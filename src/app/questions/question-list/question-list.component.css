@@ -1,0 +1,24 @@
+.questions{
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  background-color: black;
+  justify-content: space-evenly;
+}
+
+.questions > div {
+  flex-grow: 1;
+  padding: 0.5rem;
+}
+
+#easy-questions {
+  background-color: green;
+}
+
+#medium-questions {
+  background-color: yellow;
+}
+
+#harrd-questions {
+  background-color: red;
+}
