@@ -5,7 +5,8 @@ const mongoose = require('mongoose');
 const Question = require('./models/question');
 
 mongoose.connect("mongodb+srv://Admin:uCmIgjo84hiZVwIK@cluster0-obtib.mongodb.net/Alguru?retryWrites=true&w=majority")
-  .then(() => {
+  .then(() =>
+  {
     console.log('Connected to database.');
   })
   .catch(() => {
@@ -22,7 +23,8 @@ app.use((req, res, next) =>
   next();
 });
 
-app.post('/api/questions', (req, res, next) => {
+app.post('/api/questions', (req, res, next) =>
+{
   const question = new Question({
     title: req.body.title,
     content: req.body.content,
@@ -38,9 +40,9 @@ app.post('/api/questions', (req, res, next) => {
   });
 });
 
-app.use((req, res, next) =>
+app.get('/api/questions', (req, res, next) =>
 {
-  res.send('hey hey hey');
+  Question.find().then(documents => res.status(200).json(documents));
 });
 
 module.exports = app;

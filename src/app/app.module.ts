@@ -11,14 +11,13 @@ import { HeaderComponent } from './header/header.component';
 import { FooterComponent } from './footer/footer.component';
 import { QuestionListComponent } from './questions/question-list/question-list.component';
 
-
 @NgModule({
   declarations: [
     AppComponent,
     QuestionCreateComponent,
     HeaderComponent,
     FooterComponent,
-    QuestionListComponent
+    QuestionListComponent,
   ],
   imports: [
     BrowserModule,

@@ -17,12 +17,17 @@ export class QuestionsService
 
   getQuestions()
   {
-    this.http.get<Question[]>('https://localhost:3000/api/questions')
+    this.http.get<Question[]>('http://localhost:3000/api/questions')
       .subscribe(questionsData =>
       {
         this.questions = questionsData;
         this.questionsUpdated.next([...this.questions]);
       });
+  }
+
+  getQuestionUpdatedListener()
+  {
+    return this.questionsUpdated.asObservable();
   }
 
   createQuestion(title: string, content: string, solution: string, hints: string, level: number)

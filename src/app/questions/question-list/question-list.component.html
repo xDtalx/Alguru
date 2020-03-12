@@ -1,11 +1,17 @@
 <div class="questions">
-  <div id="easy-questions">
-
+  <div class="questions-container" id="easy-questions">
+    <div *ngFor="let question of questions">
+      <span class="question" *ngIf="question.level == 0">{{ question.title }}</span>
+    </div>
   </div>
-  <div id="medium-questions">
-
+  <div class="question-container" id="medium-questions">
+    <div *ngFor="let question of questions">
+      <span class="question" *ngIf="question.level == 1">{{ question.title }}</span>
+    </div>
   </div>
-  <div id="hard-questions">
-
+  <div class="question-container" id="hard-questions">
+    <div *ngFor="let question of questions">
+      <span class="question" *ngIf="question.level == 2">{{ question.title }}</span>
+    </div>
   </div>
 </div>

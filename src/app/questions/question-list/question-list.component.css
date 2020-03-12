@@ -1,24 +1,28 @@
-.questions{
+.questions {
+  margin-top: 2rem;
   width: 100%;
   display: flex;
+  flex-wrap: wrap;
   flex-direction: row;
-  background-color: black;
   justify-content: space-evenly;
 }
 
 .questions > div {
   flex-grow: 1;
-  padding: 0.5rem;
+  max-width: 50%;
+  margin-left: 1rem;
 }
 
-#easy-questions {
-  background-color: green;
+.questions > div:first-child {
+  margin-left: 0;
 }
 
-#medium-questions {
-  background-color: yellow;
-}
-
-#harrd-questions {
-  background-color: red;
+.question {
+  background-color: rgb(219, 219, 219);
+  display: flex;
+  justify-content: left;
+  padding: 1rem;
+  margin-bottom: 0.5rem;
+  min-width: 15rem;
+  border-radius: 0 0.5rem 0.5rem 0;
 }
