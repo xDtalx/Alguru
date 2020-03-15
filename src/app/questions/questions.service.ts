@@ -2,7 +2,7 @@ import { Question } from './question.model';
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Subject } from 'rxjs';
-
+import { map } from 'rxjs/operators'
 
 // Uses Injection design pattern
 @Injectable({ providedIn: 'root'})
@@ -17,12 +17,27 @@ export class QuestionsService
 
   getQuestions()
   {
-    this.http.get<Question[]>('http://localhost:3000/api/questions')
-      .subscribe(questionsData =>
-      {
-        this.questions = questionsData;
-        this.questionsUpdated.next([...this.questions]);
-      });
+    this.http
+      .get<any>('http://localhost:3000/api/questions')
+      .pipe(map(questionsData =>
+        {
+          return questionsData.map(question =>
+            {
+              return {
+                id: question._id,
+                title: question.title,
+                content: question.content,
+                solution: question.solution,
+                hints: question.hints,
+                level: question.level
+              }
+            });
+        }))
+      .subscribe(transQuestions =>
+        {
+          this.questions = transQuestions;
+          this.questionsUpdated.next([...this.questions]);
+        });
   }
 
   getQuestionUpdatedListener()
@@ -47,12 +62,24 @@ export class QuestionsService
 
   addQuestion(question: Question)
   {
-    this.http.post<{message: string}>('http://localhost:3000/api/questions', question)
-      .subscribe(() =>
+    this.http.post<{ message: string, questionId: string }>('http://localhost:3000/api/questions', question)
+      .subscribe(responseData =>
       {
+        question.id = responseData.questionId;
         this.questions.push(question);
         this.questionsUpdated.next([...this.questions]);
         console.log(this.questions);
       });
+  }
+
+  deleteQuestion(id: string)
+  {
+    this.http.delete('http://localhost:3000/api/questions/' + id)
+    .subscribe(() =>
+    {
+      const updatedQuestions = this.questions.filter(question => question.id !== id);
+      this.questions = updatedQuestions;
+      this.questionsUpdated.next([...this.questions]);
+    });
   }
 }

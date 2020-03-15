@@ -33,16 +33,26 @@ app.post('/api/questions', (req, res, next) =>
     level: req.body.level,
   });
 
-  question.save();
-
-  res.status(201).json({
-    message: 'Question posted successfully'
+  question.save().then(createdQuestion =>
+  {
+    res.status(201).json({
+      message: "Question created successfully",
+      questionId: createdQuestion._id
+    });
   });
 });
 
 app.get('/api/questions', (req, res, next) =>
 {
   Question.find().then(documents => res.status(200).json(documents));
+});
+
+app.delete("/api/questions/:id", (req, res, next) =>
+{
+  Question.deleteOne({ _id: req.params.id }).then(result =>
+    {
+      res.status(200).json({message: "Question deleted"});
+    });
 });
 
 module.exports = app;

@@ -1,17 +1,26 @@
 <div class="questions">
   <div class="questions-container" id="easy-questions">
     <div *ngFor="let question of questions">
-      <span class="question" *ngIf="question.level == 0">{{ question.title }}</span>
+      <span class="question" *ngIf="question.level == 0">
+        {{ question.title }}
+        <button (click)="onDelete(question.id)" class="btn-delete">Delete</button>
+      </span>
     </div>
   </div>
   <div class="question-container" id="medium-questions">
     <div *ngFor="let question of questions">
-      <span class="question" *ngIf="question.level == 1">{{ question.title }}</span>
+      <span class="question" *ngIf="question.level == 1">
+        {{ question.title }}
+        <button (click)="onDelete(question.id)" class="btn-delete">Delete</button>
+      </span>
     </div>
   </div>
   <div class="question-container" id="hard-questions">
     <div *ngFor="let question of questions">
-      <span class="question" *ngIf="question.level == 2">{{ question.title }}</span>
+      <span class="question" *ngIf="question.level == 2">
+        {{ question.title }}
+        <button (click)="onDelete(question.id)" class="btn-delete">Delete</button>
+      </span>
     </div>
   </div>
 </div>

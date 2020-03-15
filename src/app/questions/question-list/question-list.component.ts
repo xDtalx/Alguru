@@ -32,4 +32,9 @@ export class QuestionListComponent implements OnInit, OnDestroy
   {
     this.questionsSub.unsubscribe();
   }
+
+  onDelete(questionId: string)
+  {
+    this.questionService.deleteQuestion(questionId);
+  }
 }
