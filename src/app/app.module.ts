@@ -10,6 +10,7 @@ import { QuestionCreateComponent } from './questions/question-create/question-cr
 import { HeaderComponent } from './header/header.component';
 import { FooterComponent } from './footer/footer.component';
 import { QuestionListComponent } from './questions/question-list/question-list.component';
+import { UserRegisterComponent } from './users/user-register/user-register.component';
 
 @NgModule({
   declarations: [
@@ -18,6 +19,7 @@ import { QuestionListComponent } from './questions/question-list/question-list.c
     HeaderComponent,
     FooterComponent,
     QuestionListComponent,
+    UserRegisterComponent
   ],
   imports: [
     BrowserModule,

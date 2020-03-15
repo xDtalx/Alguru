@@ -35,6 +35,7 @@ export class QuestionsService
         }))
       .subscribe(transQuestions =>
         {
+          console.log(transQuestions);
           this.questions = transQuestions;
           this.questionsUpdated.next([...this.questions]);
         });
@@ -62,7 +63,7 @@ export class QuestionsService
 
   addQuestion(question: Question)
   {
-    this.http.post<{ message: string, questionId: string }>('http://localhost:3000/api/questions', question)
+    this.http.post<{ message: string, questionId: string }>('http://localhost:3000/admin/api/questions', question)
       .subscribe(responseData =>
       {
         question.id = responseData.questionId;
@@ -74,7 +75,7 @@ export class QuestionsService
 
   deleteQuestion(id: string)
   {
-    this.http.delete('http://localhost:3000/api/questions/' + id)
+    this.http.delete('http://localhost:3000/admin/api/questions/' + id)
     .subscribe(() =>
     {
       const updatedQuestions = this.questions.filter(question => question.id !== id);

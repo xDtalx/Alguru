@@ -1,5 +1,6 @@
-export interface Question {
-  id: string
+export interface Question 
+{
+  id: string;
   title: string;
   content: string;
   solution: string;

@@ -4,7 +4,7 @@ const http = require('http');
 const port = normalizePort(process.env.PORT || 3000);
 const server = http.createServer(app);
 
-app.set('port', port)
+app.set('port', port);
 server.on('error', onError);
 server.on('listening', onListening);
 server.listen(port);
