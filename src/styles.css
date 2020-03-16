@@ -15,6 +15,10 @@ app-root {
   width: 100vw;
 }
 
+app-error {
+  width: 30vw;
+}
+
 a {
   color: white;
   text-decoration: none;

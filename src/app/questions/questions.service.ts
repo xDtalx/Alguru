@@ -4,6 +4,9 @@ import { HttpClient } from '@angular/common/http';
 import { Subject } from 'rxjs';
 import { map } from 'rxjs/operators'
 import { Router } from '@angular/router';
+import { environment } from 'src/environments/environment'
+
+const BACKEND_URL = environment.apiUrl + '/questions';
 
 // Uses Injection design pattern
 @Injectable({ providedIn: 'root'})
@@ -15,7 +18,7 @@ export class QuestionsService {
 
   getQuestions() {
     this.http
-      .get<any>('http://localhost:3000/api/questions')
+      .get<any>(BACKEND_URL)
       .pipe(map(questionsData => {
           return questionsData.map(question =>
             {
@@ -25,7 +28,8 @@ export class QuestionsService {
                 content: question.content,
                 solution: question.solution,
                 hints: question.hints,
-                level: question.level
+                level: question.level,
+                creator: question.creator
               }
             });
         }))
@@ -41,12 +45,13 @@ export class QuestionsService {
 
   getQuestion(id: string) {
     return this.http.get<{
-      _id:string,
-      title:string,
-      content:string,
-      solution:string,
-      hints:string,
-      level:number }>('http://localhost:3000/api/questions/' + id);
+      _id: string,
+      title: string,
+      content: string,
+      solution: string,
+      hints: string,
+      level: number,
+      creator: string }>(BACKEND_URL + '/' + id);
   }
 
   createQuestion(title: string, content: string, solution: string, hints: string, level: number) {
@@ -56,14 +61,15 @@ export class QuestionsService {
       content: content,
       solution: solution,
       hints: hints,
-      level: level
+      level: level,
+      creator: null
     }
 
     this.addQuestion(question);
   }
 
   addQuestion(question: Question) {
-    this.http.post<{ message: string, questionId: string }>('http://localhost:3000/api/questions', question)
+    this.http.post<{ message: string, questionId: string }>(BACKEND_URL, question)
       .subscribe(responseData => {
         question.id = responseData.questionId;
         this.questions.push(question);
@@ -73,7 +79,7 @@ export class QuestionsService {
   }
 
   deleteQuestion(id: string) {
-    this.http.delete('http://localhost:3000/api/questions/' + id)
+    this.http.delete(BACKEND_URL + '/' + id)
     .subscribe(() => {
       const updatedQuestions = this.questions.filter(question => question.id !== id);
       this.questions = updatedQuestions;
@@ -88,10 +94,11 @@ export class QuestionsService {
       content: question.content,
       solution: question.solution,
       hints: question.hints,
-      level: question.level
+      level: question.level,
+      creator: null
     }
 
-    this.http.put('http://localhost:3000/api/questions/' + id, questionToUpdate)
+    this.http.put(BACKEND_URL + '/' + id, questionToUpdate)
       .subscribe(() => {
         const oldQuestionIndex = this.questions.findIndex(q => q.id === id);
         this.questions[oldQuestionIndex] = question;

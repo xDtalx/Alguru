@@ -1,11 +1,12 @@
+<app-error></app-error>
 <form *ngIf="!isLoading" (submit)="onLogin(userLoginForm)" #userLoginForm="ngForm">
   <label>
     <span class="error-msg" *ngIf="usernameInput.invalid">Username is invalid</span>
-    <input placeholder="Username (6 characters and above)" type="text" name="username" #usernameInput="ngModel" required ngModel minlength="6"/>
+    <input placeholder="Username" type="text" name="username" #usernameInput="ngModel" ngModel minlength="6"/>
   </label>
   <label>
     <span class="error-msg" *ngIf="passwordInput.invalid">Password is invalid</span>
-    <input placeholder="Password (6 characters and above)" type="password" name="password" #passwordInput="ngModel" required ngModel minlength="6"/>
+    <input placeholder="Password" type="password" name="password" #passwordInput="ngModel" ngModel minlength="6"/>
   </label>
   <button name="login" type="submit">Login</button>
 </form>

@@ -14,22 +14,24 @@ export class QuestionListComponent implements OnInit, OnDestroy {
   private questionsSub: Subscription;
   questions: Question[] = [];
   isUserAuth: boolean;
+  userId: string;
 
   constructor(private questionService: QuestionsService, private authService: AuthService){}
 
   ngOnInit() {
-    this.authService
-    .getAuthStatusListener()
-    .subscribe(isAuth => {
-      this.isUserAuth = isAuth;
-    });
-
+    this.userId = this.authService.getUserId();
     this.isUserAuth = this.authService.getIsAuth();
     this.questionService.getQuestions();
     this.questionsSub = this.questionService.getQuestionUpdatedListener()
       .subscribe((questions: Question[]) => {
         this.questions = questions;
       });
+    this.authService
+    .getAuthStatusListener()
+    .subscribe(isAuth => {
+      this.isUserAuth = isAuth;
+      this.userId = this.authService.getUserId();
+    });
   }
 
   ngOnDestroy() {

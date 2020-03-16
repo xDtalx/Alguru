@@ -5,4 +5,5 @@ export interface Question {
   solution: string;
   hints: string;
   level: number;
+  creator: string;
 }

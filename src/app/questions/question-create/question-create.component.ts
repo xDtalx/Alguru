@@ -32,7 +32,8 @@ export class QuestionCreateComponent implements OnInit {
           content: questionData.content,
           solution: questionData.solution,
           hints: questionData.hints,
-          level: questionData.level
+          level: questionData.level,
+          creator: questionData.creator
         }
       });
     } else {
@@ -51,7 +52,8 @@ export class QuestionCreateComponent implements OnInit {
       content: form.value.content,
       solution: form.value.solution,
       hints: form.value.hints,
-      level: this.level
+      level: this.level,
+      creator: null
     }
 
     if(this.mode ==='create') {
@@ -63,6 +65,5 @@ export class QuestionCreateComponent implements OnInit {
 
   setLevel(level: number) {
     this.level = level;
-    console.log('level: ' + level);
   }
 }
