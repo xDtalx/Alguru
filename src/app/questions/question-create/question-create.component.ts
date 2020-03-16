@@ -1,26 +1,58 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { NgForm } from '@angular/forms';
 import { QuestionsService } from '../questions.service';
 import { Question } from '../question.model';
+import { ActivatedRoute, ParamMap } from '@angular/router';
+import { QuestionListComponent } from '../question-list/question-list.component';
 
 @Component({
   selector: 'app-question-create',
   templateUrl: './question-create.component.html',
   styleUrls: [ './question-create.component.css' ]
 })
-export class QuestionCreateComponent {
-  title: string;
-  content: string;
-  hints: string;
-  Solution: string;
-  level: number;
+export class QuestionCreateComponent implements OnInit
+{
+  public question: Question;
+  public isLoading: boolean = false;
+  private level: number;
+  private mode ='create';
+  private questionId: string;
 
-  constructor(private questionService: QuestionsService)
+  constructor(private questionService: QuestionsService, private route: ActivatedRoute)
   {
   }
 
-  onAddQuestion(form: NgForm)
+  ngOnInit()
+ {
+   this.route.paramMap.subscribe((paramMap: ParamMap) =>
+   {
+    if(paramMap.has('questionId'))
+    {
+      this.mode = 'edit';
+      this.questionId = paramMap.get('questionId');
+      this.questionService.getQuestion(this.questionId).subscribe(questionData => {
+        this.question = {
+          id: questionData._id,
+          title: questionData.title,
+          content: questionData.content,
+          solution: questionData.solution,
+          hints: questionData.hints,
+          level: questionData.level
+        }
+      });
+    }
+    else
+    {
+      this.mode = 'create';
+      this.questionId = null;
+    }
+   });
+ }
+
+  onSaveQuestion(form: NgForm)
   {
+    this.isLoading = true;
+
     const question: Question = {
       id: null,
       title: form.value.title,
@@ -30,7 +62,14 @@ export class QuestionCreateComponent {
       level: this.level
     }
 
-    this.questionService.addQuestion(question);
+    if(this.mode ==='create')
+    {
+      this.questionService.addQuestion(question);
+    }
+    else
+    {
+      this.questionService.updateQuestion(this.questionId, question);
+    }
   }
 
   setLevel(level: number)

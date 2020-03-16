@@ -1,0 +1,41 @@
+div#header {
+  background-color: rgb(91, 150, 228);
+  padding: 2rem;
+  margin-bottom: 1rem;
+}
+
+.nav {
+  display: flex;
+  justify-content: flex-end;
+  list-style-type: none;
+  flex-direction: col;
+}
+
+.nav-link {
+  padding: 0.7rem;
+  margin-right: 1rem;
+  border-radius: 1rem;
+  border: none;
+  background-color: transparent;
+  font-size: 1rem;
+  color: white;
+  cursor: pointer;
+}
+
+.nav-link:hover {
+  background-color: rgb(84, 137, 207);
+  box-shadow: 0 1px 5px rgb(74, 115, 168);
+}
+
+.nav-link:active {
+  outline: none;
+  box-shadow: 0 1px 5px rgb(74, 115, 168) inset;
+}
+
+.nav-link:focus {
+  outline: none;
+}
+
+#home {
+  float: left;
+}

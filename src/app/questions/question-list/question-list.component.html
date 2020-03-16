@@ -3,7 +3,8 @@
     <div *ngFor="let question of questions">
       <span class="question" *ngIf="question.level == 0">
         {{ question.title }}
-        <button (click)="onDelete(question.id)" class="btn-delete">Delete</button>
+        <a *ngIf="isUserAuth" [routerLink]="['/edit', question.id]" class="btn-edit">Edit</a>
+        <button *ngIf="isUserAuth" (click)="onDelete(question.id)" class="btn-delete">Delete</button>
       </span>
     </div>
   </div>
@@ -11,7 +12,8 @@
     <div *ngFor="let question of questions">
       <span class="question" *ngIf="question.level == 1">
         {{ question.title }}
-        <button (click)="onDelete(question.id)" class="btn-delete">Delete</button>
+        <a *ngIf="isUserAuth" [routerLink]="['/edit', question.id]" class="btn-edit">Edit</a>
+        <button *ngIf="isUserAuth" (click)="onDelete(question.id)" class="btn-delete">Delete</button>
       </span>
     </div>
   </div>
@@ -19,7 +21,8 @@
     <div *ngFor="let question of questions">
       <span class="question" *ngIf="question.level == 2">
         {{ question.title }}
-        <button (click)="onDelete(question.id)" class="btn-delete">Delete</button>
+        <a *ngIf="isUserAuth" [routerLink]="['/edit', question.id]" class="btn-edit">Edit</a>
+        <button *ngIf="isUserAuth" (click)="onDelete(question.id)" class="btn-delete">Delete</button>
       </span>
     </div>
   </div>

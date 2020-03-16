@@ -48,3 +48,9 @@ form > .level > button:last-child
   margin-right: 0;
 }
 
+button {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 1.6rem;
+}

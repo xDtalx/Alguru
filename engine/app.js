@@ -2,8 +2,8 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const app = express();
 const mongoose = require('mongoose');
-const adminRoutes = require('./routes/admin');
-const alguruUserRoutes = require('./routes/alguruUser');
+const questionsRoutes = require('./routes/questions');
+const usersRoutes = require('./routes/users');
 
 mongoose.connect("mongodb+srv://Admin:uCmIgjo84hiZVwIK@cluster0-obtib.mongodb.net/Alguru?retryWrites=true&w=majority")
   .then(() =>
@@ -19,12 +19,12 @@ app.use(bodyParser.json());
 app.use((req, res, next) =>
 {
   res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Headers', 'Origin, X-Request-With, Content-Type, Accept');
-  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PATCH, DELETE, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Origin, X-Request-With, Content-Type, Accept, Authorization');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, PUT, POST, PATCH, DELETE, OPTIONS');
   next();
 });
-          
-app.use('/admin', adminRoutes);
-app.use(alguruUserRoutes);
+
+app.use('/api/questions', questionsRoutes);
+app.use('/api/users', usersRoutes);
 
 module.exports = app;
