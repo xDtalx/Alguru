@@ -10,24 +10,19 @@ import { QuestionListComponent } from '../question-list/question-list.component'
   templateUrl: './question-create.component.html',
   styleUrls: [ './question-create.component.css' ]
 })
-export class QuestionCreateComponent implements OnInit
-{
+export class QuestionCreateComponent implements OnInit {
+
   public question: Question;
   public isLoading: boolean = false;
   private level: number;
   private mode ='create';
   private questionId: string;
 
-  constructor(private questionService: QuestionsService, private route: ActivatedRoute)
-  {
-  }
+  constructor(private questionService: QuestionsService, private route: ActivatedRoute) {}
 
-  ngOnInit()
- {
-   this.route.paramMap.subscribe((paramMap: ParamMap) =>
-   {
-    if(paramMap.has('questionId'))
-    {
+  ngOnInit() {
+   this.route.paramMap.subscribe((paramMap: ParamMap) => {
+    if(paramMap.has('questionId')) {
       this.mode = 'edit';
       this.questionId = paramMap.get('questionId');
       this.questionService.getQuestion(this.questionId).subscribe(questionData => {
@@ -40,17 +35,14 @@ export class QuestionCreateComponent implements OnInit
           level: questionData.level
         }
       });
-    }
-    else
-    {
+    } else {
       this.mode = 'create';
       this.questionId = null;
     }
    });
- }
+  }
 
-  onSaveQuestion(form: NgForm)
-  {
+  onSaveQuestion(form: NgForm) {
     this.isLoading = true;
 
     const question: Question = {
@@ -62,18 +54,14 @@ export class QuestionCreateComponent implements OnInit
       level: this.level
     }
 
-    if(this.mode ==='create')
-    {
+    if(this.mode ==='create') {
       this.questionService.addQuestion(question);
-    }
-    else
-    {
+    } else {
       this.questionService.updateQuestion(this.questionId, question);
     }
   }
 
-  setLevel(level: number)
-  {
+  setLevel(level: number) {
     this.level = level;
     console.log('level: ' + level);
   }

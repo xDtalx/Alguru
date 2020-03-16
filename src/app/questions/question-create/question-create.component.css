@@ -1,27 +1,23 @@
-form
-{
+form {
   display: flex;
   flex-direction: column;
   justify-content: space-around;
 }
 
-form > *
-{
+form > * {
   margin-top: 0.25rem;
   margin-bottom: 0.25rem;
   padding: 0.5rem;
 }
 
-form > .level
-{
+form > .level {
   display: flex;
   justify-content: space-evenly;
   flex-direction: row;
   padding: 0;
 }
 
-form > .level > button
-{
+form > .level > button {
   flex-grow: 1;
   margin-right: 0.5rem;
   background-color: rgb(108, 189, 255);
@@ -32,19 +28,16 @@ form > .level > button
   cursor: pointer;
 }
 
-form > .level > button:focus
-{
+form > .level > button:focus {
   background-color: rgb(62, 150, 223);
   outline-color: rgb(48, 107, 184);
 }
 
-form > .level > button:hover
-{
+form > .level > button:hover {
   background-color: rgb(62, 150, 223);
 }
 
-form > .level > button:last-child
-{
+form > .level > button:last-child {
   margin-right: 0;
 }
 

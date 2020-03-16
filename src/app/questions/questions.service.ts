@@ -50,8 +50,7 @@ export class QuestionsService {
   }
 
   createQuestion(title: string, content: string, solution: string, hints: string, level: number) {
-    const question: Question =
-    {
+    const question: Question = {
       id: null,
       title: title,
       content: content,
@@ -75,8 +74,7 @@ export class QuestionsService {
 
   deleteQuestion(id: string) {
     this.http.delete('http://localhost:3000/api/questions/' + id)
-    .subscribe(() =>
-    {
+    .subscribe(() => {
       const updatedQuestions = this.questions.filter(question => question.id !== id);
       this.questions = updatedQuestions;
       this.questionsUpdated.next([...this.questions]);

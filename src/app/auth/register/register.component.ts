@@ -10,12 +10,9 @@ export class RegisterComponent
 {
   public isLoading = false;
 
-  constructor(private authService: AuthService)
-  {
-  }
+  constructor(private authService: AuthService) {}
 
-  onRegister(registerForm: NgForm)
-  {
+  onRegister(registerForm: NgForm) {
     if(registerForm.invalid) {
       return;
     }
@@ -24,8 +21,7 @@ export class RegisterComponent
     this.authService.createUserAndSave(registerForm.value.username, registerForm.value.email, registerForm.value.password);
   }
 
-  onDelete(userId: string)
-  {
+  onDelete(userId: string) {
     this.authService.deleteUser(userId);
   }
 }

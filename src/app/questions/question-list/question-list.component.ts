@@ -9,19 +9,15 @@ import { AuthService } from 'src/app/auth/auth.service';
   templateUrl: './question-list.component.html',
   styleUrls: [ './question-list.component.css' ]
 })
-export class QuestionListComponent implements OnInit, OnDestroy
-{
+export class QuestionListComponent implements OnInit, OnDestroy {
   // used in order to unsubscribe from the service when the page, which the list in, not shown
   private questionsSub: Subscription;
   questions: Question[] = [];
   isUserAuth: boolean;
 
-  constructor(private questionService: QuestionsService, private authService: AuthService)
-  {
-  }
+  constructor(private questionService: QuestionsService, private authService: AuthService){}
 
-  ngOnInit()
-  {
+  ngOnInit() {
     this.authService
     .getAuthStatusListener()
     .subscribe(isAuth => {
@@ -31,23 +27,19 @@ export class QuestionListComponent implements OnInit, OnDestroy
     this.isUserAuth = this.authService.getIsAuth();
     this.questionService.getQuestions();
     this.questionsSub = this.questionService.getQuestionUpdatedListener()
-      .subscribe((questions: Question[]) =>
-      {
+      .subscribe((questions: Question[]) => {
         this.questions = questions;
       });
   }
 
-  ngOnDestroy()
-  {
+  ngOnDestroy() {
     this.questionsSub.unsubscribe();
   }
 
-  onDelete(questionId: string)
-  {
+  onDelete(questionId: string) {
     this.questionService.deleteQuestion(questionId);
   }
 
-  onEdit(questionId: string)
-  {
+  onEdit(questionId: string) {
   }
 }

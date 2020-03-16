@@ -10,12 +10,9 @@ export class LoginComponent
 {
   public isLoading = false;
 
-  constructor(private authService: AuthService)
-  {
-  }
+  constructor(private authService: AuthService) {}
 
-  onLogin(loginForm: NgForm)
-  {
+  onLogin(loginForm: NgForm) {
     if(loginForm.invalid) {
       return;
     }

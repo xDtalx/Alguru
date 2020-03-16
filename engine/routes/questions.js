@@ -3,8 +3,7 @@ const router = express.Router();
 const Question = require('../models/question');
 const checkAuth = require('../filters/check-auth');
 
-router.post('', checkAuth, (req, res, next) =>
-{
+router.post('', checkAuth, (req, res, next) => {
   const question = new Question({
     title: req.body.title,
     content: req.body.content,
@@ -13,8 +12,7 @@ router.post('', checkAuth, (req, res, next) =>
     level: req.body.level
   });
 
-  question.save().then(createdQuestion =>
-  {
+  question.save().then(createdQuestion => {
     res.status(201).json({
       message: "Question created successfully",
       questionId: createdQuestion._id
@@ -22,16 +20,13 @@ router.post('', checkAuth, (req, res, next) =>
   });
 });
 
-router.delete("/:id", checkAuth, (req, res, next) =>
-{
-  Question.deleteOne({ _id: req.params.id }).then(result =>
-    {
+router.delete("/:id", checkAuth, (req, res, next) => {
+  Question.deleteOne({ _id: req.params.id }).then(result => {
       res.status(200).json({message: "Question deleted"});
     });
 });
 
-router.get('', (req, res, next) =>
-{
+router.get('', (req, res, next) => {
   Question.find().then(documents => res.status(200).json(documents));
 });
 
@@ -52,12 +47,9 @@ router.put('/:id', checkAuth, (req, res, next) => {
 
 router.get('/:id', (req, res, next) => {
   Question.findById(req.params.id).then(question => {
-    if(question)
-    {
+    if(question) {
       res.status(200).json(question);
-    }
-    else
-    {
+    } else {
       res.status(404).json({ message: 'Question not found!' });
     }
   });

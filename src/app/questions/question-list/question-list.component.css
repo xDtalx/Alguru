@@ -1,5 +1,4 @@
-.questions
-{
+.questions {
   margin-top: 2rem;
   width: 100%;
   display: flex;
@@ -8,20 +7,17 @@
   justify-content: space-evenly;
 }
 
-.questions > div
-{
+.questions > div {
   flex-grow: 1;
   max-width: 50%;
   margin-left: 1rem;
 }
 
-.questions > div:first-child
-{
+.questions > div:first-child {
   margin-left: 0;
 }
 
-.question
-{
+.question {
   background-color: rgb(219, 219, 219);
   display: flex;
   justify-content: left;
