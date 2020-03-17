@@ -14,7 +14,6 @@ mongoose.connect("mongodb+srv://Admin:" + process.env.MONGO_ATLAS_PASSWORD + "@c
   });
 
 app.use(bodyParser.json());
-
 app.use((req, res, next) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Headers', 'Origin, X-Request-With, Content-Type, Accept, Authorization');
