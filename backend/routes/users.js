@@ -1,8 +1,9 @@
 const express = require('express');
 const router = express.Router();
 const UserController = require('../controllers/users');
+const checkAuth = require('../filters/check-auth');
 
-router.post('/register', UserController.createUser);
+router.post('/register', checkAuth, UserController.createUser);
 
 router.post('/login', UserController.userLogin);
 

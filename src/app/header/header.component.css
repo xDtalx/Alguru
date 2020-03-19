@@ -1,4 +1,6 @@
 div#header {
+  display: flex;
+  flex-direction: col;
   background-color: rgb(91, 150, 228);
   padding: 2rem;
   margin-bottom: 1rem;
@@ -6,8 +8,7 @@ div#header {
 
 .nav {
   display: flex;
-  justify-content: flex-end;
-  list-style-type: none;
+  list-style: none;
   flex-direction: col;
 }
 
@@ -36,6 +37,6 @@ div#header {
   outline: none;
 }
 
-#home {
-  float: left;
+#spacer {
+  flex: 1 1 auto;
 }

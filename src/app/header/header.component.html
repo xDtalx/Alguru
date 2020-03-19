@@ -4,14 +4,15 @@
       <a class='nav-link' routerLink='/'>Home</a>
     </li>
   </ul>
+  <span id="spacer"></span>
   <ul class='nav'>
     <li *ngIf="isUserAuth" class='nav-item'>
       <a class='nav-link' routerLink='/create-question'>New Question</a>
     </li>
-    <li *ngIf="!isUserAuth" class='nav-item'>
+    <li *ngIf="!isUserAuth && isRelease" class='nav-item'>
       <a class='nav-link' routerLink='/login'>Login</a>
     </li>
-    <li *ngIf="!isUserAuth" class='nav-item'>
+    <li *ngIf="!isUserAuth && isRelease" class='nav-item'>
       <a class='nav-link' routerLink='/register'>Register</a>
     </li>
     <li *ngIf="isUserAuth" class='nav-item'>

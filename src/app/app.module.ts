@@ -15,6 +15,7 @@ import { LoginComponent } from './auth/login/login.component';
 import { AuthInterceptor } from './auth/auth-interceptor';
 import { ErrorComponent } from './error/error.component';
 import { ErrorInterceptor } from './error-interceptor';
+import { ComingSoonComponent } from './coming-soon/coming-soon.component';
 
 @NgModule({
   declarations: [
@@ -25,7 +26,8 @@ import { ErrorInterceptor } from './error-interceptor';
     QuestionListComponent,
     RegisterComponent,
     LoginComponent,
-    ErrorComponent
+    ErrorComponent,
+    ComingSoonComponent
   ],
   imports: [
     BrowserModule,

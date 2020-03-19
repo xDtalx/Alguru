@@ -12,7 +12,7 @@ const BACKEND_URL = environment.apiUrl + '/users';
 @Injectable({ providedIn: 'root'})
 export class AuthService {
 
-  private isAuth:boolean = false;
+  private isAuth: boolean = false;
   private token: string;
   private authStatusListener = new Subject<boolean>();
   private authErrorListener = new Subject<string[]>();
@@ -32,7 +32,6 @@ export class AuthService {
 
   addErrorMessages(errors: string[]) {
     if(errors && errors.length > 0) {
-      console.log(errors);
       errors.forEach(error => this.errors.push(error));
       this.authErrorListener.next([...this.errors]);
     }

@@ -24,6 +24,10 @@ exports.createUser = (req, res, next) => {
 };
 
 exports.userLogin = (req, res, next) => {
+  if(process.env.RELEASE == 'false' && req.body.username !== process.env.ADMIN) {
+    return res.status(401).json({ message: 'Coming soon! Be patient :)' });
+  }
+
   let errors = checkErrorsInLoginForm(req);
 
   if(errors.length > 0) {
