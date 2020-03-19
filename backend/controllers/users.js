@@ -2,8 +2,6 @@ const User = require('../models/user');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
-let fetchedUser;
-
 exports.createUser = (req, res, next) => {
   let errors = checkErrorsInRegisterForm(req);
 
@@ -34,7 +32,7 @@ exports.userLogin = (req, res, next) => {
 
   User.findOne({ username: req.body.username })
   .then(user => handleFoundUser(user, req, res))
-  .then(isPasswordMatch => handleAuthenticationAndResponse(isPasswordMatch, fetchedUser, res))
+  .then(user => handleAuthenticationAndResponse(user, res))
   .catch(err => handleUnknownErrorInLogin(err, res));
 };
 
@@ -44,11 +42,7 @@ function handleUnknownErrorInLogin(error, res) {
   res.status(401).json({ message: ['Username or password are incorrect'] });
 }
 
-function handleAuthenticationAndResponse(isPasswordMatch, fetchedUser, res) {
-  if(!isPasswordMatch) {
-    return res.status(401).json({ message: ['Username or password are incorrect'] });
-  }
-
+function handleAuthenticationAndResponse(fetchedUser, res) {
   const token = jwt.sign(
     { username: fetchedUser.username, email: fetchedUser.email, userId: fetchedUser._id },
     process.env.JWT_KEY,
@@ -63,13 +57,11 @@ function handleAuthenticationAndResponse(isPasswordMatch, fetchedUser, res) {
 }
 
 function handleFoundUser(user, req, res) {
-  if(!user) {
+  if(!user || !bcrypt.compare(req.body.password, user.hashedPassword)) {
     return res.status(401).json({ message: ['Username or password are incorrect'] });
   }
 
-  fetchedUser = user;
-
-  return bcrypt.compare(req.body.password, user.hashedPassword);
+  return user;
 }
 
 function checkErrorsInLoginForm(req) {
