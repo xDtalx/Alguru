@@ -5,7 +5,7 @@ const mongoose = require('mongoose');
 const questionsRoutes = require('./routes/questions');
 const usersRoutes = require('./routes/users');
 
-mongoose.connect("mongodb+srv://Admin:" + process.env.MONGO_ATLAS_PASSWORD + "@cluster0-obtib.mongodb.net/Alguru?retryWrites=true&w=majority")
+mongoose.connect(process.env.MONGO_AUTH)
   .then(() => {
     console.log('Connected to database.');
   })
