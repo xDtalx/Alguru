@@ -1,0 +1,46 @@
+<form *ngIf="!isLoading" (submit)="onSaveQuestion(questionsForm)" #questionsForm="ngForm">
+  <input
+  placeholder="Title"
+  name="title"
+  type="text"
+  #title="ngModel"
+  [ngModel]="question?.title"
+  required
+  minlength="3"/>
+
+  <textarea
+  placeholder="Question"
+  name="content"
+  cols="100"
+  rows="10"
+  [ngModel]="question?.content"
+  required
+  minlength="3"></textarea>
+
+  <textarea
+  placeholder="Solution"
+  name="solution"
+  cols="100"
+  rows="10"
+  [ngModel]="question?.solution"
+  required
+  minlength="3"></textarea>
+
+  <textarea
+  placeholder="Hints"
+  name="hints"
+  cols="100"
+  rows="10"
+  [ngModel]="question?.hints"
+  required
+  minlength="3"></textarea>
+
+  <div class="level">
+    <button (click)="setLevel(0)" name="easy" type="button">Easy</button>
+    <button (click)="setLevel(1)" name="medium" type="button">Medium</button>
+    <button (click)="setLevel(2)" name="hard" type="button">Hard</button>
+  </div>
+
+  <button name="create" type="submit">Create</button>
+</form>
+<div *ngIf="isLoading" class="loader">Loading...</div>

@@ -1,0 +1,28 @@
+.questions {
+  margin-top: 2rem;
+  width: 100%;
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: row;
+  justify-content: space-evenly;
+}
+
+.questions > div {
+  flex-grow: 1;
+  max-width: 50%;
+  margin-left: 1rem;
+}
+
+.questions > div:first-child {
+  margin-left: 0;
+}
+
+.question {
+  background-color: rgb(219, 219, 219);
+  display: flex;
+  justify-content: left;
+  padding: 1rem;
+  margin-bottom: 0.5rem;
+  min-width: 15rem;
+  border-radius: 0 0.5rem 0.5rem 0;
+}
