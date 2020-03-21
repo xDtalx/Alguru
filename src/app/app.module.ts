@@ -16,6 +16,10 @@ import { AuthInterceptor } from './auth/auth-interceptor';
 import { ErrorComponent } from './error/error.component';
 import { ErrorInterceptor } from './error-interceptor';
 import { ComingSoonComponent } from './coming-soon/coming-soon.component';
+import {HomePageComponent} from "./homePage/homePage.component";
+import {MatDialogModule} from "@angular/material/dialog";
+import {BrowserAnimationsModule} from "@angular/platform-browser/animations";
+import {LoginModalComponent} from "./loginModal/loginModal.component";
 
 @NgModule({
   declarations: [
@@ -27,14 +31,18 @@ import { ComingSoonComponent } from './coming-soon/coming-soon.component';
     RegisterComponent,
     LoginComponent,
     ErrorComponent,
-    ComingSoonComponent
+    ComingSoonComponent,
+    HomePageComponent,
+    LoginModalComponent
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
     FormsModule,
     CommonModule,
-    HttpClientModule
+    HttpClientModule,
+    MatDialogModule,
+    BrowserAnimationsModule
   ],
   providers: [
     { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },

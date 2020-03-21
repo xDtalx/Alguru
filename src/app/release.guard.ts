@@ -15,7 +15,7 @@ export class ReleaseGuard implements CanActivate {
     const isRelease = this.authService.getIsAuth() || environment.isRelease;
 
     if(!isRelease) {
-      this.router.navigate(['/coming-soon']);
+      this.router.navigate(['/home']);
     }
 
     return isRelease;
