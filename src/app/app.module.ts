@@ -16,6 +16,7 @@ import { AuthInterceptor } from './auth/auth-interceptor';
 import { ErrorComponent } from './error/error.component';
 import { ErrorInterceptor } from './error-interceptor';
 import { ComingSoonComponent } from './coming-soon/coming-soon.component';
+import { CodeEditorComponent } from './code-editor/code-editor.component';
 
 @NgModule({
   declarations: [
@@ -27,7 +28,8 @@ import { ComingSoonComponent } from './coming-soon/coming-soon.component';
     RegisterComponent,
     LoginComponent,
     ErrorComponent,
-    ComingSoonComponent
+    ComingSoonComponent,
+    CodeEditorComponent
   ],
   imports: [
     BrowserModule,

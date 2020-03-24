@@ -7,12 +7,14 @@ import { QuestionListComponent } from './questions/question-list/question-list.c
 import { AuthGuard } from './auth/auth.guard';
 import { ComingSoonComponent } from './coming-soon/coming-soon.component';
 import { ReleaseGuard } from './release.guard';
+import { CodeEditorComponent } from './code-editor/code-editor.component';
 
 const routes: Routes = [
   { path: 'coming-soon', component: ComingSoonComponent},
   { path: '', canActivate: [ReleaseGuard], children: [
     { path: '', component: QuestionListComponent},
     { path: 'edit/:questionId', component: QuestionCreateComponent, canActivate: [AuthGuard] },
+    { path: 'code-editor', component: CodeEditorComponent, canActivate: [AuthGuard] },
     { path: 'register', component: RegisterComponent },
     { path: 'login', component: LoginComponent },
     { path: 'create-question', component: QuestionCreateComponent, canActivate: [AuthGuard] }
