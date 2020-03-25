@@ -21,7 +21,7 @@ exports.executeCode = (req, res, next) => {
 
   request.post(process.env.RUN_CODE_API + "/execute", data, (err, runCodeRes, body) => {
     if(err) {
-      console.log(err);
+      res.status(500).json({ message: 'Unknown error: ' + err });
       return;
     }
 

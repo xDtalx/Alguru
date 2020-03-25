@@ -5,6 +5,7 @@ import { SolutionTemplateResponse } from './solution-template.model';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { environment } from 'src/environments/environment';
+import { StringFormat } from 'src/utils/string-utils';
 
 @Injectable({ providedIn: 'root'})
 export class CodeService {
@@ -23,13 +24,15 @@ export class CodeService {
   }
 
   getSolutionTemplate(lang) {
+    const urlType = StringFormat(environment.GETUrlType, 'lang');
+
     this
     .http
-    .get<SolutionTemplateResponse>(environment.apiUrl + "/code/template/" + lang)
+    .get<SolutionTemplateResponse>(environment.runCodeApi + "/template" + urlType + lang)
     .subscribe(template => this.solutionTemplateListener.next(template));
   }
 
-  runCode(lang: String, code: string) {
+  runCode(lang: string, code: string) {
     let runRequest = {
       lang: lang,
       code: code
@@ -37,7 +40,7 @@ export class CodeService {
 
     this
     .http
-    .post<ExecuteResponse>(environment.apiUrl + "/code/execute", runRequest)
+    .post<ExecuteResponse>(environment.runCodeApi + "/execute", runRequest)
     .subscribe(output => {
       this.executeResponseListener.next(output);
     });
