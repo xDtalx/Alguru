@@ -24,11 +24,9 @@ export class CodeService {
   }
 
   getSolutionTemplate(lang) {
-    const urlType = StringFormat(environment.GETUrlType, 'lang');
-
     this
     .http
-    .get<SolutionTemplateResponse>(environment.runCodeApi + "/template" + urlType + lang)
+    .get<SolutionTemplateResponse>(environment.runCodeApi + "/template/" + lang)
     .subscribe(template => this.solutionTemplateListener.next(template));
   }
 

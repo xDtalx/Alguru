@@ -5,8 +5,7 @@
 export const environment = {
   production: false,
   apiUrl: 'http://localhost:3000/api',
-  runCodeApi: 'http://localhost:8080/RunCode',
-  GETUrlType: '?{0}=',
+  runCodeApi: 'http://localhost:3000/api/code',
   isRelease: false
 };
 

@@ -5,10 +5,9 @@ exports.getTemplate = (req, res, next) => {
 
   request.get(url, null, (err, runCodeRes, body) => {
     if(err) {
-      console.log(err);
+      res.status(500).json({ message: 'Unknown error' });
       return;
     }
-
     res.status(runCodeRes.statusCode).send(body);
   });
 };
@@ -19,9 +18,13 @@ exports.executeCode = (req, res, next) => {
     code: req.body.code
   };
 
-  request.post(process.env.RUN_CODE_API + "/execute", data, (err, runCodeRes, body) => {
+  request.post({
+    headers: req.headers,
+    url: process.env.RUN_CODE_API + '/execute',
+    body: JSON.stringify(data)
+  }, (err, runCodeRes, body) => {
     if(err) {
-      res.status(500).json({ message: 'Unknown error: ' + err });
+      res.status(500).json({ message: 'Unknown error' });
       return;
     }
 
