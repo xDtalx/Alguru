@@ -15,7 +15,8 @@ exports.getTemplate = (req, res, next) => {
 exports.executeCode = (req, res, next) => {
   const data = {
     lang: req.body.lang,
-    code: req.body.code
+    code: req.body.code,
+    tests: req.body.tests
   };
 
   request.post({
@@ -28,6 +29,7 @@ exports.executeCode = (req, res, next) => {
       return;
     }
 
+    res.setHeader('Content-Type', 'application/json');
     res.status(runCodeRes.statusCode).send(body);
   });
 };

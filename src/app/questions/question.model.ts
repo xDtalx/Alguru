@@ -2,7 +2,9 @@ export interface Question {
   id: string;
   title: string;
   content: string;
-  solution: string;
+  solutionTemplate: string[];
+  solution: string[];
+  tests: string[];
   hints: string;
   level: number;
   creator: string;

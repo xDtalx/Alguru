@@ -3,6 +3,7 @@
     <div *ngFor="let question of questions">
       <span class="question" *ngIf="question.level == 0">
         {{ question.title }}
+        <a *ngIf="isUserAuth" [routerLink]="['/solve', question.id]" class="btn-edit">Solve</a>
         <a *ngIf="isUserAuth && userId === question.creator" [routerLink]="['/edit', question.id]" class="btn-edit">Edit</a>
         <button *ngIf="isUserAuth && userId === question.creator" (click)="onDelete(question.id)" class="btn-delete">Delete</button>
       </span>
@@ -12,6 +13,7 @@
     <div *ngFor="let question of questions">
       <span class="question" *ngIf="question.level == 1">
         {{ question.title }}
+        <a *ngIf="isUserAuth" [routerLink]="['/solve', question.id]" class="btn-edit">Solve</a>
         <a *ngIf="isUserAuth && userId === question.creator" [routerLink]="['/edit', question.id]" class="btn-edit">Edit</a>
         <button *ngIf="isUserAuth && userId === question.creator" (click)="onDelete(question.id)" class="btn-delete">Delete</button>
       </span>
@@ -21,6 +23,7 @@
     <div *ngFor="let question of questions">
       <span class="question" *ngIf="question.level == 2">
         {{ question.title }}
+        <a *ngIf="isUserAuth" [routerLink]="['/solve', question.id]" class="btn-edit">Solve</a>
         <a *ngIf="isUserAuth && userId === question.creator" [routerLink]="['/edit', question.id]" class="btn-edit">Edit</a>
         <button *ngIf="isUserAuth && userId === question.creator" (click)="onDelete(question.id)" class="btn-delete">Delete</button>
       </span>

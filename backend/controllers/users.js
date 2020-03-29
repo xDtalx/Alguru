@@ -1,17 +1,19 @@
 const User = require('../models/user');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const { validationResult } = require('express-validator');
 
 exports.createUser = (req, res, next) => {
-  let errors = checkErrorsInRegisterForm(req);
+  const errors = validationResult(req);
 
-  if(errors.length > 0) {
-    return res.status(500).json({ message: errors });
+  if(!errors.isEmpty()) {
+    return res.status(422).json({ errors: errors.array() });
   }
 
   bcrypt.hash(req.body.password, 10).then(hash => {
     const user = new User({
       username: req.body.username,
+      username_lower: req.body.username.toLowerCase(),
       email: req.body.email,
       hashedPassword: hash
     });
@@ -82,20 +84,6 @@ function checkErrorsInLoginForm(req) {
   return errors;
 }
 
-function checkErrorsInRegisterForm(req) {
-  let errors = [];
-
-  if(req.body.username.length < 6) {
-    errors.push('Username length should be at least 6 characters');
-  }
-
-  if(req.body.password.length < 6) {
-    errors.push('Password length should be at least 6 characters');
-  }
-
-  return errors;
-}
-
 function handleSuccessfulSave(result, res) {
   res.status(201).json({
     message: "User created",
@@ -107,7 +95,7 @@ function handleRegisterError(error, res) {
   let errors = [];
 
   if(error.errors) {
-    if(error.errors.username) {
+    if(error.errors.username_lower) {
       errors.push('Username already taken');
     }
 
