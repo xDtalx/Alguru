@@ -16,6 +16,7 @@ import { AuthInterceptor } from './auth/auth-interceptor';
 import { ErrorComponent } from './error/error.component';
 import { ErrorInterceptor } from './error-interceptor';
 import { ComingSoonComponent } from './coming-soon/coming-soon.component';
+import { CodeEditorComponent } from './code-editor/code-editor.component';
 import {HomePageComponent} from "./homePage/homePage.component";
 
 import {LoginModalComponent} from "./loginModal/loginModal.component";
@@ -32,6 +33,8 @@ import {NgbModule} from "@ng-bootstrap/ng-bootstrap";
     RegisterComponent,
     LoginComponent,
     ErrorComponent,
+    ComingSoonComponent,
+    CodeEditorComponent
     ComingSoonComponent,
     HomePageComponent,
     LoginModalComponent

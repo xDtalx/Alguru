@@ -4,8 +4,9 @@ const app = express();
 const mongoose = require('mongoose');
 const questionsRoutes = require('./routes/questions');
 const usersRoutes = require('./routes/users');
+const codeRoutes = require('./routes/code');
 
-mongoose.connect("mongodb+srv://Admin:" + process.env.MONGO_ATLAS_PASSWORD + "@cluster0-obtib.mongodb.net/Alguru?retryWrites=true&w=majority")
+mongoose.connect(process.env.MONGO_AUTH)
   .then(() => {
     console.log('Connected to database.');
   })
@@ -23,5 +24,6 @@ app.use((req, res, next) => {
 
 app.use('/api/questions', questionsRoutes);
 app.use('/api/users', usersRoutes);
+app.use('/api/code', codeRoutes);
 
 module.exports = app;

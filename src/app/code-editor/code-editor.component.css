@@ -1,0 +1,92 @@
+* {
+  padding: 0;
+  margin: 0;
+}
+
+#ide {
+  padding: 1rem;
+  position: relative;
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  height: 70vh;
+  background-color: rgb(78, 82, 102);
+}
+
+#first-col {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  height: 100%;
+}
+
+#second-col {
+  margin-left: 1rem;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  height: 100%;
+}
+
+div.container {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  width: 100%;
+}
+
+.title {
+  padding: 1rem;
+}
+
+.head {
+  color: white;
+  background-color: rgb(48, 53, 66);
+  align-items: center;
+  justify-content: center;
+  display: flex;
+}
+
+.top {
+  border-top-left-radius: 1rem;
+  border-top-right-radius: 1rem;
+}
+
+a.run-code {
+  border-radius: 0;
+  border-top-right-radius: 1rem;
+  padding: 1rem 2rem 1rem 2rem;
+}
+
+.editor {
+  font-size: 1rem;
+  padding: 1rem;
+  border: none;
+  -webkit-border-radius: 0;
+  -moz-border-radius: 0;
+  border-radius: 0;
+  resize: none;
+  flex-direction: row;
+  flex-grow: 1;
+  background-color: rgb(110, 115, 129);
+  color: rgb(39, 39, 39);
+}
+
+.editor:focus,
+.editor:active {
+  outline: none;
+}
+
+.spacer {
+  flex: 1 1 auto;
+}
+
+.btn {
+  background-color: rgb(34, 41, 46);
+  cursor: pointer;
+  border: none;
+  padding: 1rem;
+  color: white;
+  margin-left: 0.5rem;
+}

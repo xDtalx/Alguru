@@ -7,6 +7,9 @@
   <span id="spacer"></span>
   <ul class='nav'>
     <li *ngIf="isUserAuth" class='nav-item'>
+      <a class='nav-link' routerLink='/code-editor'>Solve Questions</a>
+    </li>
+    <li *ngIf="isUserAuth" class='nav-item'>
       <a class='nav-link' routerLink='/create-question'>New Question</a>
     </li>
     <li *ngIf="!isUserAuth && isRelease" class='nav-item'>
