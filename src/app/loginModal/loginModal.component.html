@@ -1,12 +1,14 @@
-<div id="modal-content-wrapper">
-  <header id="modal-header">
-    <h1 id="modal-title">Are you sure you want to logout?</h1>
-  </header>
-  <section id="modal-body">
-    <p>If you logout bad things might happen, but don't mind me, I'm just the description in a modal...</p>
-  </section>
-  <footer id="modal-footer">
-    <button mat-raised-button id="modal-action-button" (click)="actionFunction()">Logout</button>
-    <button mat-raised-button id="modal-cancel-button" (click)="closeModal()">Go back</button>
-  </footer>
+<div class="modal-header">
+  <h4 class="modal-title">Hi there!</h4>
+  <button type="button" class="close" aria-label="Close" (click)="activeModal.dismiss('Cross click')">
+<!--    <span aria-hidden="true">&times;</span>-->
+  </button>
 </div>
+<div class="modal-body">
+  <p>Hello, {{name}}!</p>
+</div>
+<div class="modal-footer">
+  <button type="button" class="btn btn-outline-dark" (click)="activeModal.close('Close click')">Close</button>
+</div>
+
+<!--<app-login></app-login>-->

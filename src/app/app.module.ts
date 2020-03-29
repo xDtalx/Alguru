@@ -17,9 +17,10 @@ import { ErrorComponent } from './error/error.component';
 import { ErrorInterceptor } from './error-interceptor';
 import { ComingSoonComponent } from './coming-soon/coming-soon.component';
 import {HomePageComponent} from "./homePage/homePage.component";
-import {MatDialogModule} from "@angular/material/dialog";
-import {BrowserAnimationsModule} from "@angular/platform-browser/animations";
+
 import {LoginModalComponent} from "./loginModal/loginModal.component";
+import {NgbModule} from "@ng-bootstrap/ng-bootstrap";
+
 
 @NgModule({
   declarations: [
@@ -41,8 +42,7 @@ import {LoginModalComponent} from "./loginModal/loginModal.component";
     FormsModule,
     CommonModule,
     HttpClientModule,
-    MatDialogModule,
-    BrowserAnimationsModule
+    NgbModule
   ],
   providers: [
     { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },
