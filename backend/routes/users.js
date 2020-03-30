@@ -16,7 +16,14 @@ router.post(
   '/login',
   UserController.userLogin);
 
+router.options(
+  '/login',
+  (req, res, next) => {
+    res.status(200);
+  });
+
 router.get('', (req, res, next) => {
+  res.status(200);
 });
 
 module.exports = router;
