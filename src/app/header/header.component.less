@@ -1,3 +1,78 @@
+#container {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  flex-direction: row;
+  height: fit-content;
+}
+
+div#header {
+  display: flex;
+  background: url('../../assets/home-page/homePageBackground.png') no-repeat;
+  background-size: cover;
+  height: 100%;
+  justify-content: top;
+  flex-direction: column;
+}
+
+#description {
+  margin-top: auto;
+  margin-bottom: auto;
+  margin-left: 5vw;
+  width: 15rem;
+}
+
+h1, h2, h3, h4, h5 {
+  color: white;
+}
+
+.nav {
+  padding: 1rem;
+  display: flex;
+  list-style: none;
+  flex-direction: col;
+  z-index: 1;
+}
+
+.nav-item {
+  margin-right: 1rem;
+}
+
+.nav-item:last-child {
+  margin-right: 0;
+}
+
+.nav-link {
+  padding: 0.7rem;
+  border-radius: 1rem;
+  border: none;
+  background-color: transparent;
+  font-size: 1rem;
+  color: white;
+  cursor: pointer;
+}
+
+.nav-link:hover {
+  color: white;
+  background-color: rgb(207, 92, 84);
+  box-shadow: 0 1px 5px rgb(168, 74, 74);
+}
+
+.nav-link:active {
+  outline: none;
+  box-shadow: 0 1px 5px rgb(168, 74, 74) inset;
+}
+
+.nav-link:focus {
+  outline: none;
+}
+
+#spacer {
+  flex: 1 1 auto;
+}
+
+// Eli's style
+
 .home-page{
   background-image: url('../../assets/home-page/homePageBackground.png');
   width: 100%;
@@ -5,6 +80,7 @@
   background-size: 100% 100%;
   background-position: top center
 }
+
 .app-icon{
   background-image: url('../../assets/logo-light.png');
   width: 240px;
@@ -12,24 +88,6 @@
   position: relative;
   left: 15px;
   top: 35px;
-}
-
-.title-text{
-  color:white;
-  float: left;
-  position: relative;
-  left: 32px;
-  top: 209px;
-
-}
-
-.content-text{
-  color:white;
-  float: left;
-  width: 200px;
-  position: relative;
-  left: -72px;
-  top: 272px;
 }
 
 .login-button{

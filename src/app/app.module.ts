@@ -17,7 +17,6 @@ import { ErrorComponent } from './error/error.component';
 import { ErrorInterceptor } from './error-interceptor';
 import { ComingSoonComponent } from './coming-soon/coming-soon.component';
 import { CodeEditorComponent } from './code-editor/code-editor.component';
-import {HomePageComponent} from "./homePage/homePage.component";
 
 
 @NgModule({
@@ -31,8 +30,7 @@ import {HomePageComponent} from "./homePage/homePage.component";
     LoginComponent,
     ErrorComponent,
     ComingSoonComponent,
-    CodeEditorComponent,
-    HomePageComponent
+    CodeEditorComponent
   ],
   imports: [
     BrowserModule,

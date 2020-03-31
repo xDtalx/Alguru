@@ -3,3 +3,8 @@ main {
   width: 80vw;
   margin: auto;
 }
+
+header {
+  height: 90vh;
+  margin-bottom: 5vh;
+}

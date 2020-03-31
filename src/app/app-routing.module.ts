@@ -7,13 +7,13 @@ import { QuestionListComponent } from './questions/question-list/question-list.c
 import { AuthGuard } from './auth/auth.guard';
 import { ComingSoonComponent } from './coming-soon/coming-soon.component';
 import { ReleaseGuard } from './release.guard';
-import {HomePageComponent} from "./homePage/homePage.component";
 import { CodeEditorComponent } from './code-editor/code-editor.component';
 
 const routes: Routes = [
-  { path: 'home', component: HomePageComponent},
+  { path: 'coming-soon', component: ComingSoonComponent},
   { path: '', canActivate: [ReleaseGuard], children: [
     { path: '', component: QuestionListComponent},
+    { path: 'questions-list', component: QuestionListComponent},
     { path: 'solve/:questionId', component: CodeEditorComponent, canActivate: [AuthGuard] },
     { path: 'edit/:questionId', component: QuestionCreateComponent, canActivate: [AuthGuard] },
     { path: 'register', component: RegisterComponent },

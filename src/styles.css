@@ -1,22 +1,17 @@
 * {
   padding: 0;
   margin: 0;
+  box-sizing: border-box;
   font-family: "Roboto";
 }
 
-body {
-  display: flex;
-  height: 100vh;
-  width: 100vw;
-}
-
 app-root {
-  height: 100vh;
-  width: 100vw;
+  height: 100%;
+  width: 100%;
 }
 
 app-error {
-  width: 30vw;
+  width: 30%;
 }
 
 a {
