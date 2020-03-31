@@ -1,0 +1,31 @@
+<div class="home-page">
+  <div class="app-icon"></div>
+    <span class="register-button" (click)="show(ModalTypes.RegisterModal)">Register</span>
+    <span class="login-button" (click)="show(ModalTypes.LoginModal)"> Log In</span>
+  <h1 class="title-text"> Alguru.</h1>
+  <h5 class="content-text">
+    The #1 place to practice
+    your coding skills, share
+    interviews question and
+    their solutions.
+  </h5>
+
+  <div [style.display]="showModal ? 'block' : 'none'" class="modal" id="imagemodal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h4 class="modal-title" id="myModalLabel"></h4>
+        </div>
+        <div class="modal-body">
+          <app-login *ngIf="showLoginModal"></app-login>
+          <app-register *ngIf="shownRegister"></app-register>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-dark" data-dismiss="modal" (click) = "hide()">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+</div>
