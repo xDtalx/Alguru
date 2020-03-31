@@ -1,6 +1,6 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
-import { FormsModule } from '@angular/forms';
+import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 
@@ -18,9 +18,7 @@ import { ErrorInterceptor } from './error-interceptor';
 import { ComingSoonComponent } from './coming-soon/coming-soon.component';
 import { CodeEditorComponent } from './code-editor/code-editor.component';
 import {HomePageComponent} from "./homePage/homePage.component";
-
 import {LoginModalComponent} from "./loginModal/loginModal.component";
-import {NgbModule} from "@ng-bootstrap/ng-bootstrap";
 
 
 @NgModule({
@@ -34,8 +32,7 @@ import {NgbModule} from "@ng-bootstrap/ng-bootstrap";
     LoginComponent,
     ErrorComponent,
     ComingSoonComponent,
-    CodeEditorComponent
-    ComingSoonComponent,
+    CodeEditorComponent,
     HomePageComponent,
     LoginModalComponent
   ],
@@ -45,7 +42,7 @@ import {NgbModule} from "@ng-bootstrap/ng-bootstrap";
     FormsModule,
     CommonModule,
     HttpClientModule,
-    NgbModule
+    ReactiveFormsModule
   ],
   providers: [
     { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },

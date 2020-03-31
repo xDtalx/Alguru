@@ -1,6 +1,6 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import {NgbModal} from "@ng-bootstrap/ng-bootstrap";
 import {LoginModalComponent} from "../loginModal/loginModal.component";
+import {FormBuilder, FormGroup, Validators} from "@angular/forms";
 
 
 @Component({
@@ -11,13 +11,48 @@ import {LoginModalComponent} from "../loginModal/loginModal.component";
     LoginModalComponent
   ]
 })
-export class HomePageComponent  {
+export class HomePageComponent {
   private showLoginPage = false;
   closeResult = '';
-  constructor(private modalService: NgbModal) {}
+  showModal: boolean;
+  registerForm: FormGroup;
+  submitted = false;
 
-  onLogInClick(){
-    const modalRef = this.modalService.open(LoginModalComponent,{ centered: true });
-    modalRef.componentInstance.name = 'Login';
+  constructor(private formBuilder: FormBuilder) {
   }
+
+  show() {
+    this.showModal = true;
+  }
+
+  hide() {
+    this.showModal = false;
+  }
+
+  ngOnInit() {
+    this.registerForm = this.formBuilder.group({
+      email: ['', [Validators.required, Validators.email]],
+      password: ['', [Validators.required, Validators.minLength(6)]]
+    });
+  }
+
+  // onLogInClick() {
+  //   // ,{ centered: true }
+  //   const modalRef = this.modalService.open(LoginModalComponent);
+  //   modalRef.componentInstance.name = 'Login';
+  // }
+
+  onSubmit() {
+    this.submitted = true;
+    // stop here if form is invalid
+    if (this.registerForm.invalid) {
+      return;
+    }
+    if (this.submitted) {
+      this.showModal = false;
+    }
+  }
+
+  get f() { return this.registerForm.controls; }
 }
+

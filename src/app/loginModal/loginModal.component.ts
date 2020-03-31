@@ -1,5 +1,5 @@
 import {Component, Input, NgModule} from '@angular/core';
-import {NgbActiveModal, NgbModule} from '@ng-bootstrap/ng-bootstrap';
+
 import {BrowserModule} from "@angular/platform-browser";
 
 
@@ -16,6 +16,6 @@ export class LoginModalComponent  {
   @Input() name;
 
 
-  constructor(public activeModal: NgbActiveModal) {}
+  constructor() {}
 
 }
