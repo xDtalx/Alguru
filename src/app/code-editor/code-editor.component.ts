@@ -1,9 +1,11 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { CodeService } from './code.service';
-import { SolutionTemplateResponse } from './solution-template.model';
 import { ExecuteResponse } from './execute-response.model';
 import { NgModel } from '@angular/forms';
+import { QuestionsService } from '../questions/questions.service';
+import { Question } from '../questions/question.model';
+import { ActivatedRoute, ParamMap } from '@angular/router';
 
 @Component({
   selector: 'code-editor',
@@ -11,25 +13,38 @@ import { NgModel } from '@angular/forms';
   styleUrls: [ './code-editor.component.css' ]
 })
 export class CodeEditorComponent implements OnInit, OnDestroy {
-  private codeListenerSubs: Subscription;
   private executeListenerSubs: Subscription;
-  solutionTemplate: SolutionTemplateResponse;
   executeResponse: ExecuteResponse;
   currentOutput: string;
   lang: string = "java";
+  questionId;
+  questionToSolve: Question;
 
-  constructor(private codeService: CodeService) {}
+  constructor(private route: ActivatedRoute, private questionsService: QuestionsService, private codeService: CodeService) {}
 
   ngOnInit() {
+    this.route.paramMap.subscribe((paramMap: ParamMap) => {
+      if(paramMap.has('questionId')) {
+        this.questionId = paramMap.get('questionId');
+
+        this.questionsService.getQuestion(this.questionId).subscribe(questionData => {
+          this.questionToSolve = {
+            id: questionData._id,
+            title: questionData.title,
+            content: questionData.content,
+            solutionTemplate: questionData.solutionTemplate,
+            solution: questionData.solution,
+            tests: questionData.tests,
+            hints: questionData.hints,
+            level: questionData.level,
+            creator: questionData.creator
+          }
+        });
+      }
+     });
+
     this.executeResponse = { message: "", output: "", errors: "" };
     this.currentOutput = "";
-
-    this.codeListenerSubs =
-    this.codeService
-    .getSolutionTemplateListener()
-    .subscribe(template => this.solutionTemplate = template);
-
-    this.codeService.getSolutionTemplate("java");
 
     this.executeListenerSubs =
     this.codeService
@@ -44,12 +59,11 @@ export class CodeEditorComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    this.codeListenerSubs.unsubscribe();
     this.executeListenerSubs.unsubscribe();
   }
 
-  onRunCode(code: string) {
-    this.codeService.runCode(this.lang, code);
+  onRunCode(code: string, tests: string) {
+    this.codeService.runCode(this.lang, code, tests);
   }
 
   onCustomClick() {

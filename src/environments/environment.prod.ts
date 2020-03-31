@@ -1,6 +1,6 @@
 export const environment = {
   production: true,
-  apiUrl: 'http://alguru-env.eba-rbgpyt4r.eu-central-1.elasticbeanstalk.com/api',
-  runCodeApi: 'http://alguru-env.eba-rbgpyt4r.eu-central-1.elasticbeanstalk.com/api/code',
+  apiUrl: 'https://api.alguru.xyz',
+  runCodeApi: 'https://api.alguru.xyz/code',
   isRelease: false
 };

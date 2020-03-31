@@ -4,9 +4,9 @@
         <div class="head top">
           <span class="title">Your Solution:</span>
           <span class="spacer"></span>
-          <a (click)="onRunCode(codeEditor.value)" class="run-code btn">Run Code</a>
+          <a (click)="onRunCode(codeEditor.value, tests.value)" class="run-code btn">Run Code</a>
         </div>
-        <textarea class="editor" NgModel #codeEditor>{{ solutionTemplate?.template }}</textarea>
+        <textarea class="editor" NgModel #codeEditor>{{ questionToSolve?.solutionTemplate }}</textarea>
       </div>
       <div class="container">
         <div class="head">
@@ -24,21 +24,21 @@
         <span class="title">Question:</span>
         <span class="spacer"></span>
       </div>
-      <textarea class="editor" readonly></textarea>
+      <textarea class="editor" readonly>{{ questionToSolve?.content }}</textarea>
     </div>
     <div class="container">
       <div class="head">
         <span class="title">Tests:</span>
         <span class="spacer"></span>
       </div>
-      <textarea class="editor"></textarea>
+      <textarea class="editor" NgModel #tests>{{ questionToSolve?.tests }}</textarea>
     </div>
     <div class="container">
       <div class="head">
         <span class="title">Hints:</span>
         <span class="spacer"></span>
       </div>
-      <textarea class="editor" readonly></textarea>
+      <textarea class="editor" readonly>{{ questionToSolve?.hints }}</textarea>
     </div>
   </div>
 </div>

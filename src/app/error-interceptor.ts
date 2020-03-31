@@ -17,6 +17,11 @@ export class ErrorInterceptor implements HttpInterceptor {
 
         if(error.error.message) {
           errorMessage = error.error.message;
+        } else if(error.error.errors) {
+          errorMessage = [];
+          error.error.errors.forEach(error => {
+            errorMessage.push(error.msg);
+          });
         }
 
         this.authService.addErrorMessages(errorMessage);

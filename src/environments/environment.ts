@@ -4,8 +4,8 @@
 
 export const environment = {
   production: false,
-  apiUrl: 'http://localhost:3000/api',
-  runCodeApi: 'http://localhost:3000/api/code',
+  apiUrl: 'http://localhost:3000',
+  runCodeApi: 'http://localhost:3000/code',
   isRelease: false
 };
 

@@ -18,11 +18,29 @@
   minlength="3"></textarea>
 
   <textarea
+  placeholder="Solution Template"
+  name="solutionTemplate"
+  cols="100"
+  rows="10"
+  [ngModel]="question?.solutionTemplate[0]"
+  required
+  minlength="3"></textarea>
+
+  <textarea
   placeholder="Solution"
   name="solution"
   cols="100"
   rows="10"
-  [ngModel]="question?.solution"
+  [ngModel]="question?.solution[0]"
+  required
+  minlength="3"></textarea>
+
+  <textarea
+  placeholder="Tests"
+  name="tests"
+  cols="100"
+  rows="10"
+  [ngModel]="question?.tests[0]"
   required
   minlength="3"></textarea>
 

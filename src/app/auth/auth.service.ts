@@ -78,7 +78,10 @@ export class AuthService {
     this.http.post(BACKEND_URL + '/register', authData)
       .subscribe(() => {
         this.router.navigate(['/login']);
-      }, error => this.authStatusListener.next(false));
+      }, errors => {
+        this.authErrorListener.next([...this.errors]);
+        this.authStatusListener.next(false);
+      });
   }
 
   deleteUser(id: string) {

@@ -48,18 +48,22 @@ export class QuestionsService {
       _id: string,
       title: string,
       content: string,
-      solution: string,
+      solutionTemplate: string[],
+      solution: string[],
+      tests: string[],
       hints: string,
       level: number,
       creator: string }>(BACKEND_URL + '/' + id);
   }
 
-  createQuestion(title: string, content: string, solution: string, hints: string, level: number) {
+  createQuestion(title: string, content: string, solutionTemplate: string[], solution: string[], tests: string[], hints: string, level: number) {
     const question: Question = {
       id: null,
       title: title,
       content: content,
+      solutionTemplate: solutionTemplate,
       solution: solution,
+      tests: tests,
       hints: hints,
       level: level,
       creator: null
@@ -92,11 +96,15 @@ export class QuestionsService {
       id: id,
       title: question.title,
       content: question.content,
+      solutionTemplate: question.solutionTemplate,
       solution: question.solution,
+      tests: question.tests,
       hints: question.hints,
       level: question.level,
       creator: null
     }
+
+    console.log(questionToUpdate);
 
     this.http.put(BACKEND_URL + '/' + id, questionToUpdate)
       .subscribe(() => {

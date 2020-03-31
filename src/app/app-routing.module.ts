@@ -14,8 +14,8 @@ const routes: Routes = [
   { path: 'home', component: HomePageComponent},
   { path: '', canActivate: [ReleaseGuard], children: [
     { path: '', component: QuestionListComponent},
+    { path: 'solve/:questionId', component: CodeEditorComponent, canActivate: [AuthGuard] },
     { path: 'edit/:questionId', component: QuestionCreateComponent, canActivate: [AuthGuard] },
-    { path: 'code-editor', component: CodeEditorComponent, canActivate: [AuthGuard] },
     { path: 'register', component: RegisterComponent },
     { path: 'login', component: LoginComponent },
     { path: 'create-question', component: QuestionCreateComponent, canActivate: [AuthGuard] }

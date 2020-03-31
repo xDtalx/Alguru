@@ -25,12 +25,15 @@ export class QuestionCreateComponent implements OnInit {
     if(paramMap.has('questionId')) {
       this.mode = 'edit';
       this.questionId = paramMap.get('questionId');
+
       this.questionService.getQuestion(this.questionId).subscribe(questionData => {
         this.question = {
           id: questionData._id,
           title: questionData.title,
           content: questionData.content,
+          solutionTemplate: questionData.solutionTemplate,
           solution: questionData.solution,
+          tests: questionData.tests,
           hints: questionData.hints,
           level: questionData.level,
           creator: questionData.creator
@@ -50,11 +53,15 @@ export class QuestionCreateComponent implements OnInit {
       id: null,
       title: form.value.title,
       content: form.value.content,
-      solution: form.value.solution,
+      solutionTemplate: [ form.value.solutionTemplate ],
+      solution: [ form.value.solution ],
+      tests: [ form.value.tests ],
       hints: form.value.hints,
       level: this.level,
       creator: null
     }
+
+    console.log(question);
 
     if(this.mode ==='create') {
       this.questionService.addQuestion(question);

@@ -4,7 +4,9 @@ exports.createQuestion = (req, res, next) => {
   const question = new Question({
     title: req.body.title,
     content: req.body.content,
+    solutionTemplate: req.body.solutionTemplate,
     solution: req.body.solution,
+    tests: req.body.tests,
     hints: req.body.hints,
     level: req.body.level,
     creator: req.userData.userId
@@ -40,14 +42,20 @@ exports.updateQuestion = (req, res, next) => {
     _id: req.body.id,
     title: req.body.title,
     content: req.body.content,
+    solutionTemplate: req.body.solutionTemplate,
     solution: req.body.solution,
+    tests: req.body.tests,
     hints: req.body.hints,
     level: req.body.level,
     creator: req.userData.userId
   });
 
   Question.updateOne(
-    { _id: req.params.id, creator: req.userData.userId },question)
+    {
+      _id: req.params.id,
+      creator: req.userData.userId
+    }
+    ,question)
     .then(result => {
       const isModified = result.n > 0;
 
