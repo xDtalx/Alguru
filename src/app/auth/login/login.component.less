@@ -1,0 +1,51 @@
+form {
+  margin: auto;
+  width: 35vw;
+}
+
+form > label > input {
+  display: block;
+  margin: auto;
+  width: 27vw;
+  margin-bottom: 1rem;
+  border-radius: 0.5rem;
+}
+
+input {
+  padding: 0.5rem;
+}
+
+span.error-msg {
+  display: block;
+  margin: auto;
+  color: red;
+  width: 27vw;
+  border-radius: 0.5rem;
+  font-size: 0.9rem;
+}
+
+button {
+  opacity: 0.9;
+  margin: auto;
+  width: 27vw;
+  justify-content: center;
+  align-items: center;
+  font-size: 1.5rem;
+  color: black;
+  background-color: white;
+  border: none;
+  border-radius: 1.5rem;
+  cursor: pointer;
+  box-shadow: 0 2px 3px rgb(79, 131, 180);
+  &:hover{
+    background-color: grey;
+   }
+}
+
+button:focus {
+  outline-style: none;
+}
+
+button:active {
+  box-shadow: 0 2px 5px rgb(79, 131, 180) inset;
+}

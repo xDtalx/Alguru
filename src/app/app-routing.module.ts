@@ -8,11 +8,13 @@ import { AuthGuard } from './auth/auth.guard';
 import { ComingSoonComponent } from './coming-soon/coming-soon.component';
 import { ReleaseGuard } from './release.guard';
 import { CodeEditorComponent } from './code-editor/code-editor.component';
+import { HomePageComponent } from "./homePage/homePage.component";
 
 const routes: Routes = [
   { path: 'coming-soon', component: ComingSoonComponent},
   { path: '', canActivate: [ReleaseGuard], children: [
     { path: '', component: QuestionListComponent},
+    { path: 'questions-list', component: QuestionListComponent},
     { path: 'solve/:questionId', component: CodeEditorComponent, canActivate: [AuthGuard] },
     { path: 'edit/:questionId', component: QuestionCreateComponent, canActivate: [AuthGuard] },
     { path: 'register', component: RegisterComponent },

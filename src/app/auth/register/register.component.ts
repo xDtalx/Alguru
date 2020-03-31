@@ -4,6 +4,7 @@ import { AuthService } from '../auth.service';
 import { Subscription } from 'rxjs';
 
 @Component({
+  selector: 'app-register',
   templateUrl: './register.component.html',
   styleUrls: [ './register.component.css' ]
 })

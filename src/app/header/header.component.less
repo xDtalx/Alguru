@@ -1,0 +1,131 @@
+#container {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  flex-direction: row;
+  height: fit-content;
+}
+
+div#header {
+  display: flex;
+  background: url('../../assets/home-page/homePageBackground.png') no-repeat;
+  background-size: cover;
+  height: 100%;
+  justify-content: top;
+  flex-direction: column;
+}
+
+#description {
+  margin-top: auto;
+  margin-bottom: auto;
+  margin-left: 5vw;
+  width: 15rem;
+}
+
+h1, h2, h3, h4, h5 {
+  color: white;
+}
+
+.nav {
+  padding: 1rem;
+  display: flex;
+  list-style: none;
+  flex-direction: col;
+  z-index: 1;
+}
+
+img {
+  height: 3rem;
+}
+
+.nav-item {
+  margin-right: 1rem;
+}
+
+.nav-item:last-child {
+  margin-right: 0;
+}
+
+.nav-link {
+  padding: 0.7rem;
+  border-radius: 1rem;
+  border: none;
+  background-color: transparent;
+  font-size: 1rem;
+  color: white;
+  cursor: pointer;
+}
+
+.nav-link:hover {
+  color: white;
+  background-color: rgb(207, 92, 84);
+  box-shadow: 0 1px 5px rgb(168, 74, 74);
+}
+
+.nav-link:active {
+  outline: none;
+  box-shadow: 0 1px 5px rgb(168, 74, 74) inset;
+}
+
+.nav-link:focus {
+  outline: none;
+}
+
+#spacer {
+  flex: 1 1 auto;
+}
+
+// Eli's style
+
+.home-page{
+  background-image: url('../../assets/home-page/homePageBackground.png');
+  width: 100%;
+  height: 100%;
+  background-size: 100% 100%;
+  background-position: top center
+}
+
+.app-icon{
+  background-image: url('../../assets/logo-light.png');
+  width: 240px;
+  height: 70px;
+  position: relative;
+  left: 15px;
+  top: 35px;
+}
+
+.login-button{
+  right: 100px;
+  float: right;
+  position: relative;
+  bottom: 15px;
+  color:white;
+  cursor: pointer;
+}
+
+.register-button{
+  right: 86px;
+  float: right;
+  position: relative;
+  bottom: 15px;
+  color:white;
+  cursor: pointer;
+}
+
+.modal-header {
+  display: inline-block ;
+  text-align: center ;
+}
+.modal-content
+{
+  opacity:0.9 ;
+  background-color: black;
+}
+.modal-title{
+  background-image: url("data:image/svg+xml,%3Csvg version='1.1' id='IconsRepoEditor' xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' x='0px' y='0px' viewBox='0 0 489.3 489.3' style='enable-background:new 0 0 489.3 489.3;' xml:space='preserve' width='80px' height='80px' fill='grey' stroke='grey' stroke-width='0'%3E%3Cg id='IconsRepo_bgCarrier'%3E%3C/g%3E%3Cpath d='M56.75,450.5c0,21.4,17.4,38.8,38.8,38.8h49.3l-88.1-101.2V450.5z'%3E%3C/path%3E%3Cpath d='M347.15,489.3h46.6c6.2,0,12.1-1.5,17.3-4.1l-111.9-128.6h67.4l66,75.8v-75.8l0,0V236.8c0-21.4-17.4-38.8-38.8-38.8h-1 v-51.1c0-81-65.9-146.9-146.9-146.9S98.95,65.9,98.95,146.9V198h-3.4c-21.4,0-38.8,17.4-38.8,38.8v119.7h40l115.5,132.8h67.4 l-115.4-132.7h67.4L347.15,489.3z M163.25,198.1V147c0-45.6,37.1-82.6,82.6-82.6c45.6,0,82.6,37.1,82.6,82.6v51.1H163.25z'%3E%3C/path%3E%3C/svg%3E");
+  height: 80px;
+  width: 80px;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
