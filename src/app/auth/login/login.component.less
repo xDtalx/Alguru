@@ -6,8 +6,9 @@ form {
 form > label > input {
   display: block;
   margin: auto;
-  width: 30vw;
+  width: 27vw;
   margin-bottom: 1rem;
+  border-radius: 0.5rem;
 }
 
 input {
@@ -16,26 +17,29 @@ input {
 
 span.error-msg {
   display: block;
-  width: fit-content;
   margin: auto;
   color: red;
+  width: 27vw;
+  border-radius: 0.5rem;
   font-size: 0.9rem;
 }
 
 button {
+  opacity: 0.9;
   margin: auto;
-  width: 30vw;
-  display: flex;
+  width: 27vw;
   justify-content: center;
   align-items: center;
-  padding: 1rem;
   font-size: 1.5rem;
-  color: white;
-  background-color: rgb(92, 173, 240);
+  color: black;
+  background-color: white;
   border: none;
-  border-radius: 0.5rem;
+  border-radius: 1.5rem;
   cursor: pointer;
   box-shadow: 0 2px 3px rgb(79, 131, 180);
+  &:hover{
+    background-color: grey;
+   }
 }
 
 button:focus {

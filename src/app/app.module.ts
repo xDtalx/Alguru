@@ -18,7 +18,6 @@ import { ErrorInterceptor } from './error-interceptor';
 import { ComingSoonComponent } from './coming-soon/coming-soon.component';
 import { CodeEditorComponent } from './code-editor/code-editor.component';
 import {HomePageComponent} from "./homePage/homePage.component";
-import {LoginModalComponent} from "./loginModal/loginModal.component";
 
 
 @NgModule({
@@ -33,8 +32,7 @@ import {LoginModalComponent} from "./loginModal/loginModal.component";
     ErrorComponent,
     ComingSoonComponent,
     CodeEditorComponent,
-    HomePageComponent,
-    LoginModalComponent
+    HomePageComponent
   ],
   imports: [
     BrowserModule,
