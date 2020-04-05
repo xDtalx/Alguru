@@ -1,13 +1,22 @@
 <app-error></app-error>
 <form *ngIf="!isLoading" (submit)="onLogin(userLoginForm)" #userLoginForm="ngForm">
-  <label>
-    <span class="error-msg" *ngIf="usernameInput.invalid">Username is invalid</span>
-    <input placeholder="Username" type="text" name="username" #usernameInput="ngModel" ngModel minlength="6"/>
-  </label>
-  <label>
-    <span class="error-msg" *ngIf="passwordInput.invalid">Password is invalid</span>
-    <input placeholder="Password" type="password" name="password" #passwordInput="ngModel" ngModel minlength="6"/>
-  </label>
-  <button name="login" type="submit">Login</button>
+  <div>
+    <label>
+      <span class="error-msg" *ngIf="usernameInput.invalid">Username is invalid</span>
+      <input class="input-class" placeholder="Username" type="text" name="username" #usernameInput="ngModel" ngModel minlength="6"/>
+    </label>
+  </div>
+  <div>
+    <label>
+      <span class="error-msg" *ngIf="passwordInput.invalid">Password is invalid</span>
+      <input class="input-class" placeholder="Password" type="password" name="password" #passwordInput="ngModel" ngModel minlength="6"/>
+    </label>
+  </div>
+  <div>
+    <button name="login" type="submit">Login</button>
+  </div>
+  <a class="btn btn-block btn-social btn-twitter">
+    <span class="fa fa-twitter"></span> Sign in with Twitter
+  </a>
 </form>
 <div *ngIf="isLoading" class="loader">Loading...</div>
