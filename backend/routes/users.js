@@ -19,11 +19,11 @@ router.post(
 router.options(
   '/login',
   (req, res, next) => {
-    res.status(200);
+    res.status(200).send();
   });
 
 router.get('', (req, res, next) => {
-  res.status(200);
+  res.status(200).send();
 });
 
 module.exports = router;

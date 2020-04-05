@@ -3,12 +3,21 @@ import { AuthService } from '../auth/auth.service';
 import { Subscription } from 'rxjs';
 import { environment } from '../../environments/environment';
 
+enum ModalTypes {
+  LoginModal = 'loginModal',
+  RegisterModal ='registerModal'
+}
+
 @Component({
   selector: 'app-header',
   templateUrl: './header.component.html',
-  styleUrls: [ './header.component.css' ]
+  styleUrls: [ './header.component.less' ]
 })
 export class HeaderComponent implements OnInit, OnDestroy {
+  showLoginModal: boolean;
+  shownRegister: boolean;
+  showModal : boolean;
+  ModalTypes = ModalTypes;
 
   private authListenerSubs: Subscription;
   public isUserAuth: boolean;
@@ -23,6 +32,10 @@ export class HeaderComponent implements OnInit, OnDestroy {
     .getAuthStatusListener()
     .subscribe(isAuth => {
       this.isUserAuth = isAuth;
+
+      if(isAuth) {
+        this.hide();
+      }
     });
   }
 
@@ -32,5 +45,21 @@ export class HeaderComponent implements OnInit, OnDestroy {
 
   onLogout() {
     this.authService.logout();
+  }
+
+  show(type : ModalTypes) {
+    this.showModal = true;
+
+    if (type==ModalTypes.LoginModal) {
+      this.showLoginModal = true;
+    } else {
+      this.shownRegister = true;
+    }
+  }
+
+  hide() {
+    this.showModal = false;
+    this.showLoginModal = false;
+    this.shownRegister = false;
   }
 }
