@@ -1,5 +1,5 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import {FormBuilder, FormGroup, Validators} from "@angular/forms";
+
 
  enum ModalTypes{
   LoginModal ='loginModal',
@@ -17,7 +17,7 @@ export class HomePageComponent {
   showModal : boolean;
   ModalTypes = ModalTypes;
 
-  constructor(private formBuilder: FormBuilder) {
+  constructor() {
   }
 
   show(type : ModalTypes) {
