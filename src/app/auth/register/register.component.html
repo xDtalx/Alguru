@@ -1,18 +1,18 @@
-<!--<app-error></app-error>-->
-<!--<form *ngIf="!isLoading" (submit)="onRegister(userRegistration)" #userRegistration="ngForm">-->
-<!--  <label>-->
-<!--    <span class="error-msg" *ngIf="usernameInput.invalid">Username is invalid</span>-->
-<!--    <input placeholder="Username (6 characters and above)" type="text" name="username" #usernameInput="ngModel" ngModel minlength="6"/>-->
-<!--  </label>-->
-<!--  <label>-->
-<!--    <span class="error-msg" *ngIf="emailInput.invalid">Email is invalid</span>-->
-<!--    <input placeholder="Email" type="email" name="email" #emailInput="ngModel" ngModel email/>-->
-<!--  </label>-->
-<!--  <label>-->
-<!--    <span class="error-msg" *ngIf="passwordInput.invalid">Password is invalid</span>-->
-<!--    <input placeholder="Password (6 characters and above)" type="password" name="password" #passwordInput="ngModel" ngModel minlength="6"/>-->
-<!--  </label>-->
-<!--  <button name="register" type="submit">Register</button>-->
-<!--</form>-->
-<!--<div *ngIf="isLoading" class="loader">Loading...</div>-->
-<div> Eli </div>
+<app-error></app-error>
+<form *ngIf="!isLoading" (submit)="onRegister(userRegistration)" #userRegistration="ngForm">
+  <label>
+    <span class="error-msg" *ngIf="usernameInput.invalid">Username is invalid</span>
+    <input placeholder="Username (6 characters and above)" type="text" name="username" #usernameInput="ngModel" ngModel minlength="6"/>
+  </label>
+  <label>
+    <span class="error-msg" *ngIf="emailInput.invalid">Email is invalid</span>
+    <input placeholder="Email" type="email" name="email" #emailInput="ngModel" ngModel email/>
+  </label>
+  <label>
+    <span class="error-msg" *ngIf="passwordInput.invalid">Password is invalid</span>
+    <input placeholder="Password (6 characters and above)" type="password" name="password" #passwordInput="ngModel" ngModel minlength="6"/>
+  </label>
+  <button name="register" type="submit">Register</button>
+</form>
+<div *ngIf="isLoading" class="loader">Loading...</div>
+<!--<div>Eli </div>-->
