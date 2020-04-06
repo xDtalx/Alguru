@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import {Component, OnInit, OnDestroy, Output, EventEmitter} from '@angular/core';
 import { NgForm } from '@angular/forms';
 import { AuthService } from '../auth.service';
 import { Subscription } from 'rxjs';
@@ -12,6 +12,8 @@ export class LoginComponent implements OnInit, OnDestroy {
 
   public isLoading = false;
   authStatusSub: Subscription;
+  @Output() onCloseModal: EventEmitter<any> = new EventEmitter();
+  @Output() onRegisterOpen: EventEmitter<any> = new EventEmitter();
 
   constructor(private authService: AuthService) {}
 
@@ -33,5 +35,13 @@ export class LoginComponent implements OnInit, OnDestroy {
 
     this.isLoading = true;
     this.authService.login(loginForm.value.username, loginForm.value.password);
+  }
+
+  hide(){
+    this.onCloseModal.emit();
+  }
+
+  openRegister(){
+    this.onRegisterOpen.emit();
   }
 }
