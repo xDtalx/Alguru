@@ -36,9 +36,8 @@
   </div>
 </div>
 <div [style.display]="showModal ? 'block' : 'none'" class="modal" id="imagemodal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-        <app-login *ngIf="showLoginModal"></app-login>
-        <app-register *ngIf="shownRegister"></app-register>
-<!--        <button type="button" class="btn btn-dark" data-dismiss="modal" (click) = "hide()">Close</button>-->
+        <app-login *ngIf="showLoginModal" (onCloseModal)="hide()" (onRegisterOpen)="openRegister()"></app-login>
+        <app-register *ngIf="showRegister" (onCloseModal)="hide()"></app-register>
 </div>
 <!--
 <div class="home-page">
