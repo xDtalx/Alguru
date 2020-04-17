@@ -15,7 +15,7 @@ enum ModalTypes {
 })
 export class HeaderComponent implements OnInit, OnDestroy {
   showLoginModal: boolean;
-  shownRegister: boolean;
+  showRegister: boolean;
   showModal : boolean;
   ModalTypes = ModalTypes;
 
@@ -53,13 +53,18 @@ export class HeaderComponent implements OnInit, OnDestroy {
     if (type==ModalTypes.LoginModal) {
       this.showLoginModal = true;
     } else {
-      this.shownRegister = true;
+      this.showRegister = true;
     }
   }
 
   hide() {
     this.showModal = false;
     this.showLoginModal = false;
-    this.shownRegister = false;
+    this.showRegister = false;
+  }
+
+  openRegister(){
+    this.showLoginModal = false;
+    this.showRegister = true;
   }
 }
