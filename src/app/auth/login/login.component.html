@@ -36,39 +36,42 @@
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-<!--<app-error></app-error>-->
 <div class="login-form">
-  <form *ngIf="!isLoading" (submit)="onLogin(userLoginForm)" #userLoginForm="ngForm">
-    <h2 class="text-center">Sign in</h2>
-    <div class="form-group">
-      <div class="error-msg" *ngIf="usernameInput.invalid">Username is invalid</div>
-      <div class="input-group">
-        <span class="input-group-addon"><i class="fa fa-user"></i></span>
-        <input type="text" class="form-control" name="username" placeholder="Username" required="required" #usernameInput="ngModel" ngModel minlength="6" >
+  <app-error></app-error>
+  <form (submit)="onLogin(userLoginForm)" #userLoginForm="ngForm">
+    <div *ngIf="isLoading" class="loader">Loading...</div>
+    <div *ngIf="!isLoading">
+      <h2 class="text-center">Sign in</h2>
+      <div class="form-group">
+        <div class="error-msg" *ngIf="usernameInput.invalid">Username is invalid</div>
+        <div class="input-group">
+          <span class="input-group-addon"><i class="fa fa-user"></i></span>
+          <input type="text" class="form-control" name="username" placeholder="Username" required="required" #usernameInput="ngModel" ngModel minlength="6" >
+        </div>
       </div>
-    </div>
-    <div class="form-group">
-      <div class="error-msg" *ngIf="passwordInput.invalid">Password is invalid</div>
-      <div class="input-group">
-        <span class="input-group-addon"><i class="fa fa-lock"></i></span>
-        <input type="password" class="form-control" name="password" placeholder="Password" required="required" #passwordInput="ngModel" ngModel minlength="6">
+      <div class="form-group">
+        <div class="error-msg" *ngIf="passwordInput.invalid">Password is invalid</div>
+        <div class="input-group">
+          <span class="input-group-addon"><i class="fa fa-lock"></i></span>
+          <input type="password" class="form-control" name="password" placeholder="Password" required="required" #passwordInput="ngModel" ngModel minlength="6">
+        </div>
       </div>
+      <div class="form-group">
+        <button type="submit" class="btn btn-primary login-btn btn-block">Sign in</button>
+      </div>
+      <div class="clearfix">
+        <label class="pull-left checkbox-inline"><input type="checkbox"> Remember me</label>
+        <a href="#" class="pull-right">Forgot Password?</a>
+      </div>
+      <div class="or-seperator"><i>or</i></div>
+      <p class="text-center">Login with your social media account</p>
+      <div class="text-center social-btn">
+        <a href="#" class="btn btn-primary"><i class="fa fa-facebook"></i>&nbsp; Facebook</a>
+        <a href="#" class="btn btn-info"><i class="fa fa-twitter"></i>&nbsp; Twitter</a>
+        <a href="#" class="btn btn-danger"><i class="fa fa-google"></i>&nbsp; Google</a>
+      </div>
+      <p class="text-center text-muted small">Don't have an account? <a href="#" class="sign-up" (click)="openRegister()">Sign up here!</a></p>
+      <p class="text-center"><a (click)="hide()" class="close-button">Close</a></p>
     </div>
-    <div class="form-group">
-      <button type="submit" class="btn btn-primary login-btn btn-block">Sign in</button>
-    </div>
-    <div class="clearfix">
-      <label class="pull-left checkbox-inline"><input type="checkbox"> Remember me</label>
-      <a href="#" class="pull-right">Forgot Password?</a>
-    </div>
-    <div class="or-seperator"><i>or</i></div>
-    <p class="text-center">Login with your social media account</p>
-    <div class="text-center social-btn">
-      <a href="#" class="btn btn-primary"><i class="fa fa-facebook"></i>&nbsp; Facebook</a>
-      <a href="#" class="btn btn-info"><i class="fa fa-twitter"></i>&nbsp; Twitter</a>
-      <a href="#" class="btn btn-danger"><i class="fa fa-google"></i>&nbsp; Google</a>
-    </div>
-    <p class="text-center text-muted small">Don't have an account? <a href="#" class="sign-up" (click)="openRegister()">Sign up here!</a></p>
-    <p class="text-center"><a (click)="hide()" class="close-button">Close</a></p>
   </form>
 </div>
