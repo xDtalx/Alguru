@@ -5,6 +5,7 @@ const mongoose = require('mongoose');
 const questionsRoutes = require('./routes/questions');
 const usersRoutes = require('./routes/users');
 const codeRoutes = require('./routes/code');
+const forumRoutes = require('./routes/forum');
 
 mongoose.connect(process.env.MONGO_AUTH)
   .then(() => {
@@ -24,5 +25,6 @@ app.use((req, res, next) => {
 app.use('/questions', questionsRoutes);
 app.use('/users', usersRoutes);
 app.use('/code', codeRoutes);
+app.use('/forum', forumRoutes);
 
 module.exports = app;
