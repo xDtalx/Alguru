@@ -1,28 +1,16 @@
-.questions {
-  margin-top: 2rem;
+table {
   width: 100%;
-  display: flex;
-  flex-wrap: wrap;
-  flex-direction: row;
-  justify-content: space-evenly;
 }
 
-.questions > div {
-  flex-grow: 1;
-  max-width: 50%;
-  margin-left: 1rem;
+.mat-form-field {
+  font-size: 14px;
+  width: 100%;
 }
 
-.questions > div:first-child {
-  margin-left: 0;
+td, th {
+  width: 25%;
 }
 
-.question {
-  background-color: rgb(219, 219, 219);
-  display: flex;
-  justify-content: left;
-  padding: 1rem;
-  margin-bottom: 0.5rem;
-  min-width: 15rem;
-  border-radius: 0 0.5rem 0.5rem 0;
+.action-button{
+  margin-right: 10px;
 }

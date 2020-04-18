@@ -10,7 +10,7 @@ import { ReleaseGuard } from './release.guard';
 import { CodeEditorComponent } from './code-editor/code-editor.component';
 
 const routes: Routes = [
-  { path: 'coming-soon', component: ComingSoonComponent},
+  { path: '', component: ComingSoonComponent},
   { path: '', canActivate: [ReleaseGuard], children: [
     { path: '', component: QuestionListComponent},
     { path: 'questions-list', component: QuestionListComponent},
