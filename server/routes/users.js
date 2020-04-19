@@ -14,6 +14,10 @@ router.post(
 
 router.post(
   '/login',
+  [
+    check('username', 'Username should be at least 6 characters').exists().trim().isLength({ min: 6 }),
+    check('password', 'Password should be at least 6 characters').exists().trim().isLength({ min: 6 })
+  ],
   UserController.userLogin);
 
 router.options(

@@ -5,7 +5,7 @@ const { validationResult } = require('express-validator');
 
 exports.createUser = (req, res, next) => {
   const errors = validationResult(req);
-
+  
   if(!errors.isEmpty()) {
     return res.status(422).json({ errors: errors.array() });
   }
@@ -26,14 +26,14 @@ exports.createUser = (req, res, next) => {
 };
 
 exports.userLogin = (req, res, next) => {
-  if(process.env.RELEASE == 'false' && req.body.username !== process.env.ADMIN) {
-    return res.status(401).json({ message: 'Coming soon! Be patient :)' });
+  const errors = validationResult(req);
+
+  if(!errors.isEmpty()) {
+    return res.status(422).json({ errors: errors.array() });
   }
 
-  let errors = checkErrorsInLoginForm(req);
-
-  if(errors.length > 0) {
-    return res.status(401).json({ message: errors });
+  if(process.env.RELEASE == 'false' && req.body.username !== process.env.ADMIN) {
+    return res.status(401).json({ message: 'Coming soon! Be patient :)' });
   }
 
   User.findOne({ username: req.body.username })
@@ -70,20 +70,6 @@ function handleFoundUser(user, req, res) {
   return user;
 }
 
-function checkErrorsInLoginForm(req) {
-  let errors = [];
-
-  if(req.body.username.length < 6) {
-    errors.push('Username length should be at least 6 characters');
-  }
-
-  if(req.body.password.length < 6) {
-    errors.push('Password length should be at least 6 characters');
-  }
-
-  return errors;
-}
-
 function handleSuccessfulSave(result, res) {
   res.status(201).json({
     message: "User created",
@@ -104,5 +90,5 @@ function handleRegisterError(error, res) {
     }
   }
 
-  res.status(500).json({ message: errors });
+  res.status(409).json({ message: errors });
 }

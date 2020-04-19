@@ -14,11 +14,13 @@ export class ErrorInterceptor implements HttpInterceptor {
     return next.handle(req).pipe(
       catchError((error: HttpErrorResponse) => {
         let errorMessage: string[] = ['An unknown error occurred!'];
-
+        console.log(error)
         if(error.error.message) {
+          console.log(1);
           errorMessage = error.error.message;
         } else if(error.error.errors) {
           errorMessage = [];
+          console.log(2);
           error.error.errors.forEach(error => {
             errorMessage.push(error.msg);
           });

@@ -14,14 +14,14 @@ enum ModalTypes {
   styleUrls: [ './header.component.less' ]
 })
 export class HeaderComponent implements OnInit, OnDestroy {
+
+  private authListenerSubs: Subscription;
   showLoginModal: boolean;
   showRegister: boolean;
   showModal : boolean;
   ModalTypes = ModalTypes;
-
-  private authListenerSubs: Subscription;
-  public isUserAuth: boolean;
-  public isRelease: boolean;
+  isUserAuth: boolean;
+  isRelease: boolean;
 
   constructor(private authService: AuthService) {}
 
@@ -50,7 +50,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
   show(type : ModalTypes) {
     this.showModal = true;
 
-    if (type==ModalTypes.LoginModal) {
+    if (type == ModalTypes.LoginModal) {
       this.showLoginModal = true;
     } else {
       this.showRegister = true;
