@@ -24,8 +24,6 @@ export class CodeService {
       tests: tests
     }
 
-console.log(runRequest);
-
     this
     .http
     .post<ExecuteResponse>(environment.runCodeApi + "/execute", runRequest)

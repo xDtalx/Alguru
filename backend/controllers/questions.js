@@ -52,7 +52,7 @@ exports.updateQuestion = (req, res, next) => {
 
   Question.updateOne(
     {
-      _id: req.params.id,
+      _id: req.body.id,
       creator: req.userData.userId
     }
     ,question)

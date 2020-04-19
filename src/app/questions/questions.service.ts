@@ -104,8 +104,6 @@ export class QuestionsService {
       creator: null
     }
 
-    console.log(questionToUpdate);
-
     this.http.put(BACKEND_URL + '/' + id, questionToUpdate)
       .subscribe(() => {
         const oldQuestionIndex = this.questions.findIndex(q => q.id === id);

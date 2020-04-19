@@ -9,7 +9,7 @@ router.delete("/:id", checkAuth, QuestionsController.deleteQuestion);
 
 router.get('', QuestionsController.getQuestions);
 
-router.put('/:id', checkAuth, QuestionsController.updateQuestion);
+router.put('', checkAuth, QuestionsController.updateQuestion);
 
 router.get('/:id', QuestionsController.getQuestion);
 
