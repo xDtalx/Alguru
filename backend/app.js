@@ -7,7 +7,7 @@ const usersRoutes = require('./routes/users');
 const codeRoutes = require('./routes/code');
 const forumRoutes = require('./routes/forum');
 
-mongoose.connect(process.env.MONGO_AUTH)
+mongoose.connect(process.env.MONGO_AUTH, { useFindAndModify: false, useUnifiedTopology: true, useNewUrlParser: true })
   .then(() => {
     console.log('Connected to database.');
   })
