@@ -10,10 +10,12 @@ exports.createPost = (req, res, next) => {
     creator: req.userData.userId
   });
 
-  post.save().then(createdPost => {
+  post
+  .save()
+  .then(createdPost => {
     res.status(201).json({
       message: "Post created successfully",
-      postId: createdPost._id
+      post: createdPost
     });
   });
 };
@@ -21,15 +23,9 @@ exports.createPost = (req, res, next) => {
 //method to create a comment for a post on forum - have to get the post id from req
 exports.createComment = (req, res, next) => {
   //need to load the specific post from db by it's ID
-  Post.findById(req.params.postId, (err, post) => {
-    if (err) {
-      //didnt find the post - returns error
-      res.status(400).json({
-        message: "Wasn't able to find the Post you want to comment on!"
-      });
-    }
-    else {
-
+  Post
+  .findById(req.params.postId)
+  .then(post => {
       const comment = new Comment({
         title: req.body.title,
         content: req.body.content,
@@ -37,164 +33,134 @@ exports.createComment = (req, res, next) => {
         creator: req.userData.userId
       });
 
-      Post.updateOne(
-        { 
-          _id: req.params.postId 
-        }, 
-        {
-          $push: { comments: [ comment ] }
-        })
-        .then(result => {
-          const isModified = result.n > 0;
+      post.comments.set(String(comment._id), comment);
 
-          if (isModified) {
-            //then save it on the comments scheme and return success
-            comment.save().then(createdComment => {
-              res.status(201).json({
-                message: "Comment created successfully",
-                commentId: createdComment._id
-              });
-            });
-          } else {
-            res.status(401).json({ message: 'Not authorized!' })
-          }
-        });
-    }
-  });
-};
-
-exports.deletePost = (req, res, next) => {
-  //to delete the post from the posts scheme
-  Post.deleteOne({ _id: req.params.postId, creator: req.userData.userId }, (err) => {
-    if (err) {
-      res.status(401).json({ message: "Wasn't able to delete the post!" });
-    } else {
-      //if the post is deleted from Post DB - delete the posts comments from Comments DB
-      //no need to handle error - the post might be without comments
-      Comment.deleteMany({ postId: req.params.postId }, function (err) { });
-      res.status(200).json({ message: 'Post deleted' });
-    }
-  });
-};
-
-exports.deleteComment = (req, res, next) => {
-  //we need to delete from the comments array of that post 
-  Comment.find(
-    { 
-      _id: req.params.commentId,
-      creator: req.userData.userId 
-    }
-  )
-  .then(() => {
-    Post.findById(req.params.postId).then(post => {
-      Post.updateOne(
-      {
-        _id: req.params.postId
-      },
-      {
-        $pull: { comments: { _id: req.params.commentId } } 
-      })
+      Post
+      .updateOne({ _id: req.params.postId }, post)
       .then(result => {
         const isModified = result.n > 0;
 
         if (isModified) {
-          Comment.deleteOne(
-            { 
-              _id: req.params.commentId, 
-              creator: req.userData.userId 
-            })
-            .then(result => {
-              const isDeleted = result.n > 0;
-
-              if (isDeleted) {
-                res.status(200).json({ message: "Comment deleted" });
-              } else {
-                res.status(401).json({ message: "Unable to delete the comment" });
-              }
+          //then save it on the comments scheme and return success
+          comment
+          .save()
+          .then(createdComment => {
+            res.status(201).json({
+              message: "Comment created",
+              comment: createdComment
             });
+          });
         } else {
-          res.status(401).json({ message: "Unable to delete the comment" })
+          res
+          .status(500)
+          .json({ message: 'Updating post was unsuccessful' })
+        }
+      })
+      .catch(() => res.status(500).json({ message: "Updating the post was unsuccessful" }));
+    }
+  )
+  .catch(() => res.status(400).json({ message: "Finding the requested post was unsuccessful" }));
+};
+
+exports.deletePost = (req, res, next) => {
+  //to delete the post from the posts scheme
+  Post
+  .deleteOne({ _id: req.params.postId, creator: req.userData.userId })
+  .then(() => {
+    //if the post is deleted from Post DB - delete the posts comments from Comments DB
+    //no need to handle error - the post might be without comments
+    Comment
+    .deleteMany({ postId: req.params.postId })
+    .then(() => res.status(200).json({ message: 'Post deleted' }))
+    .catch(() => res.status(500).json({ message: "Not all posts comments deleted." }));
+  })
+  .catch(() => res.status(401).json({ message: "Not authorized!" }));
+};
+
+exports.deleteComment = (req, res, next) => {
+  //we need to delete from the comments array of that post 
+  Comment
+  .find({ _id: req.params.commentId, creator: req.userData.userId })
+  .then(() => {
+    Post
+    .findById(req.params.postId).then(post => {
+      post.comments.delete(req.params.commentId);
+
+      Post
+      .updateOne({_id: req.params.postId, creator: req.userData.userId }, post)
+      .then(result => {
+        const isModified = result.n > 0;
+
+        if (isModified) {
+          Comment
+          .deleteOne({ _id: req.params.commentId, creator: req.userData.userId })
+          .then(result => {
+            const isDeleted = result.n > 0;
+
+            if (isDeleted) {
+              res.status(200).json({ message: "Comment deleted" });
+            } else {
+              res.status(500).json({ message: "Deleting the comment was unsuccessful" });
+            }
+          });
+        } else {
+          res.status(401).json({ message: "Not authorized!" })
         }
       })
     })
   })
-  .catch(err => res.status(401).json({ message: "Unable to delete the comment" }))
+  .catch(err => res.status(401).json({ message: "Not authorized!" }))
 };
 
 exports.getPosts = (req, res, next) => {
-  Post.find().then(documents => res.status(200).json(documents));
+  Post
+  .find()
+  .then(documents => res.status(200).json(documents));
 };
 
 exports.getPost = (req, res, next) => {
-  Post.findById(req.params.postId)
+  Post
+  .findById(req.params.postId)
   .then(post => res.status(200).json(post))
   .catch(() => res.status(404).json({ message: 'Post not found!' }));
 };
 
 exports.updatePost = (req, res, next) => {
-  Post.updateOne(
-    {
-      _id: req.params.postId,
-      creator: req.userData.userId
-    }
-    , {
-      title: req.body.title,
-      content: req.body.content
-    }
+  Post
+  .updateOne(
+    { _id: req.params.postId, creator: req.userData.userId }, 
+    { title: req.body.title, content: req.body.content }
   )
-  .then(post => res.status(200).json(
-    { 
-      message: 'Post updated',
-      post: post
-    }))
+  .then(post => res.status(200).json({ message: 'Post updated', post: post }))
   .catch(() => res.status(401).json({ message: 'Not authorized!' }));
 };
 
 exports.updateComment = (req, res, next) => {
   //first we need to use the old comment instance and remove it from the post comments array
-  Comment.findOneAndUpdate(
-    { 
-      _id: req.params.commentId, 
-      creator: req.userData.userId 
-    },
-    {
-      title: req.body.title,
-      content: req.body.content
-    })
-    .then(updatedComment => {
-      Post.findById(req.params.postId)
+  Comment
+  .findOneAndUpdate(
+    { _id: req.params.commentId, creator: req.userData.userId },
+    { title: req.body.title, content: req.body.content }
+  )
+  .then(updatedComment => {
+      Post
+      .findById(req.params.postId)
       .then(post => {
-        let commentIndex = -1;
-        
-        for(let i = 0; i < post.comments.length; i++) {
-          commentIndex++;
-          
-          if(post.comments[i]._id === updatedComment._id) {
-            break;
-          }
-        }
-
-        post.comments[commentIndex] = updatedComment;
-        
-        Post.updateOne(
-          { 
-            _id: req.params.postId, 
-            creator: req.userData.userId 
-          },
-          post
-        )
+        post.comments.set(req.params.commentId, updatedComment);
+        Post
+        .updateOne({ _id: req.params.postId }, post)
         .then(result => {
           const isModified = result.n > 0;
           
           if(isModified) {
-            res.status(200).json({ message: 'Comment updated' });
+            res.status(200).json({ message: 'Comment updated', comment: updatedComment });
           } else {
-            res.status(401).json({ message: 'Comment updated but not in post' })
+            res.status(500).json({ message: 'Comment updated but not in post' })
           }
         })
       })
-      .catch(() => res.status(401).json({ message: "Comment found but the linked post is missing" }));
+      .catch(() => res.status(400).json({ message: "Comment found but the linked post is missing" }));
     }
   )
-  .catch(() => res.status(400).json({ message: "Comment not found" }));
+  .catch(() => res.status(401).json({ message: "Unauthorized!" }));
 };
