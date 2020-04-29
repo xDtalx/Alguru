@@ -1,6 +1,13 @@
 const Question = require('../models/question');
+const { validationResult } = require('express-validator');
 
 exports.createQuestion = (req, res, next) => {
+  const errors = validationResult(req);
+
+  if(!errors.isEmpty()) {
+    return res.status(422).json({ errors: errors.array() })
+  }
+
   const question = new Question({
     title: req.body.title,
     content: req.body.content,
@@ -38,6 +45,12 @@ exports.getQuestions = (req, res, next) => {
 };
 
 exports.updateQuestion = (req, res, next) => {
+  const errors = validationResult(req);
+
+  if(!errors.isEmpty()) {
+    return res.status(422).json({ errors: errors.array() })
+  }
+
   const question = new Question({
     _id: req.body.id,
     title: req.body.title,

@@ -8,7 +8,6 @@ import { AuthGuard } from './auth/auth.guard';
 import { ComingSoonComponent } from './coming-soon/coming-soon.component';
 import { ReleaseGuard } from './release.guard';
 import { CodeEditorComponent } from './code-editor/code-editor.component';
-import { HomePageComponent } from "./homePage/homePage.component";
 
 const routes: Routes = [
   { path: 'coming-soon', component: ComingSoonComponent},

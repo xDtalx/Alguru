@@ -1,8 +1,15 @@
 const Comment = require('../models/comment');
 const Post = require('../models/post');
+const { validationResult } = require('express-validator');
 
 //method to create a post on forum
 exports.createPost = (req, res, next) => {
+  const errors = validationResult(req);
+
+  if(!errors.isEmpty()) {
+    return res.status(422).json({ errors: errors.array() })
+  }
+
   const post = new Post({
     title: req.body.title,
     content: req.body.content,
@@ -22,6 +29,12 @@ exports.createPost = (req, res, next) => {
 
 //method to create a comment for a post on forum - have to get the post id from req
 exports.createComment = (req, res, next) => {
+  const errors = validationResult(req);
+
+  if(!errors.isEmpty()) {
+    return res.status(422).json({ errors: errors.array() })
+  }
+  
   //need to load the specific post from db by it's ID
   Post
   .findById(req.params.postId)
@@ -126,6 +139,12 @@ exports.getPost = (req, res, next) => {
 };
 
 exports.updatePost = (req, res, next) => {
+  const errors = validationResult(req);
+
+  if(!errors.isEmpty()) {
+    return res.status(422).json({ errors: errors.array() })
+  }
+
   Post
   .updateOne(
     { _id: req.params.postId, creator: req.userData.userId }, 
@@ -136,6 +155,12 @@ exports.updatePost = (req, res, next) => {
 };
 
 exports.updateComment = (req, res, next) => {
+  const errors = validationResult(req);
+
+  if(!errors.isEmpty()) {
+    return res.status(422).json({ errors: errors.array() })
+  }
+  
   //first we need to use the old comment instance and remove it from the post comments array
   Comment
   .findOneAndUpdate(
