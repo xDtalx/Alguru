@@ -2,6 +2,10 @@ const Question = require('../models/question');
 const { validationResult } = require('express-validator');
 
 exports.createQuestion = (req, res, next) => {
+  if(!req.userData.isAdmin) {
+    return res.status(401).json({ message: "Not authorized to use this path" })
+  }
+
   const errors = validationResult(req);
 
   if(!errors.isEmpty()) {
@@ -28,6 +32,10 @@ exports.createQuestion = (req, res, next) => {
 };
 
 exports.deleteQuestion = (req, res, next) => {
+  if(!req.userData.isAdmin) {
+    return res.status(401).json({ message: "Not authorized to use this path" })
+  }
+
   Question.deleteOne({ _id: req.params.id, creator: req.userData.userId })
   .then(result => {
     const isDeleted = result.n > 0;
@@ -45,6 +53,10 @@ exports.getQuestions = (req, res, next) => {
 };
 
 exports.updateQuestion = (req, res, next) => {
+  if(!req.userData.isAdmin) {
+    return res.status(401).json({ message: "Not authorized to use this path" })
+  }
+
   const errors = validationResult(req);
 
   if(!errors.isEmpty()) {
@@ -67,8 +79,8 @@ exports.updateQuestion = (req, res, next) => {
     {
       _id: req.body.id,
       creator: req.userData.userId
-    }
-    ,question)
+    },
+    question)
     .then(result => {
       const isModified = result.n > 0;
 

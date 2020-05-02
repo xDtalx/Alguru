@@ -14,13 +14,16 @@ const validations = [
     check('solutionTemplate', 'Solution template should be exists and not empty').exists().trim().notEmpty()
 ]
 
+// admin path
 router.post('', checkAuth, validations, QuestionsController.createQuestion);
 
+// admin path
 router.delete("/:id", checkAuth, QuestionsController.deleteQuestion);
 
-router.get('', QuestionsController.getQuestions);
-
+// admin path
 router.put('', checkAuth, validations, QuestionsController.updateQuestion);
+
+router.get('', QuestionsController.getQuestions);
 
 router.get('/:id', QuestionsController.getQuestion);
 

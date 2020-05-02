@@ -12,7 +12,12 @@ module.exports = (req, res, next) => {
     } else if(!isRegisterReq) {
       const token = req.headers.authorization.split(" ")[1];
       const decodedToken = jwt.verify(token, process.env.JWT_KEY);
-      req.userData = { username: decodedToken.username, email: decodedToken.email, userId: decodedToken.userId };
+      req.userData = { 
+        username: decodedToken.username,
+        email: decodedToken.email,
+        userId: decodedToken.userId,
+        isAdmin: decodedToken.isAdmin  
+      };
     }
 
     next();
