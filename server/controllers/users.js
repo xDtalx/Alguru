@@ -15,13 +15,63 @@ exports.createUser = (req, res, next) => {
       username: req.body.username,
       username_lower: req.body.username.toLowerCase(),
       email: req.body.email,
-      hashedPassword: hash
+      hashedPassword: hash,
+      isAdmin: false
     });
 
     user
     .save()
     .then(result => handleSuccessfulSave(result, res))
     .catch(err => handleRegisterError(err, res));
+  });
+};
+
+exports.deleteUser = (req, res, next) => {
+  User.deleteOne({ _id: req.userData.userId })
+  .then(result => {
+    const isDeleted = result.n > 0;
+
+    if(isDeleted) {
+      res.status(200).json({message: "User deleted"});
+    } else {
+      res.status(401).json({ message: 'Not authorized!' })
+    }
+  })
+  .catch(() => res.status(500).json({ message: "Deleting user was unsuccessful" }));
+};
+
+exports.updateUser = (req, res, next) => {
+  const errors = validationResult(req);
+
+  if(!errors.isEmpty()) {
+    return res.status(422).json({ errors: errors.array() })
+  }
+
+  bcrypt.hash(req.body.password, 10).then(hash => {
+    const user = new User({
+      _id: req.userData.userId,
+      username: req.body.username,
+      username_lower: req.body.username.toLowerCase(),
+      email: req.body.email,
+      hashedPassword: hash,
+      isAdmin: false
+    });
+
+    User.updateOne(
+      {
+        _id: req.userData.userId
+      }, 
+      user)
+      .then(result => {
+        const isModified = result.n > 0;
+  
+        if(isModified) {
+          res.status(200).json({ message: 'User updated' });
+        } else {
+          res.status(401).json({ message: 'Not authorized!' })
+        }
+      })
+      .catch(err => res.status(500).json({ message: "Updating user was unsuccessful" }));
   });
 };
 
@@ -50,15 +100,23 @@ function handleUnknownErrorInLogin(error, res) {
 
 function handleAuthenticationAndResponse(fetchedUser, res) {
   const token = jwt.sign(
-    { username: fetchedUser.username, email: fetchedUser.email, userId: fetchedUser._id },
+    { 
+      username: fetchedUser.username,
+      email: fetchedUser.email,
+      userId: fetchedUser._id,
+      isAdmin: fetchedUser.isAdmin
+    },
     process.env.JWT_KEY,
-    { expiresIn: '1h' }
+    { 
+      expiresIn: '1h' 
+    }
   );
 
   res.status(200).json({
     token: token,
     expiresIn: 3600,
-    userId: fetchedUser._id
+    userId: fetchedUser._id,
+    isAdmin: fetchedUser.isAdmin
   })
 }
 
@@ -73,7 +131,10 @@ function handleFoundUser(user, req, res) {
 function handleSuccessfulSave(result, res) {
   res.status(201).json({
     message: "User created",
-    id: result
+    user: {
+      id: result._id,
+      username: result.username
+    }
   })
 }
 
