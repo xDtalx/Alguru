@@ -6,6 +6,12 @@ const questionsRoutes = require('./routes/questions');
 const usersRoutes = require('./routes/users');
 const codeRoutes = require('./routes/code');
 const forumRoutes = require('./routes/forum');
+const rateLimit = require("express-rate-limit");
+const limiter = rateLimit({
+  windowMs: 10000,
+  max: 200,
+  message: "Too many requests from this IP, please try again"
+});
 
 mongoose.connect(process.env.MONGO_AUTH, { useFindAndModify: false, useUnifiedTopology: true, useNewUrlParser: true })
   .then(() => {
@@ -15,6 +21,7 @@ mongoose.connect(process.env.MONGO_AUTH, { useFindAndModify: false, useUnifiedTo
     console.log('Connection failed.');
   });
 
+app.use(limiter);
 app.use(express.json());
 app.use((req, res, next) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
