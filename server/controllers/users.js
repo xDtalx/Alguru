@@ -88,7 +88,6 @@ exports.userLogin = (req, res, next) => {
 
   User.findOne({ username: req.body.username })
   .then(user => handleFoundUser(user, req, res))
-  .then(user => handleAuthenticationAndResponse(user, res))
   .catch(err => handleUnknownErrorInLogin(err, res));
 };
 
@@ -121,11 +120,13 @@ function handleAuthenticationAndResponse(fetchedUser, res) {
 }
 
 function handleFoundUser(user, req, res) {
-  if(!user || !bcrypt.compare(req.body.password, user.hashedPassword)) {
-    return res.status(401).json({ message: ['Username or password are incorrect'] });
-  }
+  bcrypt.compare(req.body.password, user.hashedPassword).then(isEqual => {
+    if(!isEqual) {
+      return res.status(401).json({ message: ['Username or password are incorrect'] });
+    }
 
-  return user;
+    return handleAuthenticationAndResponse(user, res);
+  })
 }
 
 function handleSuccessfulSave(result, res) {
