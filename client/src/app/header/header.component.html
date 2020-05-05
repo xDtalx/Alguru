@@ -1,4 +1,4 @@
-<div id='header'>
+<div [ngClass]="(showSmallHeader)?'small-header':'header'">
   <div id="container">
     <ul id='home' class='nav'>
       <li class='nav-item'><img src="../../assets/logo-light.png"/></li>
@@ -8,8 +8,8 @@
     </ul>
     <span id="spacer"></span>
     <ul class='nav'>
-      <li *ngIf="isUserAuth" class='nav-item'>
-        <a class='nav-link' routerLink='/create-question'>New Question</a>
+      <li *ngIf="isAdmin" class='nav-item'>
+        <a class='nav-link' routerLink='/admin'>Admin</a>
       </li>
       <li *ngIf="isUserAuth" class='nav-item'>
         <a class='nav-link' routerLink='/questions-list'>Questions</a>
@@ -25,7 +25,7 @@
       </li>
     </ul>
   </div>
-  <div id="description">
+  <div id="description" *ngIf="!showSmallHeader">
     <h1 class="title-text"> Alguru.</h1>
     <h5 class="content-text">
       The #1 place to practice

@@ -2,6 +2,7 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { AuthService } from '../auth/auth.service';
 import { Subscription } from 'rxjs';
 import { environment } from '../../environments/environment';
+import { SettingsService } from '../settings.service';
 
 enum ModalTypes {
   LoginModal = 'loginModal',
@@ -14,21 +15,26 @@ enum ModalTypes {
   styleUrls: [ './header.component.less' ]
 })
 export class HeaderComponent implements OnInit, OnDestroy {
+
   private authListenerSubs: Subscription;
+  private adminListenerSubs: Subscription;
   showLoginModal: boolean;
   showRegister: boolean;
   showModal : boolean;
   ModalTypes = ModalTypes;
   isUserAuth: boolean;
   isRelease: boolean;
+  showSmallHeader: boolean;
+  isAdmin: boolean;
 
-  constructor(private authService: AuthService) {}
+  constructor(private authService: AuthService, private settingsService: SettingsService) {
+    this.settingsService.getSmallHeaderObservable().subscribe(isShow => this.showSmallHeader = isShow)
+  }
 
   ngOnInit() {
     this.isRelease = environment.isRelease;
     this.isUserAuth = this.authService.getIsAuth();
-    this.authListenerSubs = this.authService
-    .getAuthStatusListener()
+    this.authListenerSubs = this.authService.getAuthStatusListener()
     .subscribe(isAuth => {
       this.isUserAuth = isAuth;
 
@@ -36,10 +42,13 @@ export class HeaderComponent implements OnInit, OnDestroy {
         this.hide();
       }
     });
+    this.adminListenerSubs = this.authService.getAdminListener()
+    .subscribe(isAdmin => this.isAdmin = isAdmin);
   }
 
   ngOnDestroy() {
     this.authListenerSubs.unsubscribe();
+    this.adminListenerSubs.unsubscribe();
   }
 
   onLogout() {

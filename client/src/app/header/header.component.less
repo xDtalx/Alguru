@@ -6,11 +6,18 @@
   height: fit-content;
 }
 
-div#header {
+div.header {
   display: flex;
   background: url('../../assets/home-page/homePageBackground.png') no-repeat;
   background-size: cover;
-  height: 100%;
+  height: 100vh;
+  justify-content: top;
+  flex-direction: column;
+}
+
+div.small-header {
+  display: flex;
+  background-color: rgb(53, 58, 66);
   justify-content: top;
   flex-direction: column;
 }
