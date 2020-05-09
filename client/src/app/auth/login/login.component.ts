@@ -32,7 +32,6 @@ export class LoginComponent implements OnInit, OnDestroy {
     if(loginForm.invalid) {
       return;
     }
-
     this.isLoading = true;
     this.authService.login(loginForm.value.username, loginForm.value.password);
   }
