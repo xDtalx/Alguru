@@ -6,6 +6,7 @@ import { NgModel } from '@angular/forms';
 import { QuestionsService } from '../questions/questions.service';
 import { Question } from '../questions/question.model';
 import { ActivatedRoute, ParamMap } from '@angular/router';
+import {CodeModel} from "@ngstack/code-editor";
 
 @Component({
   selector: 'code-editor',
@@ -16,11 +17,15 @@ export class CodeEditorComponent implements OnInit, OnDestroy {
   private executeListenerSubs: Subscription;
   executeResponse: ExecuteResponse;
   currentOutput: string;
+  userCode: string;
   lang: string = "java";
   questionId;
   questionToSolve: Question;
 
-  constructor(private route: ActivatedRoute, private questionsService: QuestionsService, private codeService: CodeService) {}
+  constructor(private route: ActivatedRoute, private questionsService: QuestionsService, private codeService: CodeService) {
+
+
+  }
 
   ngOnInit() {
     this.route.paramMap.subscribe((paramMap: ParamMap) => {
@@ -38,7 +43,13 @@ export class CodeEditorComponent implements OnInit, OnDestroy {
             hints: questionData.hints,
             level: questionData.level,
             creator: questionData.creator
-          }
+          };
+          this.solutionTemplate = this.questionToSolve.solutionTemplate[0];
+          this.codeModel = {
+            language: 'java',
+            uri: 'main.json',
+            value: this.solutionTemplate,
+          };
         });
       }
      });
@@ -72,5 +83,21 @@ export class CodeEditorComponent implements OnInit, OnDestroy {
 
   onRawOuputClick() {
     this.currentOutput = "Output> " + (this.executeResponse.errors === '' ? this.executeResponse.output : this.executeResponse.errors);
+  }
+
+  theme = 'vs-dark';
+  solutionTemplate : string;
+  codeModel: CodeModel;
+
+  options = {
+    contextmenu: true,
+    minimap: {
+      enabled: false,
+    },
+  };
+
+  onCodeChanged(value) {
+    this.userCode = value;
+    console.log('CODE', value);
   }
 }
