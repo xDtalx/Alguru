@@ -18,12 +18,6 @@
       <td mat-cell *matCellDef="let question"> {{question.level==2 ? 'Hard' : question.level==1 ? 'Medium' : 'Easy'}}</td>
     </ng-container>
 
-<!--    &lt;!&ndash; Content Column &ndash;&gt;-->
-<!--    <ng-container matColumnDef="content">-->
-<!--      <th mat-header-cell *matHeaderCellDef mat-sort-header> Content </th>-->
-<!--      <td mat-cell *matCellDef="let question"> {{question.content}} </td>-->
-<!--    </ng-container>-->
-
     <!-- Actions Column -->
     <ng-container matColumnDef="actions">
       <th mat-header-cell *matHeaderCellDef mat-sort-header> Actions </th>

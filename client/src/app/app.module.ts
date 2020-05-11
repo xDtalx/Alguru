@@ -9,7 +9,9 @@ import { MatTableModule } from "@angular/material/table";
 import { MatSortModule } from "@angular/material/sort";
 import { MatPaginatorModule } from "@angular/material/paginator";
 import { MatInputModule } from "@angular/material/input";
-
+import { MatSidenavModule } from '@angular/material/sidenav';
+import { CodeEditorModule } from "@ngstack/code-editor";
+ 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { QuestionCreateComponent } from './questions/question-create/question-create.component';
@@ -24,7 +26,6 @@ import { ErrorInterceptor } from './error-interceptor';
 import { ComingSoonComponent } from './coming-soon/coming-soon.component';
 import { CodeEditorComponent } from './code-editor/code-editor.component';
 import { AdminPageComponent } from './admin-page/admin-page.component';
-import { MatSidenavModule } from '@angular/material/sidenav';
 
 
 @NgModule({
@@ -54,7 +55,8 @@ import { MatSidenavModule } from '@angular/material/sidenav';
     MatSortModule,
     MatPaginatorModule,
     MatInputModule,
-    MatSidenavModule
+    MatSidenavModule,
+    CodeEditorModule
   ],
   providers: [
     { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },

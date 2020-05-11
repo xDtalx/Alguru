@@ -4,9 +4,15 @@
         <div class="head top">
           <span class="title">Your Solution:</span>
           <span class="spacer"></span>
-          <a (click)="onRunCode(codeEditor.value, tests.value)" class="run-code btn">Run Code</a>
+          <a (click)="onRunCode(userCode, tests.value)" class="run-code btn">Run Code</a>
         </div>
-        <textarea class="editor" NgModel #codeEditor>{{ questionToSolve?.solutionTemplate }}</textarea>
+<!--        <textarea class="editor" NgModel #codeEditor>{{ questionToSolve?.solutionTemplate }}</textarea>-->
+        <ngs-code-editor
+          [theme]="theme"
+          [codeModel]="codeModel"
+          [options]="options"
+          (valueChanged)="onCodeChanged($event)">
+        </ngs-code-editor>
       </div>
       <div class="container">
         <div class="head">

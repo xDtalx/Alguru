@@ -11,6 +11,8 @@ import { Subscription } from 'rxjs';
 export class LoginComponent implements OnInit, OnDestroy {
 
   public isLoading = false;
+  userNameValidCharacterNumber = true;
+  passwordValidCharacterNumber = true;
   authStatusSub: Subscription;
   @Output() onCloseModal: EventEmitter<any> = new EventEmitter();
   @Output() onRegisterOpen: EventEmitter<any> = new EventEmitter();
@@ -29,10 +31,11 @@ export class LoginComponent implements OnInit, OnDestroy {
   }
 
   onLogin(loginForm: NgForm) {
+    this.userNameValidCharacterNumber = loginForm.value.username.length >=6;
+    this.passwordValidCharacterNumber = loginForm.value.password.length >=6;
     if(loginForm.invalid) {
       return;
     }
-
     this.isLoading = true;
     this.authService.login(loginForm.value.username, loginForm.value.password);
   }
