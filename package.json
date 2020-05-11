@@ -8,8 +8,8 @@
     "test": "ng test",
     "lint": "ng lint",
     "e2e": "ng e2e",
-    "start:server": "npm install && cd client && nodemon ../server/server.js",
-    "start:client": "npm install && cd client && npm start"
+    "start:server": "npm install && npm install -g @angular/cli && cd client && nodemon ../server/server.js",
+    "start:client": "npm install && npm install -g @angular/cli && cd client && ng add @angular/material && npm start"
   },
   "private": true,
   "dependencies": {
