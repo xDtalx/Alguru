@@ -1,4 +1,4 @@
-const request = require('request');
+const axios = require('axios');
 
 exports.executeCode = (req, res, next) => {
   const data = {
@@ -7,17 +7,14 @@ exports.executeCode = (req, res, next) => {
     tests: req.body.tests
   };
 
-  request.post({
-    headers: req.headers,
-    url: process.env.RUN_CODE_API + '/execute',
-    body: JSON.stringify(data)
-  }, (err, runCodeRes, body) => {
-    if(err) {
-      res.status(500).json({ message: 'Unknown error' });
-      return;
-    }
+  const config = {
+    headers: req.headers
+  }
 
+  axios.post(process.env.RUN_CODE_API + '/execute', JSON.stringify(data), config)
+  .then(result => {
     res.setHeader('Content-Type', 'application/json');
-    res.status(runCodeRes.statusCode).send(body);
-  });
+    res.status(result.status).send(result.data);
+  })
+  .catch(() => res.status(500).json({ message: 'Unknown error' }));
 };
