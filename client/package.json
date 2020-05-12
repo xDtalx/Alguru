@@ -8,11 +8,5 @@
     "test": "ng test",
     "lint": "ng lint",
     "e2e": "ng e2e"
-  },
-  "dependencies": {
-    "@angular/animations": "^9.0.0 || ^10.0.0-0",
-    "@angular/cdk": "~9.2.2",
-    "@angular/forms": "^9.0.0 || ^10.0.0-0",
-    "@angular/material": "~9.2.2"
   }
 }
