@@ -12,16 +12,16 @@ import { CodeEditorComponent } from './code-editor/code-editor.component';
 import { AdminPageComponent } from './admin-page/admin-page.component';
 
 const routes: Routes = [
-  { path: '', component: ComingSoonComponent},
+  { path: '', component: ComingSoonComponent, data: { showSmallHeader: false }},
   { path: '', canActivate: [ReleaseGuard], children: [
-    { path: '', component: QuestionListComponent},
-    { path: 'questions-list', component: QuestionListComponent},
-    { path: 'solve/:questionId', component: CodeEditorComponent, canActivate: [AuthGuard] },
+    { path: '', component: QuestionListComponent, data: { showSmallHeader: true }},
+    { path: 'questions-list', component: QuestionListComponent, data: { showSmallHeader: true }},
+    { path: 'solve/:questionId', component: CodeEditorComponent, data: { showSmallHeader: true }, canActivate: [AuthGuard] },
     { path: 'admin', component: AdminPageComponent, data: { showSmallHeader: true }, canActivate: [AuthGuard] },
-    { path: 'edit/:questionId', component: QuestionCreateComponent, canActivate: [AuthGuard] },
+    { path: 'edit/:questionId', component: QuestionCreateComponent, data: { showSmallHeader: true }, canActivate: [AuthGuard] },
     { path: 'register', component: RegisterComponent },
     { path: 'login', component: LoginComponent },
-    { path: 'create-question', component: QuestionCreateComponent, canActivate: [AuthGuard] }
+    { path: 'create-question', component: QuestionCreateComponent, data: { showSmallHeader: true }, canActivate: [AuthGuard] }
   ]},
 ];
 

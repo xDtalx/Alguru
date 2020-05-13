@@ -8,11 +8,41 @@
 
 div.header {
   display: flex;
-  background: url('../../assets/home-page/homePageBackground.png') no-repeat;
-  background-size: cover;
   height: 100vh;
   justify-content: top;
   flex-direction: column;
+}
+
+div.show-header-color {
+  background-color: rgba(53, 58, 66, 0);
+  animation: show-color 0.2s forwards;
+}
+
+div.hide-header-color {
+  background-color: rgba(53, 58, 66, 256);
+  animation: hide-color 0.2s forwards;
+}
+
+div.background {
+  background: url('../../assets/home-page/homePageBackground.png') no-repeat;
+  background-size: cover;
+  height: 100vh;
+  width: 100vw;
+  max-width:100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: -1;
+}
+
+@keyframes show-color {
+  from { background-color: rgba(53, 58, 66, 0); }
+  to { background-color: rgba(53, 58, 66, 256); }
+}
+
+@keyframes hide-color {
+  from { background-color: rgba(53, 58, 66, 256); }
+  to { background-color: rgba(53, 58, 66, 0); }
 }
 
 div.small-header {
@@ -23,8 +53,13 @@ div.small-header {
 }
 
 #description {
-  margin-top: auto;
-  margin-bottom: auto;
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  height: 100vh;
+  position: absolute;
+  top: 0;
+  left: 0;
   margin-left: 5vw;
   width: 15rem;
 }

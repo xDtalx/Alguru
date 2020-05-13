@@ -1,18 +1,19 @@
-<div [ngClass]="(showSmallHeader)?'small-header':'header'">
+<div class="header">
+  <div class="background">asd</div>
   <div id="container">
     <ul id='home' class='nav'>
       <li class='nav-item'><img src="../../assets/logo-light.png"/></li>
       <li class='nav-item'>
-        <a class='nav-link' routerLink='/'>Home</a>
+        <a class='nav-link' (click)="setSmallHeader(false)" routerLink='/'>Home</a>
       </li>
     </ul>
     <span id="spacer"></span>
     <ul class='nav'>
       <li *ngIf="isAdmin" class='nav-item'>
-        <a class='nav-link' routerLink='/admin'>Admin</a>
+        <a class='nav-link' (click)="setSmallHeader(true)" routerLink='/admin'>Admin</a>
       </li>
       <li *ngIf="isUserAuth" class='nav-item'>
-        <a class='nav-link' routerLink='/questions-list'>Questions</a>
+        <a class='nav-link' (click)="setSmallHeader(true)" routerLink='/questions-list'>Questions</a>
       </li>
       <li *ngIf="!isUserAuth && isRelease" class='nav-item'>
         <a class='nav-link' (click)="show(ModalTypes.LoginModal)">Login</a>
@@ -39,32 +40,3 @@
         <app-login *ngIf="showLoginModal" (onCloseModal)="hide()" (onRegisterOpen)="openRegister()"></app-login>
         <app-register *ngIf="showRegister" (onCloseModal)="hide()"></app-register>
 </div>
-<!--
-<div class="home-page">
-  <div class="app-icon"></div>
-    <span class="register-button" (click)="show(ModalTypes.RegisterModal)">Register</span>
-    <span class="login-button" (click)="show(ModalTypes.LoginModal)"> Log In</span>
-  <h1 class="title-text"> Alguru.</h1>
-  <h5 class="content-text">
-    The #1 place to practice
-    your coding skills, share
-    interviews question and
-    their solutions.
-  </h5>
-  <div [style.display]="showModal ? 'block' : 'none'" class="modal" id="imagemodal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h4 class="modal-title" id="myModalLabel"></h4>
-        </div>
-        <div class="modal-body">
-          <app-login *ngIf="showLoginModal"></app-login>
-          <app-register *ngIf="shownRegister"></app-register>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-dark" data-dismiss="modal" (click) = "hide()">Close</button>
-        </div>
-      </div>
-    </div>
-  </div>
-</div> -->

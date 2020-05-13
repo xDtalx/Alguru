@@ -125,10 +125,13 @@ export class AuthService {
           this.adminListener.next(this.isAdmin);
           const now = new Date();
           const expirationDate = new Date(now.getTime() + response.expiresIn * 1000);
-          this.saveAuthData(this.token, expirationDate, this.userId);
+          this.saveAuthData(this.token, expirationDate, this.userId, String(this.isAdmin));
           this.router.navigate(['/']);
         }
-      }, error => this.authStatusListener.next(false));
+      }, error => {
+        this.authStatusListener.next(false);
+        this.adminListener.next(false);
+      });
   }
 
   getUserId() {
@@ -148,9 +151,11 @@ export class AuthService {
     if(expiresIn > 0) {
       this.token = authInfo.token;
       this.isAuth = true;
+      this.isAdmin = authInfo.isAdmin === "true";
       this.userId = authInfo.userId;
       this.setAuthTimer(expiresIn / 1000);
       this.authStatusListener.next(true);
+      this.adminListener.next(this.isAdmin);
     }
   }
 
@@ -167,22 +172,25 @@ export class AuthService {
     clearTimeout(this.tokenTimer);
   }
 
-  private saveAuthData(token: string, expirationDate: Date, userId: string) {
+  private saveAuthData(token: string, expirationDate: Date, userId: string, isAdmin: string) {
     localStorage.setItem('token', token);
     localStorage.setItem('expiration', expirationDate.toISOString());
     localStorage.setItem('userId', userId);
+    localStorage.setItem('isAdmin', isAdmin);
   }
 
   private clearAuthData() {
     localStorage.removeItem('token');
     localStorage.removeItem('expiration');
     localStorage.removeItem('userId');
+    localStorage.removeItem('isAdmin');
   }
 
   private getAuthData() {
     const token = localStorage.getItem('token');
     const expirationDate = localStorage.getItem('expiration');
     const userId = localStorage.getItem('userId');
+    const isAdmin = localStorage.getItem('isAdmin');
 
     if(!(token && expirationDate)) {
       return;
@@ -191,7 +199,8 @@ export class AuthService {
     return {
       token: token,
       expirationDate: new Date(expirationDate),
-      userId: userId
+      userId: userId,
+      isAdmin: isAdmin
     }
   }
 

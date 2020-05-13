@@ -2,7 +2,9 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { AuthService } from '../auth/auth.service';
 import { Subscription } from 'rxjs';
 import { environment } from '../../environments/environment';
+import * as $ from 'jquery';
 import { SettingsService } from '../settings.service';
+import { animate } from '@angular/animations';
 
 enum ModalTypes {
   LoginModal = 'loginModal',
@@ -28,12 +30,13 @@ export class HeaderComponent implements OnInit, OnDestroy {
   isAdmin: boolean;
 
   constructor(private authService: AuthService, private settingsService: SettingsService) {
-    this.settingsService.getSmallHeaderObservable().subscribe(isShow => this.showSmallHeader = isShow)
+    this.settingsService.getSmallHeaderObservable().subscribe(isShow => this.setSmallHeader(isShow));
   }
 
   ngOnInit() {
     this.isRelease = environment.isRelease;
     this.isUserAuth = this.authService.getIsAuth();
+    this.isAdmin = this.authService.getIsAdmin();
     this.authListenerSubs = this.authService.getAuthStatusListener()
     .subscribe(isAuth => {
       this.isUserAuth = isAuth;
@@ -43,7 +46,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
       }
     });
     this.adminListenerSubs = this.authService.getAdminListener()
-    .subscribe(isAdmin => this.isAdmin = isAdmin);
+    .subscribe(isAdmin => { this.isAdmin = isAdmin; console.log(this.isAdmin)});
   }
 
   ngOnDestroy() {
@@ -51,7 +54,34 @@ export class HeaderComponent implements OnInit, OnDestroy {
     this.adminListenerSubs.unsubscribe();
   }
 
+  setSmallHeader(isShow: boolean) {
+    var length = 200;
+    this.showSmallHeader = isShow;
+
+    if(this.showSmallHeader) {
+      var header = $('div.header');
+      var background = $('div.background');
+      var container = $('#container');
+      var target = {height: container.height()};
+      var onDone = () => header.css('height', 'auto');
+
+      header.addClass('show-header-color');
+      header.removeClass('hide-header-color');
+      background.animate(target, length);
+      header.animate(target, length, onDone);
+    } else {
+      var header = $('div.header');
+      var background = $('div.background');
+      
+      header.addClass('hide-header-color');
+      header.removeClass('show-header-color');
+      background.animate({height: '100vh'}, length);
+      header.animate({height: '100vh'}, length);
+    }
+  }
+
   onLogout() {
+    this.setSmallHeader(false);
     this.authService.logout();
   }
 
