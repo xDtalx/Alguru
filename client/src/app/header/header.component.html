@@ -10,6 +10,9 @@
     <span id="spacer"></span>
     <ul class='nav'>
       <li *ngIf="isAdmin" class='nav-item'>
+        <a class='nav-link' (click)="setSmallHeader(true)" routerLink='/code-editor'>Code Editor</a>
+      </li>
+      <li *ngIf="isAdmin" class='nav-item'>
         <a class='nav-link' (click)="setSmallHeader(true)" routerLink='/admin'>Admin</a>
       </li>
       <li *ngIf="isUserAuth" class='nav-item'>

@@ -10,7 +10,6 @@ import { MatSortModule } from "@angular/material/sort";
 import { MatPaginatorModule } from "@angular/material/paginator";
 import { MatInputModule } from "@angular/material/input";
 import { MatSidenavModule } from '@angular/material/sidenav';
-import { CodeEditorModule } from "@ngstack/code-editor";
  
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -24,8 +23,9 @@ import { AuthInterceptor } from './auth/auth-interceptor';
 import { ErrorComponent } from './error/error.component';
 import { ErrorInterceptor } from './error-interceptor';
 import { ComingSoonComponent } from './coming-soon/coming-soon.component';
-import { CodeEditorComponent } from './code-editor/code-editor.component';
+import { IDEComponent } from './ide/ide.component';
 import { AdminPageComponent } from './admin-page/admin-page.component';
+import { CodeEditorComponent } from './code-editor/code-editor.component';
 
 
 @NgModule({
@@ -39,8 +39,9 @@ import { AdminPageComponent } from './admin-page/admin-page.component';
     LoginComponent,
     ErrorComponent,
     ComingSoonComponent,
-    CodeEditorComponent,
-    AdminPageComponent
+    IDEComponent,
+    AdminPageComponent,
+    CodeEditorComponent
   ],
   imports: [
     BrowserModule,
@@ -56,7 +57,6 @@ import { AdminPageComponent } from './admin-page/admin-page.component';
     MatPaginatorModule,
     MatInputModule,
     MatSidenavModule,
-    CodeEditorModule
   ],
   providers: [
     { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },

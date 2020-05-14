@@ -2,9 +2,8 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { AuthService } from '../auth/auth.service';
 import { Subscription } from 'rxjs';
 import { environment } from '../../environments/environment';
-import * as $ from 'jquery';
 import { SettingsService } from '../settings.service';
-import { animate } from '@angular/animations';
+import * as $ from 'jquery';
 
 enum ModalTypes {
   LoginModal = 'loginModal',

@@ -1,0 +1,44 @@
+<div id="ide">
+  <div id="first-col">
+      <div class="container" id="solution">
+        <div class="head top">
+          <span class="title">Your Solution:</span>
+          <span class="spacer"></span>
+          <a (click)="onRunCode()" class="run-code btn">Run Code</a>
+        </div>
+       <textarea class="editor" NgModel #codeEditor>{{ questionToSolve?.solutionTemplate }}</textarea>
+      </div>
+      <div class="container">
+        <div class="head">
+          <span class="title">Output:</span>
+          <span class="spacer"></span>
+          <a (click)="onCustomClick()" class="btn">Custom</a>
+          <a  (click)="onRawOuputClick()" class="btn">Raw Output</a>
+        </div>
+        <textarea class="editor" readonly [(ngModel)]="currentOutput"></textarea>
+      </div>
+  </div>
+  <div id="second-col">
+    <div class="container">
+      <div class="head top">
+        <span class="title">Question:</span>
+        <span class="spacer"></span>
+      </div>
+      <textarea class="editor" readonly>{{ questionToSolve?.content }}</textarea>
+    </div>
+    <div class="container">
+      <div class="head">
+        <span class="title">Tests:</span>
+        <span class="spacer"></span>
+      </div>
+      <textarea class="editor" NgModel #tests>{{ questionToSolve?.tests }}</textarea>
+    </div>
+    <div class="container">
+      <div class="head">
+        <span class="title">Hints:</span>
+        <span class="spacer"></span>
+      </div>
+      <textarea class="editor" readonly>{{ questionToSolve?.hints }}</textarea>
+    </div>
+  </div>
+</div>

@@ -1,103 +1,30 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
-import { Subscription } from 'rxjs';
-import { CodeService } from './code.service';
-import { ExecuteResponse } from './execute-response.model';
-import { NgModel } from '@angular/forms';
-import { QuestionsService } from '../questions/questions.service';
-import { Question } from '../questions/question.model';
-import { ActivatedRoute, ParamMap } from '@angular/router';
-import {CodeModel} from "@ngstack/code-editor";
+import { Component, OnInit, OnDestroy, Input } from '@angular/core';
+import * as $ from 'jquery';
+import { range } from 'rxjs';
+
+declare function handleKeyDown(event);
+declare function addClassToNewLineDiv(id);
 
 @Component({
-  selector: 'code-editor',
-  templateUrl: './code-editor.component.html',
-  styleUrls: [ './code-editor.component.css' ]
+    selector: 'code-editor',
+    templateUrl: './code-editor.component.html',
+    styleUrls: [ './code-editor.component.css' ]
 })
 export class CodeEditorComponent implements OnInit, OnDestroy {
-  private executeListenerSubs: Subscription;
-  executeResponse: ExecuteResponse;
-  currentOutput: string;
-  userCode: string;
-  lang: string = "java";
-  questionId;
-  questionToSolve: Question;
 
-  constructor(private route: ActivatedRoute, private questionsService: QuestionsService, private codeService: CodeService) {
+    @Input() public editorId: string = 'editor';
 
+    ngOnDestroy(): void {
+    }
 
-  }
-
-  ngOnInit() {
-    this.route.paramMap.subscribe((paramMap: ParamMap) => {
-      if(paramMap.has('questionId')) {
-        this.questionId = paramMap.get('questionId');
-
-        this.questionsService.getQuestion(this.questionId).subscribe(questionData => {
-          this.questionToSolve = {
-            id: questionData._id,
-            title: questionData.title,
-            content: questionData.content,
-            solutionTemplate: questionData.solutionTemplate,
-            solution: questionData.solution,
-            tests: questionData.tests,
-            hints: questionData.hints,
-            level: questionData.level,
-            creator: questionData.creator
-          };
-          this.solutionTemplate = this.questionToSolve.solutionTemplate[0];
-          this.codeModel = {
-            language: 'java',
-            uri: 'main.json',
-            value: this.solutionTemplate,
-          };
+    ngOnInit(): void {
+        document.querySelectorAll('div.editor').forEach((value, key, parent) => {
+            value.addEventListener('keydown', handleKeyDown);
+            value.addEventListener('input', () => addClassToNewLineDiv(this.editorId));
         });
-      }
-     });
-
-    this.executeResponse = { message: "", output: "", errors: "" };
-    this.currentOutput = "";
-
-    this.executeListenerSubs =
-    this.codeService
-    .getExecuteResponseListener()
-    .subscribe(response => {
-      this.executeResponse = response;
-
-      if(this.executeResponse !== null) {
-        this.currentOutput = "Custom> " + this.executeResponse.message;
-      }
-    });
-  }
-
-  ngOnDestroy() {
-    this.executeListenerSubs.unsubscribe();
-  }
-
-  onRunCode(code: string, tests: string) {
-    this.codeService.runCode(this.lang, code, tests);
-  }
-
-  onCustomClick() {
-    this.currentOutput = "Custom> " + this.executeResponse.message;
-  }
-
-  onRawOuputClick() {
-    this.currentOutput = "Output> " + (this.executeResponse.errors === '' ? this.executeResponse.output : this.executeResponse.errors);
-  }
-
-  theme = 'vs-dark';
-  solutionTemplate : string;
-  codeModel: CodeModel;
-
-  options = {
-    contextmenu: true,
-    minimap: {
-      enabled: false,
-    },
-  };
-
-  onCodeChanged(value) {
-    this.userCode = value;
-    console.log('CODE', value);
-  }
+    }
+    
+    getId() {
+        return this.editorId;
+    }
 }

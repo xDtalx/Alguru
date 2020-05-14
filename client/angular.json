@@ -29,7 +29,8 @@
               "../node_modules/bootstrap/dist/css/bootstrap.min.css"
             ],
             "scripts": [
-              "../node_modules/jquery/dist/jquery.min.js"
+              "../node_modules/jquery/dist/jquery.min.js",
+              "src/app/code-editor/code-editor.component.js"
             ]
           },
           "configurations": {

@@ -8,15 +8,17 @@ import { QuestionListComponent } from './questions/question-list/question-list.c
 import { AuthGuard } from './auth/auth.guard';
 import { ComingSoonComponent } from './coming-soon/coming-soon.component';
 import { ReleaseGuard } from './release.guard';
-import { CodeEditorComponent } from './code-editor/code-editor.component';
+import { IDEComponent } from './ide/ide.component';
 import { AdminPageComponent } from './admin-page/admin-page.component';
+import { CodeEditorComponent } from './code-editor/code-editor.component';
 
 const routes: Routes = [
   { path: '', component: ComingSoonComponent, data: { showSmallHeader: false }},
   { path: '', canActivate: [ReleaseGuard], children: [
+    { path: 'code-editor', component: CodeEditorComponent, data: { showSmallHeader: true }, canActivate: [AuthGuard]},
     { path: '', component: QuestionListComponent, data: { showSmallHeader: true }},
     { path: 'questions-list', component: QuestionListComponent, data: { showSmallHeader: true }},
-    { path: 'solve/:questionId', component: CodeEditorComponent, data: { showSmallHeader: true }, canActivate: [AuthGuard] },
+    { path: 'solve/:questionId', component: IDEComponent, data: { showSmallHeader: true }, canActivate: [AuthGuard] },
     { path: 'admin', component: AdminPageComponent, data: { showSmallHeader: true }, canActivate: [AuthGuard] },
     { path: 'edit/:questionId', component: QuestionCreateComponent, data: { showSmallHeader: true }, canActivate: [AuthGuard] },
     { path: 'register', component: RegisterComponent },
