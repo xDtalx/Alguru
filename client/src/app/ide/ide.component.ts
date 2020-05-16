@@ -90,7 +90,7 @@ export class IDEComponent implements OnInit, OnDestroy {
     this.currentOutput = "Custom> " + this.executeResponse.message;
   }
 
-  onRawOuputClick() {
+  onRawOutputClick() {
     this.currentOutput = "Output> " + (this.executeResponse.errors === '' ? this.executeResponse.output : this.executeResponse.errors);
   }
 

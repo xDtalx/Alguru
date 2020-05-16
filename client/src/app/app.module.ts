@@ -26,6 +26,8 @@ import { ComingSoonComponent } from './coming-soon/coming-soon.component';
 import { IDEComponent } from './ide/ide.component';
 import { AdminPageComponent } from './admin-page/admin-page.component';
 import { EditorComponent } from './editor/editor.component';
+import {ForumComponent} from "./forum/forum.component";
+
 
 
 @NgModule({
@@ -41,7 +43,8 @@ import { EditorComponent } from './editor/editor.component';
     ComingSoonComponent,
     IDEComponent,
     AdminPageComponent,
-    EditorComponent
+    EditorComponent,
+    ForumComponent
   ],
   imports: [
     BrowserModule,

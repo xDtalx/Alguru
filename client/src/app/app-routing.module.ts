@@ -11,6 +11,7 @@ import { ReleaseGuard } from './release.guard';
 import { IDEComponent } from './ide/ide.component';
 import { AdminPageComponent } from './admin-page/admin-page.component';
 import { EditorComponent } from './editor/editor.component';
+import {ForumComponent} from "./forum/forum.component";
 
 const routes: Routes = [
   { path: '', component: ComingSoonComponent, data: { showSmallHeader: false }},
@@ -23,7 +24,8 @@ const routes: Routes = [
     { path: 'edit/:questionId', component: QuestionCreateComponent, data: { showSmallHeader: true }, canActivate: [AuthGuard] },
     { path: 'register', component: RegisterComponent },
     { path: 'login', component: LoginComponent },
-    { path: 'create-question', component: QuestionCreateComponent, data: { showSmallHeader: true }, canActivate: [AuthGuard] }
+    { path: 'create-question', component: QuestionCreateComponent, data: { showSmallHeader: true }, canActivate: [AuthGuard] },
+    { path: 'forum', component: ForumComponent, data: { showSmallHeader: true }, canActivate: [AuthGuard] }
   ]},
 ];
 

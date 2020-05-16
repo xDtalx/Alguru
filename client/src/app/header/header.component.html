@@ -18,6 +18,9 @@
       <li *ngIf="isUserAuth" class='nav-item'>
         <a class='nav-link' (click)="setSmallHeader(true)" routerLink='/questions-list'>Questions</a>
       </li>
+      <li *ngIf="isUserAuth" class='nav-item'>
+        <a class='nav-link' routerLink='/forum'>Forum</a>
+      </li>
       <li *ngIf="!isUserAuth && isRelease" class='nav-item'>
         <a class='nav-link' (click)="show(ModalTypes.LoginModal)">Login</a>
       </li>
