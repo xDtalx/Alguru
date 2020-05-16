@@ -114,6 +114,7 @@ function handleAuthenticationAndResponse(fetchedUser, res) {
   res.status(200).json({
     token: token,
     expiresIn: 3600,
+    username: fetchedUser.username,
     userId: fetchedUser._id,
     isAdmin: fetchedUser.isAdmin
   })
