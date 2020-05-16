@@ -13,12 +13,13 @@ const limiter = rateLimit({
   message: "Too many requests from this IP, please try again"
 });
 
-mongoose.connect(process.env.MONGO_AUTH, { useFindAndModify: false, useUnifiedTopology: true, useNewUrlParser: true })
+mongoose.connect(process.env.MONGO_AUTH)
   .then(() => {
     console.log('Connected to database.');
   })
-  .catch(() => {
+  .catch(err => {
     console.log('Connection failed.');
+    console.log(err);
   });
 
 app.use(limiter);

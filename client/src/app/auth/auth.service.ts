@@ -12,10 +12,12 @@ const BACKEND_URL = environment.apiUrl + '/users';
 @Injectable({ providedIn: 'root'})
 export class AuthService {
 
-  private isAuth: boolean = false;
-  private token: string;
   private authStatusListener = new Subject<boolean>();
+  private adminListener = new Subject<boolean>();
   private authErrorListener = new Subject<string[]>();
+  private isAuth: boolean = false;
+  private isAdmin: boolean = false;
+  private token: string;
   private tokenTimer: any;
   private userId: string;
   private errors: string[] = [];
@@ -24,6 +26,10 @@ export class AuthService {
 
   getToken() {
     return this.token;
+  }
+
+  getAdminListener() {
+    return this.adminListener.asObservable();
   }
 
   getAuthErrorListener() {
@@ -39,6 +45,10 @@ export class AuthService {
 
   getIsAuth() {
     return this.isAuth;
+  }
+
+  getIsAdmin() {
+    return this.isAdmin;
   }
 
   getAuthStatusListener() {
@@ -99,21 +109,29 @@ export class AuthService {
       password: password
     }
 
-    this.http.post<{ token: string, expiresIn: number, userId: string }>(BACKEND_URL + '/login', authData)
+    console.log(authData);
+
+    this.http.post<{ token: string, expiresIn: number, userId: string, isAdmin: boolean }>(BACKEND_URL + '/login', authData)
       .subscribe(response => {
+        console.log(response);
         this.token = response.token;
 
         if(this.token) {
           this.userId = response.userId;
           this.setAuthTimer(response.expiresIn);
           this.isAuth = true;
+          this.isAdmin = response.isAdmin;
           this.authStatusListener.next(true);
+          this.adminListener.next(this.isAdmin);
           const now = new Date();
           const expirationDate = new Date(now.getTime() + response.expiresIn * 1000);
-          this.saveAuthData(this.token, expirationDate, this.userId);
+          this.saveAuthData(this.token, expirationDate, this.userId, String(this.isAdmin));
           this.router.navigate(['/']);
         }
-      }, error => this.authStatusListener.next(false));
+      }, error => {
+        this.authStatusListener.next(false);
+        this.adminListener.next(false);
+      });
   }
 
   getUserId() {
@@ -133,9 +151,11 @@ export class AuthService {
     if(expiresIn > 0) {
       this.token = authInfo.token;
       this.isAuth = true;
+      this.isAdmin = authInfo.isAdmin === "true";
       this.userId = authInfo.userId;
       this.setAuthTimer(expiresIn / 1000);
       this.authStatusListener.next(true);
+      this.adminListener.next(this.isAdmin);
     }
   }
 
@@ -143,29 +163,34 @@ export class AuthService {
     this.errors = [];
     this.token = null;
     this.isAuth = false;
+    this.isAdmin = false;
     this.authStatusListener.next(false);
+    this.adminListener.next(false);
     this.router.navigate(['/']);
     this.clearAuthData();
     this.userId = null;
     clearTimeout(this.tokenTimer);
   }
 
-  private saveAuthData(token: string, expirationDate: Date, userId: string) {
+  private saveAuthData(token: string, expirationDate: Date, userId: string, isAdmin: string) {
     localStorage.setItem('token', token);
     localStorage.setItem('expiration', expirationDate.toISOString());
     localStorage.setItem('userId', userId);
+    localStorage.setItem('isAdmin', isAdmin);
   }
 
   private clearAuthData() {
     localStorage.removeItem('token');
     localStorage.removeItem('expiration');
     localStorage.removeItem('userId');
+    localStorage.removeItem('isAdmin');
   }
 
   private getAuthData() {
     const token = localStorage.getItem('token');
     const expirationDate = localStorage.getItem('expiration');
     const userId = localStorage.getItem('userId');
+    const isAdmin = localStorage.getItem('isAdmin');
 
     if(!(token && expirationDate)) {
       return;
@@ -174,7 +199,8 @@ export class AuthService {
     return {
       token: token,
       expirationDate: new Date(expirationDate),
-      userId: userId
+      userId: userId,
+      isAdmin: isAdmin
     }
   }
 

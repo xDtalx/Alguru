@@ -1,9 +1,16 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
-import {FormsModule, ReactiveFormsModule} from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
-
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { MatFormFieldModule } from "@angular/material/form-field";
+import { MatTableModule } from "@angular/material/table";
+import { MatSortModule } from "@angular/material/sort";
+import { MatPaginatorModule } from "@angular/material/paginator";
+import { MatInputModule } from "@angular/material/input";
+import { MatSidenavModule } from '@angular/material/sidenav';
+ 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { QuestionCreateComponent } from './questions/question-create/question-create.component';
@@ -16,14 +23,9 @@ import { AuthInterceptor } from './auth/auth-interceptor';
 import { ErrorComponent } from './error/error.component';
 import { ErrorInterceptor } from './error-interceptor';
 import { ComingSoonComponent } from './coming-soon/coming-soon.component';
-import { CodeEditorComponent } from './code-editor/code-editor.component';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import {MatFormFieldModule} from "@angular/material/form-field";
-import {MatTableModule} from "@angular/material/table";
-import {MatSortModule} from "@angular/material/sort";
-import {MatPaginatorModule} from "@angular/material/paginator";
-import {MatInputModule} from "@angular/material/input";
-import {CodeEditorModule} from "@ngstack/code-editor";
+import { IDEComponent } from './ide/ide.component';
+import { AdminPageComponent } from './admin-page/admin-page.component';
+import { EditorComponent } from './editor/editor.component';
 import {ForumComponent} from "./forum/forum.component";
 
 
@@ -39,7 +41,9 @@ import {ForumComponent} from "./forum/forum.component";
     LoginComponent,
     ErrorComponent,
     ComingSoonComponent,
-    CodeEditorComponent,
+    IDEComponent,
+    AdminPageComponent,
+    EditorComponent,
     ForumComponent
   ],
   imports: [
@@ -55,7 +59,7 @@ import {ForumComponent} from "./forum/forum.component";
     MatSortModule,
     MatPaginatorModule,
     MatInputModule,
-    CodeEditorModule
+    MatSidenavModule,
   ],
   providers: [
     { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },

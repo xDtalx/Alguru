@@ -6,42 +6,32 @@ import { NgModel } from '@angular/forms';
 import { QuestionsService } from '../questions/questions.service';
 import { Question } from '../questions/question.model';
 import { ActivatedRoute, ParamMap } from '@angular/router';
-import {CodeModel} from "@ngstack/code-editor";
 
 @Component({
-  selector: 'code-editor',
-  templateUrl: './code-editor.component.html',
-  styleUrls: [ './code-editor.component.css' ]
+  selector: 'ide',
+  templateUrl: './ide.component.html',
+  styleUrls: [ './ide.component.css' ]
 })
-export class CodeEditorComponent implements OnInit, OnDestroy {
+export class IDEComponent implements OnInit, OnDestroy {
   private executeListenerSubs: Subscription;
   executeResponse: ExecuteResponse;
   currentOutput: string;
-  userCode: string;
-  testCode : string;
-  lang: string = "java";
-  questionId;
+  solutionCode: string;
+  testsCode: string;
+  lang: string = 'java';
+  questionId: string;
   questionToSolve: Question;
-  theme = 'vs-dark';
-  them2 = 'vs-dark';
-  solutionTemplate : string;
-  solutionCodeModel: CodeModel;
-  testCodeModel : CodeModel;
-  testTemplate : string;
-  options = {
-    contextmenu: false,
-    minimap: {
-      enabled: false,
-    },
-  };
-  options2 = {
-    contextmenu: false,
-    minimap: {
-      enabled: false,
-    },
-  };
+  theme: string = 'dark';
+  solutionTemplate: string;
+  code: string;
+  solValue: string;
+  testsValue: string;
 
-  constructor(private route: ActivatedRoute, private questionsService: QuestionsService, private codeService: CodeService) {}
+  constructor(
+    private route: ActivatedRoute, 
+    private questionsService: QuestionsService, 
+    private codeService: CodeService
+  ) {}
 
   ngOnInit() {
     this.route.paramMap.subscribe((paramMap: ParamMap) => {
@@ -60,26 +50,14 @@ export class CodeEditorComponent implements OnInit, OnDestroy {
             level: questionData.level,
             creator: questionData.creator
           };
-          this.solutionTemplate = this.questionToSolve.solutionTemplate[0];
-          this.solutionCodeModel = {
-            language: 'java',
-            uri: 'main.json',
-            value: this.solutionTemplate,
-          };
-
-          this.testTemplate =  this.questionToSolve.tests ? this.questionToSolve.tests[0] : null;
-          this.testCodeModel = {
-            language: 'java',
-            uri: 'main.json',
-            value: this.testTemplate,
-          };
+          this.solValue = this.questionToSolve.solutionTemplate[0];
+          this.testsValue = this.questionToSolve.tests[0];
         });
       }
      });
 
     this.executeResponse = { message: "", output: "", errors: "" };
     this.currentOutput = "";
-
     this.executeListenerSubs =
     this.codeService
     .getExecuteResponseListener()
@@ -92,12 +70,20 @@ export class CodeEditorComponent implements OnInit, OnDestroy {
     });
   }
 
+  onValueChanged1(value) {
+    console.log('editor1', value);
+  }
+
+  onValueChanged2(value) {
+    console.log('editor2', value);
+  }
+
   ngOnDestroy() {
     this.executeListenerSubs.unsubscribe();
   }
 
-  onRunCode(code: string, tests: string) {
-    this.codeService.runCode(this.lang, code, tests);
+  onRunCode() {
+    this.codeService.runCode(this.lang, this.solutionCode, this.testsCode);
   }
 
   onCustomClick() {
@@ -108,12 +94,11 @@ export class CodeEditorComponent implements OnInit, OnDestroy {
     this.currentOutput = "Output> " + (this.executeResponse.errors === '' ? this.executeResponse.output : this.executeResponse.errors);
   }
 
-  onCodeChanged(value , type: string) {
-    if(type === 'solution') {
-      this.userCode = value;
-    }
-    else{
-      this.testCode = value;
-    }
+  onSolutionCodeChanged(value: string) {
+    this.solutionCode = value;
+  }
+
+  onTestsCodeChanged(value: string) {
+    this.testsCode = value;
   }
 }

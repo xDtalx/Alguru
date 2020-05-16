@@ -4,14 +4,9 @@
         <div class="head top">
           <span class="title">Your Solution:</span>
           <span class="spacer"></span>
-          <a (click)="onRunCode(userCode, testCode)" class="run-code btn">Run Code</a>
+          <a (click)="onRunCode()" class="run-code btn">Run Code</a>
         </div>
-        <ngs-code-editor *ngIf="solutionTemplate"
-          [theme]="theme"
-          [codeModel]="solutionCodeModel"
-          [options]="options"
-          (valueChanged)="onCodeChanged($event, 'solution')">
-        </ngs-code-editor>
+      <editor [value]="solValue" [theme]="theme" (valueChanged)="onValueChanged1($event)"></editor>
       </div>
       <div class="container">
         <div class="head">
@@ -36,13 +31,7 @@
         <span class="title">Tests:</span>
         <span class="spacer"></span>
       </div>
-<!--      <textarea class="editor" NgModel #tests>{{ questionToSolve?.tests }}</textarea>-->
-      <ngs-code-editor *ngIf="testCodeModel"
-        [theme]="them2"
-        [codeModel]="testCodeModel"
-        [options]="options2"
-        (valueChanged)="onCodeChanged($event, 'test')">
-      </ngs-code-editor>
+      <editor [value]="testsValue" [theme]="theme" (valueChanged)="onValueChanged2($event)"></editor>
     </div>
     <div class="container">
       <div class="head">
