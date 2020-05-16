@@ -39,7 +39,6 @@ export class ForumComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   ngAfterViewInit(){
-    this.elementRef.nativeElement.ownerDocument.body.style.backgroundColor = 'grey';
   }
 
   ngOnDestroy() {
