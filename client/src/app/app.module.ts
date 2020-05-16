@@ -25,7 +25,7 @@ import { ErrorInterceptor } from './error-interceptor';
 import { ComingSoonComponent } from './coming-soon/coming-soon.component';
 import { IDEComponent } from './ide/ide.component';
 import { AdminPageComponent } from './admin-page/admin-page.component';
-import { CodeEditorComponent } from './code-editor/code-editor.component';
+import { EditorComponent } from './editor/editor.component';
 
 
 @NgModule({
@@ -41,7 +41,7 @@ import { CodeEditorComponent } from './code-editor/code-editor.component';
     ComingSoonComponent,
     IDEComponent,
     AdminPageComponent,
-    CodeEditorComponent
+    EditorComponent
   ],
   imports: [
     BrowserModule,

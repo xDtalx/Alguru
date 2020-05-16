@@ -6,7 +6,7 @@
           <span class="spacer"></span>
           <a (click)="onRunCode()" class="run-code btn">Run Code</a>
         </div>
-       <textarea class="editor" NgModel #codeEditor>{{ questionToSolve?.solutionTemplate }}</textarea>
+      <editor [value]="solValue" [theme]="theme" (valueChanged)="onValueChanged1($event)"></editor>
       </div>
       <div class="container">
         <div class="head">
@@ -31,7 +31,7 @@
         <span class="title">Tests:</span>
         <span class="spacer"></span>
       </div>
-      <textarea class="editor" NgModel #tests>{{ questionToSolve?.tests }}</textarea>
+      <editor [value]="testsValue" [theme]="theme" (valueChanged)="onValueChanged2($event)"></editor>
     </div>
     <div class="container">
       <div class="head">

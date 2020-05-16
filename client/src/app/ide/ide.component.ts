@@ -21,8 +21,11 @@ export class IDEComponent implements OnInit, OnDestroy {
   lang: string = 'java';
   questionId: string;
   questionToSolve: Question;
-  theme: string = 'vs-dark';
+  theme: string = 'dark';
   solutionTemplate: string;
+  code: string;
+  solValue: string;
+  testsValue: string;
 
   constructor(
     private route: ActivatedRoute, 
@@ -47,7 +50,8 @@ export class IDEComponent implements OnInit, OnDestroy {
             level: questionData.level,
             creator: questionData.creator
           };
-          this.solutionTemplate = this.questionToSolve.solutionTemplate[0];
+          this.solValue = this.questionToSolve.solutionTemplate[0];
+          this.testsValue = this.questionToSolve.tests[0];
         });
       }
      });
@@ -64,6 +68,14 @@ export class IDEComponent implements OnInit, OnDestroy {
         this.currentOutput = "Custom> " + this.executeResponse.message;
       }
     });
+  }
+
+  onValueChanged1(value) {
+    console.log('editor1', value);
+  }
+
+  onValueChanged2(value) {
+    console.log('editor2', value);
   }
 
   ngOnDestroy() {

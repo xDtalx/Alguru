@@ -1,0 +1,33 @@
+.editor {
+    height: 100%;
+    width: 100%;
+    min-height: 50vh;
+    resize: none;
+    background-color: rgb(255, 255, 255);
+    border: none;
+    color: rgba(0, 0, 0, 0.959);
+    counter-reset: line;
+    padding: 0 0.8rem;
+}
+
+.editor:focus {
+    outline: none;
+    white-space: pre-wrap;
+}
+
+.numbers-container {
+    background-color: rgb(255, 255, 255);
+    color: rgba(0, 0, 0, 0.959);
+}
+
+.editor-container {
+    background-color: rgb(255, 255, 255);
+    display: flex;
+    flex-direction: row;
+    padding: 0.5rem 0;
+}
+
+.line-number {
+    border-right: 1px solid rgba(0,0,0,0.3);
+    padding: 0 0.8rem;
+}

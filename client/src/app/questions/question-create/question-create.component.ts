@@ -17,6 +17,7 @@ export class QuestionCreateComponent implements OnInit {
   private level: number;
   private mode ='create';
   private questionId: string;
+  public solTemplate: string;
 
   constructor(private questionService: QuestionsService, private route: ActivatedRoute) {}
 
@@ -68,6 +69,10 @@ export class QuestionCreateComponent implements OnInit {
     } else {
       this.questionService.updateQuestion(this.questionId, question);
     }
+  }
+
+  onSolTemplateValueChanged(value) {
+    this.solTemplate = value;
   }
 
   setLevel(level: number) {

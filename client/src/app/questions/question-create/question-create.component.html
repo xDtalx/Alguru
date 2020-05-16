@@ -22,9 +22,11 @@
   name="solutionTemplate"
   cols="100"
   rows="10"
-  [ngModel]="question?.solutionTemplate[0]"
+  [ngModel]="solTemplate"
   required
   minlength="3"></textarea>
+
+  <editor theme="dark" [value]="question?.solutionTemplate[0]" (valueChanged)="onSolTemplateValueChanged($event)"></editor>
 
   <textarea
   placeholder="Solution"
