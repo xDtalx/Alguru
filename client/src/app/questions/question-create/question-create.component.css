@@ -53,11 +53,11 @@ label {
   cursor: auto;
 }
 
-div.editor {
+app-question-create div.editor {
   border-bottom: 2px solid rgb(159, 196, 243);
 }
 
-div.editor:focus {
+app-question-create div.editor:focus {
   border-bottom: 2px solid rgb(159, 196, 243);
   animation: fadein 0.5s forwards;
 }
