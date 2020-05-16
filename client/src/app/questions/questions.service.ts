@@ -8,7 +8,6 @@ import { environment } from 'src/environments/environment'
 
 const BACKEND_URL = environment.apiUrl + '/questions';
 
-// Uses Injection design pattern
 @Injectable({ providedIn: 'root'})
 export class QuestionsService {
   private questions: Question[] = [];

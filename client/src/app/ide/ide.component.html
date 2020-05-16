@@ -1,26 +1,34 @@
 <div id="ide">
   <div id="first-col">
-      <div class="container" id="solution">
+      <div class="container editable-editor" id="solution-container">
         <div class="head top">
           <span class="title">Your Solution:</span>
           <span class="spacer"></span>
-          <a (click)="onRunCode()" class="run-code btn">Run Code</a>
+          <button *ngIf="!loading" (click)="onRunCode()" class="run-code btn">Run Code</button>
+          <div *ngIf="loading" class="loading-btn"><div class="loader"></div></div>
         </div>
       <editor 
-      highlights=true 
-      lineNumbering=true 
+      class="editable-editor"
+      highlights="true" 
+      lineNumbering="true"
       [value]="solValue" 
       [theme]="theme" 
-      (valueChanged)="onValueChanged1($event)"></editor>
+      (valueChanged)="onSolutionChanged($event)"></editor>
       </div>
-      <div class="container">
+      <div class="container static-size" id="output-container">
         <div class="head">
           <span class="title">Output:</span>
           <span class="spacer"></span>
-          <a (click)="onCustomClick()" class="btn">Custom</a>
-          <a  (click)="onRawOutputClick()" class="btn">Raw Output</a>
+          <button (click)="onCustomClick()" class="btn">Custom</button>
+          <button  (click)="onRawOutputClick()" class="btn">Raw Output</button>
         </div>
-        <textarea class="editor" readonly [(ngModel)]="currentOutput"></textarea>
+        <editor 
+        highlights="false"
+        deletePrevValueOnChange="true"
+        initialValue="Custom>"
+        editable="false"
+        [value]="currentOutput" 
+        [theme]="theme"></editor>
       </div>
   </div>
   <div id="second-col">
@@ -29,26 +37,37 @@
         <span class="title">Question:</span>
         <span class="spacer"></span>
       </div>
-      <textarea class="editor" readonly>{{ questionToSolve?.content }}</textarea>
+      <editor 
+      highlights="false" 
+      deletePrevValueOnChange="true"
+      editable="false"
+      [value]="questionToSolve?.content" 
+      [theme]="theme"></editor>
     </div>
-    <div class="container">
+    <div class="container editable-editor" id="tests-container">
       <div class="head">
         <span class="title">Tests:</span>
         <span class="spacer"></span>
       </div>
       <editor 
-      highlights=true 
-      lineNumbering=true 
+      class="editable-editor"
+      highlights="true"
+      lineNumbering="true" 
       [value]="testsValue" 
       [theme]="theme" 
-      (valueChanged)="onValueChanged2($event)"></editor>
+      (valueChanged)="onTestsChanged($event)"></editor>
     </div>
     <div class="container">
       <div class="head">
         <span class="title">Hints:</span>
         <span class="spacer"></span>
       </div>
-      <textarea class="editor" readonly>{{ questionToSolve?.hints }}</textarea>
+      <editor 
+      highlights="false" 
+      deletePrevValueOnChange="true"
+      editable="false"
+      [value]="questionToSolve?.hints" 
+      [theme]="theme"></editor>
     </div>
   </div>
 </div>

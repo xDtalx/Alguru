@@ -1,0 +1,49 @@
+.editor {
+    padding: 0.5rem 0.8rem;
+    height: fit-content;
+    width: 100%;
+    background-color: var(--editor-background);
+    border: none;
+    color: var(--text-color);
+    counter-reset: line;
+}
+
+.editor:focus {
+    outline: none;
+    white-space: pre-wrap;
+}
+
+.numbers-container {
+    padding: 0.5rem 0;
+    height: fit-content;
+    background-color: var(--editor-background);
+    color: var(--text-color);
+}
+
+.editor-container {
+    background-color: var(--editor-background);
+    display: flex;
+    flex-direction: row;
+    flex: auto;
+    width: 100%;
+    height: 100%;
+    cursor: text;
+}
+
+.line-number {
+    border-right: var(--editor-border);
+    padding: 0 0.8rem;
+    cursor: context-menu;
+    user-select: none;
+    -webkit-user-select: none;
+}
+
+.uneditable {
+    -webkit-user-select: none;
+    user-select: none;
+    cursor: context-menu;
+}
+
+.tab {
+    white-space: pre;
+}

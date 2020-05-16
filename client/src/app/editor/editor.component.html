@@ -1,13 +1,13 @@
 <div class="editor-container">
-    <div *ngIf="lineNumbering" class="numbers-container">
+    <div *ngIf="lineNumbering === 'true'" class="numbers-container">
         <div *ngFor="let number of linesNumbers" class="line-number">{{number}}</div>
     </div>
-    <div 
+    <span 
     (input)="onInput($event)" 
     (keydown)="onKeyDown($event)" 
     (keyup)="onKeyUp($event)" 
     contenteditable="true" 
     class="editor" 
     #editor>
-    </div>
+    </span>
 </div>

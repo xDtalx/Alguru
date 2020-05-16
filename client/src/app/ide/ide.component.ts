@@ -1,11 +1,12 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewEncapsulation, Renderer2 } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { CodeService } from './code.service';
 import { ExecuteResponse } from './execute-response.model';
-import { NgModel } from '@angular/forms';
 import { QuestionsService } from '../questions/questions.service';
 import { Question } from '../questions/question.model';
 import { ActivatedRoute, ParamMap } from '@angular/router';
+import * as $ from 'jquery';
+
 
 @Component({
   selector: 'ide',
@@ -14,26 +15,31 @@ import { ActivatedRoute, ParamMap } from '@angular/router';
 })
 export class IDEComponent implements OnInit, OnDestroy {
   private executeListenerSubs: Subscription;
-  executeResponse: ExecuteResponse;
-  currentOutput: string;
-  solutionCode: string;
-  testsCode: string;
-  lang: string = 'java';
-  questionId: string;
-  questionToSolve: Question;
-  theme: string = 'dark';
-  solutionTemplate: string;
-  code: string;
-  solValue: string;
-  testsValue: string;
+  private prevHeight: number = 0;
+  public executeResponse: ExecuteResponse;
+  public currentOutput: string;
+  public solutionCode: string;
+  public testsCode: string;
+  public lang: string = 'java';
+  public questionId: string;
+  public questionToSolve: Question;
+  public theme: string = 'dark';
+  public solutionTemplate: string;
+  public code: string;
+  public solValue: string;
+  public testsValue: string;
+  public loading: boolean = false;
 
   constructor(
     private route: ActivatedRoute, 
     private questionsService: QuestionsService, 
-    private codeService: CodeService
-  ) {}
+    private codeService: CodeService,
+    private renderer: Renderer2
+  ) {
+    $(document).ready(this.onPageLoaded.bind(this));
+  }
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.route.paramMap.subscribe((paramMap: ParamMap) => {
       if(paramMap.has('questionId')) {
         this.questionId = paramMap.get('questionId');
@@ -59,46 +65,129 @@ export class IDEComponent implements OnInit, OnDestroy {
     this.executeResponse = { message: "", output: "", errors: "" };
     this.currentOutput = "";
     this.executeListenerSubs =
-    this.codeService
-    .getExecuteResponseListener()
-    .subscribe(response => {
-      this.executeResponse = response;
+      this.codeService.getExecuteResponseListener().subscribe(response => {
+        this.executeResponse = response;
+        this.loading = false;
 
-      if(this.executeResponse !== null) {
-        this.currentOutput = "Custom> " + this.executeResponse.message;
-      }
+        if(this.executeResponse !== null) {
+          this.currentOutput = "Custom> " + this.executeResponse.message;
+        }
+      });
+  }
+
+  onPageLoaded(): void {
+    $('.container').each((index, container) => {
+      const style = getComputedStyle(container);
+      this.makeContainerWithFixHeight(container, style);
+      $(window).resize(() => this.refreshContainerSize(container, style));
     });
   }
 
-  onValueChanged1(value) {
-    console.log('editor1', value);
+  makeContainerWithFixHeight(container, style): void {
+    setTimeout(() => {
+      if(!$(container).hasClass('static-size')) {
+        this.renderer.setStyle(container, 'max-height', style.height);
+      }
+    }, 500);
   }
 
-  onValueChanged2(value) {
-    console.log('editor2', value);
+  calcVH(v): number {
+    var h = Math.max(document.documentElement.clientHeight, window.innerHeight || 0);
+    return (v * h) / 100;
+  }
+  
+  calcVW(v): number {
+    var w = Math.max(document.documentElement.clientWidth, window.innerWidth || 0);
+    return (v * w) / 100;
+  }
+  
+  refreshContainerSize(container, style): void {
+    if(!$(container).hasClass('static-size')) {
+      this.renderer.setStyle(container, 'max-height', '100%');
+      
+      if($(container).is('#solution-container')) {
+        this.setContainerStartingHeight(container, 50);
+      } else if($(container).is('#tests-container')) {
+        this.setContainerStartingHeight(container, 30);
+      }
+
+      setTimeout(() => {
+        this.renderer.setStyle(container, 'max-height', style.height);
+      }, 500);
+    }
   }
 
-  ngOnDestroy() {
-    this.executeListenerSubs.unsubscribe();
+  setContainerStartingHeight(container, vh): void {
+    const fitContentHeight = this.calcSolutionContainerHeight(container);
+    const startingHeight = this.calcVH(vh);
+    const currentHeight = this.calcVH(100);
+    let newMinHeight;
+
+    if(currentHeight > this.prevHeight) {
+      newMinHeight = Math.max(startingHeight, fitContentHeight);
+    } else {
+      newMinHeight = startingHeight < fitContentHeight ? fitContentHeight : Math.max(startingHeight, fitContentHeight);
+    }
+
+    this.renderer.setStyle(container, 'min-height', `${newMinHeight}px`);
+    this.prevHeight = currentHeight;
   }
 
-  onRunCode() {
-    this.codeService.runCode(this.lang, this.solutionCode, this.testsCode);
+  calcSolutionContainerHeight(element): number {
+    let height = 0;
+
+    height += $(element).find('.head').outerHeight();
+    height += $(element).find('.editor').outerHeight();
+
+    return height;
   }
 
-  onCustomClick() {
-    this.currentOutput = "Custom> " + this.executeResponse.message;
+  refreshAllContainersSize(): void {
+    $('.container').each((index, container) => {
+      const style = getComputedStyle(container);
+      this.refreshContainerSize(container, style);
+    });
   }
 
-  onRawOutputClick() {
-    this.currentOutput = "Output> " + (this.executeResponse.errors === '' ? this.executeResponse.output : this.executeResponse.errors);
-  }
-
-  onSolutionCodeChanged(value: string) {
+  onSolutionChanged(value): void {
     this.solutionCode = value;
   }
 
-  onTestsCodeChanged(value: string) {
+  onTestsChanged(value): void {
+    this.testsCode = value;
+  }
+
+  ngOnDestroy(): void {
+    this.executeListenerSubs.unsubscribe();
+  }
+
+  onRunCode(): void {
+    this.loading = true;
+
+    if(!this.testsCode || this.testsCode.trim() === '') {
+      this.testsCode = this.questionToSolve.tests[0];
+    }
+
+    if(!this.solutionCode || this.solutionCode.trim() === '') {
+      this.solutionCode = this.questionToSolve.solutionTemplate[0];
+    }
+
+    this.codeService.runCode(this.lang, this.solutionCode, this.testsCode);
+  }
+
+  onCustomClick(): void {
+    this.currentOutput = "Custom> " + this.executeResponse.message;
+  }
+
+  onRawOutputClick(): void {
+    this.currentOutput = "Output> " + (this.executeResponse.errors === '' ? this.executeResponse.output : this.executeResponse.errors);
+  }
+
+  onSolutionCodeChanged(value: string): void {
+    this.solutionCode = value;
+  }
+
+  onTestsCodeChanged(value: string): void {
     this.testsCode = value;
   }
 }

@@ -6,7 +6,6 @@ import { LoginAuthData } from './login-auth-data.model';
 import { Subject } from 'rxjs';
 import { Router } from '@angular/router';
 import { environment } from 'src/environments/environment';
-import { ThrowStmt } from '@angular/compiler';
 
 const BACKEND_URL = environment.apiUrl + '/users';
 

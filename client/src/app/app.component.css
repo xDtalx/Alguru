@@ -1,9 +1,9 @@
 main {
+  display: var(--main-display);
   position: relative;
-  width: 80vw;
+  width: var(--main-width);
   margin: auto;
-}
+  max-width: 100%;
+  height: 100%;
 
-header {
-  margin-bottom: 5vh;
 }
