@@ -6,6 +6,7 @@ import { LoginAuthData } from './login-auth-data.model';
 import { Subject } from 'rxjs';
 import { Router } from '@angular/router';
 import { environment } from 'src/environments/environment';
+import { ThrowStmt } from '@angular/compiler';
 
 const BACKEND_URL = environment.apiUrl + '/users';
 
@@ -20,12 +21,17 @@ export class AuthService {
   private token: string;
   private tokenTimer: any;
   private userId: string;
+  private username: string;
   private errors: string[] = [];
 
   constructor(private http: HttpClient, private router: Router) {}
 
   getToken() {
     return this.token;
+  }
+
+  getUsername() {
+    return this.username;
   }
 
   getAdminListener() {
@@ -111,7 +117,7 @@ export class AuthService {
 
     console.log(authData);
 
-    this.http.post<{ token: string, expiresIn: number, userId: string, isAdmin: boolean }>(BACKEND_URL + '/login', authData)
+    this.http.post<{ token: string, expiresIn: number, userId: string, username: string, isAdmin: boolean }>(BACKEND_URL + '/login', authData)
       .subscribe(response => {
         console.log(response);
         this.token = response.token;
@@ -120,12 +126,13 @@ export class AuthService {
           this.userId = response.userId;
           this.setAuthTimer(response.expiresIn);
           this.isAuth = true;
+          this.username = response.username;
           this.isAdmin = response.isAdmin;
           this.authStatusListener.next(true);
           this.adminListener.next(this.isAdmin);
           const now = new Date();
           const expirationDate = new Date(now.getTime() + response.expiresIn * 1000);
-          this.saveAuthData(this.token, expirationDate, this.userId, String(this.isAdmin));
+          this.saveAuthData(this.token, expirationDate, this.userId, this.username, String(this.isAdmin));
           this.router.navigate(['/']);
         }
       }, error => {
@@ -153,6 +160,7 @@ export class AuthService {
       this.isAuth = true;
       this.isAdmin = authInfo.isAdmin === "true";
       this.userId = authInfo.userId;
+      this.username = authInfo.username;
       this.setAuthTimer(expiresIn / 1000);
       this.authStatusListener.next(true);
       this.adminListener.next(this.isAdmin);
@@ -164,6 +172,7 @@ export class AuthService {
     this.token = null;
     this.isAuth = false;
     this.isAdmin = false;
+    this.username = null;
     this.authStatusListener.next(false);
     this.adminListener.next(false);
     this.router.navigate(['/']);
@@ -172,10 +181,11 @@ export class AuthService {
     clearTimeout(this.tokenTimer);
   }
 
-  private saveAuthData(token: string, expirationDate: Date, userId: string, isAdmin: string) {
+  private saveAuthData(token: string, expirationDate: Date, userId: string, username: string, isAdmin: string) {
     localStorage.setItem('token', token);
     localStorage.setItem('expiration', expirationDate.toISOString());
     localStorage.setItem('userId', userId);
+    localStorage.setItem('username', username);
     localStorage.setItem('isAdmin', isAdmin);
   }
 
@@ -183,6 +193,7 @@ export class AuthService {
     localStorage.removeItem('token');
     localStorage.removeItem('expiration');
     localStorage.removeItem('userId');
+    localStorage.removeItem('username');
     localStorage.removeItem('isAdmin');
   }
 
@@ -191,6 +202,7 @@ export class AuthService {
     const expirationDate = localStorage.getItem('expiration');
     const userId = localStorage.getItem('userId');
     const isAdmin = localStorage.getItem('isAdmin');
+    const username = localStorage.getItem('username');
 
     if(!(token && expirationDate)) {
       return;
@@ -200,7 +212,8 @@ export class AuthService {
       token: token,
       expirationDate: new Date(expirationDate),
       userId: userId,
-      isAdmin: isAdmin
+      isAdmin: isAdmin,
+      username: username
     }
   }
 
