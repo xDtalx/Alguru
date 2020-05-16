@@ -24,6 +24,7 @@ import {MatSortModule} from "@angular/material/sort";
 import {MatPaginatorModule} from "@angular/material/paginator";
 import {MatInputModule} from "@angular/material/input";
 import {CodeEditorModule} from "@ngstack/code-editor";
+import {ForumComponent} from "./forum/forum.component";
 
 
 
@@ -38,7 +39,8 @@ import {CodeEditorModule} from "@ngstack/code-editor";
     LoginComponent,
     ErrorComponent,
     ComingSoonComponent,
-    CodeEditorComponent
+    CodeEditorComponent,
+    ForumComponent
   ],
   imports: [
     BrowserModule,

@@ -18,14 +18,30 @@ export class CodeEditorComponent implements OnInit, OnDestroy {
   executeResponse: ExecuteResponse;
   currentOutput: string;
   userCode: string;
+  testCode : string;
   lang: string = "java";
   questionId;
   questionToSolve: Question;
+  theme = 'vs-dark';
+  them2 = 'vs-dark';
+  solutionTemplate : string;
+  solutionCodeModel: CodeModel;
+  testCodeModel : CodeModel;
+  testTemplate : string;
+  options = {
+    contextmenu: false,
+    minimap: {
+      enabled: false,
+    },
+  };
+  options2 = {
+    contextmenu: false,
+    minimap: {
+      enabled: false,
+    },
+  };
 
-  constructor(private route: ActivatedRoute, private questionsService: QuestionsService, private codeService: CodeService) {
-
-
-  }
+  constructor(private route: ActivatedRoute, private questionsService: QuestionsService, private codeService: CodeService) {}
 
   ngOnInit() {
     this.route.paramMap.subscribe((paramMap: ParamMap) => {
@@ -45,10 +61,17 @@ export class CodeEditorComponent implements OnInit, OnDestroy {
             creator: questionData.creator
           };
           this.solutionTemplate = this.questionToSolve.solutionTemplate[0];
-          this.codeModel = {
+          this.solutionCodeModel = {
             language: 'java',
             uri: 'main.json',
             value: this.solutionTemplate,
+          };
+
+          this.testTemplate =  this.questionToSolve.tests ? this.questionToSolve.tests[0] : null;
+          this.testCodeModel = {
+            language: 'java',
+            uri: 'main.json',
+            value: this.testTemplate,
           };
         });
       }
@@ -81,23 +104,16 @@ export class CodeEditorComponent implements OnInit, OnDestroy {
     this.currentOutput = "Custom> " + this.executeResponse.message;
   }
 
-  onRawOuputClick() {
+  onRawOutputClick() {
     this.currentOutput = "Output> " + (this.executeResponse.errors === '' ? this.executeResponse.output : this.executeResponse.errors);
   }
 
-  theme = 'vs-dark';
-  solutionTemplate : string;
-  codeModel: CodeModel;
-
-  options = {
-    contextmenu: true,
-    minimap: {
-      enabled: false,
-    },
-  };
-
-  onCodeChanged(value) {
-    this.userCode = value;
-    console.log('CODE', value);
+  onCodeChanged(value , type: string) {
+    if(type === 'solution') {
+      this.userCode = value;
+    }
+    else{
+      this.testCode = value;
+    }
   }
 }

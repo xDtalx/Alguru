@@ -4,14 +4,13 @@
         <div class="head top">
           <span class="title">Your Solution:</span>
           <span class="spacer"></span>
-          <a (click)="onRunCode(userCode, tests.value)" class="run-code btn">Run Code</a>
+          <a (click)="onRunCode(userCode, testCode)" class="run-code btn">Run Code</a>
         </div>
-<!--        <textarea class="editor" NgModel #codeEditor>{{ questionToSolve?.solutionTemplate }}</textarea>-->
-        <ngs-code-editor
+        <ngs-code-editor *ngIf="solutionTemplate"
           [theme]="theme"
-          [codeModel]="codeModel"
+          [codeModel]="solutionCodeModel"
           [options]="options"
-          (valueChanged)="onCodeChanged($event)">
+          (valueChanged)="onCodeChanged($event, 'solution')">
         </ngs-code-editor>
       </div>
       <div class="container">
@@ -19,7 +18,7 @@
           <span class="title">Output:</span>
           <span class="spacer"></span>
           <a (click)="onCustomClick()" class="btn">Custom</a>
-          <a  (click)="onRawOuputClick()" class="btn">Raw Output</a>
+          <a  (click)="onRawOutputClick()" class="btn">Raw Output</a>
         </div>
         <textarea class="editor" readonly [(ngModel)]="currentOutput"></textarea>
       </div>
@@ -37,7 +36,13 @@
         <span class="title">Tests:</span>
         <span class="spacer"></span>
       </div>
-      <textarea class="editor" NgModel #tests>{{ questionToSolve?.tests }}</textarea>
+<!--      <textarea class="editor" NgModel #tests>{{ questionToSolve?.tests }}</textarea>-->
+      <ngs-code-editor *ngIf="testCodeModel"
+        [theme]="them2"
+        [codeModel]="testCodeModel"
+        [options]="options2"
+        (valueChanged)="onCodeChanged($event, 'test')">
+      </ngs-code-editor>
     </div>
     <div class="container">
       <div class="head">
