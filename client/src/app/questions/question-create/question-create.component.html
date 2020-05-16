@@ -9,7 +9,7 @@
   minlength="3"/> -->
   <label for="title">
     <span class="title">Title</span>
-    <editor [value]="question?.title" (valueChanged)="onTitleValueChanged($event)"></editor>
+    <editor [value]="retrievedQuestionData?.title" (valueChanged)="onTitleValueChanged($event)"></editor>
   </label>
   <!-- <textarea
   placeholder="Question"
@@ -21,7 +21,7 @@
   minlength="3"></textarea> -->
   <label for="title">
     <span class="title">Content</span>
-    <editor [value]="question?.content" (valueChanged)="onContentValueChanged($event)"></editor>
+    <editor [value]="retrievedQuestionData?.content" (valueChanged)="onContentValueChanged($event)"></editor>
   </label>
   <!-- <textarea
   placeholder="Solution Template"
@@ -34,7 +34,7 @@
 
   <label for="title">
     <span class="title">Solution Template</span>
-    <editor [value]="question?.solutionTemplate[0]" (valueChanged)="onSolTemplateValueChanged($event)"></editor>
+    <editor [value]="retrievedQuestionData?.solutionTemplate[0]" (valueChanged)="onSolTemplateValueChanged($event)"></editor>
   </label>
   <!-- <textarea
   placeholder="Solution"
@@ -46,7 +46,7 @@
   minlength="3"></textarea> -->
   <label for="title">
     <span class="title">Solution</span>
-    <editor [value]="question?.solution[0]" (valueChanged)="onSolValueChanged($event)"></editor>
+    <editor [value]="retrievedQuestionData?.solution[0]" (valueChanged)="onSolValueChanged($event)"></editor>
   </label>
   <!-- <textarea
   placeholder="Tests"
@@ -58,7 +58,7 @@
   minlength="3"></textarea> -->
   <label for="title">
     <span class="title">Tests</span>
-    <editor [value]="question?.tests[0]" (valueChanged)="onTestsValueChanged($event)"></editor>
+    <editor [value]="retrievedQuestionData?.tests[0]" (valueChanged)="onTestsValueChanged($event)"></editor>
   </label>
   <!-- <textarea
   placeholder="Hints"
@@ -70,7 +70,7 @@
   minlength="3"></textarea> -->
   <label for="title">
     <span class="title">Hints</span>
-    <editor [value]="question?.hints" (valueChanged)="onHintsValueChanged($event)"></editor>
+    <editor [value]="retrievedQuestionData?.hints" (valueChanged)="onHintsValueChanged($event)"></editor>
   </label>
 
   <div class="level">

@@ -115,11 +115,8 @@ export class AuthService {
       password: password
     }
 
-    console.log(authData);
-
     this.http.post<{ token: string, expiresIn: number, userId: string, username: string, isAdmin: boolean }>(BACKEND_URL + '/login', authData)
       .subscribe(response => {
-        console.log(response);
         this.token = response.token;
 
         if(this.token) {

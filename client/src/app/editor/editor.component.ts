@@ -249,7 +249,7 @@ export class EditorComponent implements OnInit, OnChanges, AfterViewInit {
         }
 
         const hightlightCode = this.highlights && (/[a-zA-Z0-9-_@#$%^&*=()!~`:;"',\./?<>}{} ]/.test(input) || isBackspace || isEnter)
-        console.log(this.highlights)
+        
         if (event.keyCode === 9 && event.shiftKey) {
             this.handleDeleteTab(event);
         } else if(event.keyCode === 9) {

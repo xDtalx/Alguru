@@ -21,7 +21,7 @@ router.post('', checkAuth, validations, QuestionsController.createQuestion);
 router.delete("/:id", checkAuth, QuestionsController.deleteQuestion);
 
 // admin path
-router.put('', checkAuth, validations, QuestionsController.updateQuestion);
+router.put('/:id', checkAuth, validations, QuestionsController.updateQuestion);
 
 router.get('', QuestionsController.getQuestions);
 
