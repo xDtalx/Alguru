@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewEncapsulation } from '@angular/core';
 import { NgForm } from '@angular/forms';
 import { QuestionsService } from '../questions.service';
 import { Question } from '../question.model';
@@ -8,7 +8,8 @@ import { QuestionListComponent } from '../question-list/question-list.component'
 @Component({
   selector: 'app-question-create',
   templateUrl: './question-create.component.html',
-  styleUrls: [ './question-create.component.css' ]
+  styleUrls: [ './question-create.component.css' ],
+  encapsulation: ViewEncapsulation.None
 })
 export class QuestionCreateComponent implements OnInit {
 

@@ -1,5 +1,5 @@
 <div class="editor-container">
-    <div class="numbers-container">
+    <div *ngIf="lineNumbering" class="numbers-container">
         <div *ngFor="let number of linesNumbers" class="line-number">{{number}}</div>
     </div>
     <div 

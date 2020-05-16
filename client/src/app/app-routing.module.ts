@@ -11,7 +11,7 @@ import { ReleaseGuard } from './release.guard';
 import { IDEComponent } from './ide/ide.component';
 import { AdminPageComponent } from './admin-page/admin-page.component';
 import { EditorComponent } from './editor/editor.component';
-import {ForumComponent} from "./forum/forum.component";
+import { ForumComponent } from "./forum/forum.component";
 
 const routes: Routes = [
   { path: '', component: ComingSoonComponent, data: { showSmallHeader: false }},

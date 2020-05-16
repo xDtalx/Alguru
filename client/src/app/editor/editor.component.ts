@@ -7,17 +7,18 @@ import { DomSanitizer } from '@angular/platform-browser';
 })
 export class EditorComponent implements OnInit, OnChanges, AfterViewInit {
 
+    @Input() public highlights: boolean = false;
+    @Input() public lineNumbering: boolean = false;
     @Input() public value: string = '';
     @Input() public theme: string = 'default';
     @Output() public valueChanged = new EventEmitter<string>();
     @ViewChild('editor', {read: ElementRef}) editor: ElementRef;
 
-    public showLinesNumbers: boolean = false;
-    public linesNumbers: number[] = [1];
     private cssUrl: string;
     private currentWordLetters: any[] = [];
     private currentWord: string;
     private hightlightDict = { 'public': 'red' }
+    public linesNumbers: number[] = [1];
 
     constructor(public sanitizer: DomSanitizer, private renderer: Renderer2) {}
 
@@ -127,16 +128,18 @@ export class EditorComponent implements OnInit, OnChanges, AfterViewInit {
     }
 
     refreshLineNumbers(editor) {
-        const lines = editor.querySelectorAll('.view-line').length;
-        const numbers = this.linesNumbers.length;        
+        if(this.lineNumbering) {
+            const lines = editor.querySelectorAll('.view-line').length;
+            const numbers = this.linesNumbers.length;        
 
-        if(lines != numbers) {
-            for(let i = 0; i < lines - numbers; i++) {
-                this.linesNumbers.push(numbers + i + 1);
-            }
+            if(lines != numbers) {
+                for(let i = 0; i < lines - numbers; i++) {
+                    this.linesNumbers.push(numbers + i + 1);
+                }
 
-            for(let i = 0; i < (numbers - lines) && numbers > 1; i++) {
-                this.linesNumbers.pop();
+                for(let i = 0; i < (numbers - lines) && numbers > 1; i++) {
+                    this.linesNumbers.pop();
+                }
             }
         }
     }
@@ -236,24 +239,30 @@ export class EditorComponent implements OnInit, OnChanges, AfterViewInit {
         const isBackspace = event.keyCode === 8;
         const isEnter = event.keyCode === 13;
         let input = ' ';
-
+        
         if(!isBackspace && !isEnter) {
             input = String.fromCharCode(event.keyCode);
-
+            
             if(!event.getModifierState('CapsLock')) {
                 input = input.toLowerCase();
             }
         }
 
+        const hightlightCode = this.highlights && (/[a-zA-Z0-9-_@#$%^&*=()!~`:;"',\./?<>}{} ]/.test(input) || isBackspace || isEnter)
+        console.log(this.highlights)
         if (event.keyCode === 9 && event.shiftKey) {
             this.handleDeleteTab(event);
         } else if(event.keyCode === 9) {
             this.handleInsertTab(event);
         } else if(this.editor.nativeElement.querySelectorAll('.view-line').length === 0) {
             this.initFirstViewLine(event, false);
-            this.currentWordLetters.push(input);
-        } else if(/[a-zA-Z0-9-_@#$%^&*=()!~`:;"',\./?<>}{} ]/.test(input) || event.keyCode === 13 || event.keyCode === 8) {
-            if(event.keyCode === 8) {
+
+            if(hightlightCode) {
+                this.currentWordLetters.push(input);
+            }
+        } else if(hightlightCode) {
+
+            if(isBackspace) {
                 this.currentWordLetters.pop();
             } else if(input === ' ') {
                 this.currentWord = this.currentWordLetters.join("");
@@ -265,7 +274,7 @@ export class EditorComponent implements OnInit, OnChanges, AfterViewInit {
                     const sel = document.getSelection();
                     const editor = this.editor.nativeElement;
                     const range = new Range();
-                    
+
                     this.renderer.appendChild(span, text);
                     this.renderer.setStyle(span, 'color', highlightColor);
                     this.renderer.appendChild(editor, span);
