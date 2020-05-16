@@ -18,6 +18,7 @@ export interface Date{
 export class ForumComponent implements OnInit, OnDestroy, AfterViewInit {
 
   showPost = false;
+  addNewPost = false;
   selectedPost : Tag;
   titleDefaultValue: string;
   messageDefaultValue : string;
@@ -55,8 +56,14 @@ export class ForumComponent implements OnInit, OnDestroy, AfterViewInit {
     }
     else{
       this.tags.push(tagToAdd);
+      this.addNewPost = !this.addNewPost;
     }
     this.titleDefaultValue = '';
     this.messageDefaultValue = '';
+
+  }
+
+  onAddNewPostClick(){
+    this.addNewPost = !this.addNewPost;
   }
 }

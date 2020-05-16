@@ -1,11 +1,7 @@
 <div *ngIf="!showPost">
   <h1> Alguru-Forum</h1>
-  <div class="container"  *ngFor="let post of tags" (click)="onPostClick(post)">
-    <span>{{post.author}} </span>
-    <p>{{post.title}}</p>
-    <div class="time-right">{{post.date.time + ' ' + post.date.date}}</div>
-  </div>
-  <div class="container">
+  <button (click)="onAddNewPostClick()">Add new Post</button>
+  <div class="container" *ngIf="addNewPost">
     <h2> New-Post</h2>
     <div class="form-group green-border-focus">
       <label for="titleTextarea">Title:</label>
@@ -15,10 +11,14 @@
     </div>
     <button (click)="onSubmitMessage(titleTextarea.value, contentTextarea.value, 'Post')">Submit</button>
   </div>
+  <div class="container"  *ngFor="let post of tags" (click)="onPostClick(post)">
+    <span>{{post.author}} </span>
+    <p>{{post.title}}</p>
+    <div class="time-right">{{post.date.time + ' ' + post.date.date}}</div>
+  </div>
 </div>
 <div *ngIf="showPost">
   <h1> Post-Content</h1>
-
   <div class="container" >
     <span>{{selectedPost.author}} </span>
     <h2>{{selectedPost.title}}</h2>
