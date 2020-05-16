@@ -18,6 +18,12 @@ export class QuestionCreateComponent implements OnInit {
   private mode ='create';
   private questionId: string;
   public solTemplate: string;
+  public title: string;
+  public content: string;
+  public solution: string;
+  public tests: string;
+  public hints: string;
+
 
   constructor(private questionService: QuestionsService, private route: ActivatedRoute) {}
 
@@ -47,17 +53,17 @@ export class QuestionCreateComponent implements OnInit {
    });
   }
 
-  onSaveQuestion(form: NgForm) {
+  onSaveQuestion() {
     this.isLoading = true;
 
     const question: Question = {
       id: null,
-      title: form.value.title,
-      content: form.value.content,
-      solutionTemplate: [ form.value.solutionTemplate ],
-      solution: [ form.value.solution ],
-      tests: [ form.value.tests ],
-      hints: form.value.hints,
+      title: this.title,
+      content: this.content,
+      solutionTemplate: [ this.solTemplate ],
+      solution: [ this.solution ],
+      tests: [ this.tests ],
+      hints: this.hints,
       level: this.level,
       creator: null
     }
@@ -73,6 +79,26 @@ export class QuestionCreateComponent implements OnInit {
 
   onSolTemplateValueChanged(value) {
     this.solTemplate = value;
+  }
+
+  onTestsValueChanged(value) {
+    this.tests = value;
+  }
+
+  onSolValueChanged(value) {
+    this.solution = value;
+  }
+
+  onContentValueChanged(value) {
+    this.content = value;
+  }
+
+  onTitleValueChanged(value) {
+    this.title = value;
+  }
+
+  onHintsValueChanged(value) {
+    this.hints = value;
   }
 
   setLevel(level: number) {

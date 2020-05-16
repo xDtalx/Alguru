@@ -1,7 +1,6 @@
 .editor {
     height: 100%;
     width: 100%;
-    min-height: 50vh;
     resize: none;
     background-color: rgb(80, 80, 94);
     border: none;

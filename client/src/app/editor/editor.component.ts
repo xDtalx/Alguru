@@ -15,6 +15,9 @@ export class EditorComponent implements OnInit, OnChanges, AfterViewInit {
     public showLinesNumbers: boolean = false;
     public linesNumbers: number[] = [1];
     private cssUrl: string;
+    private currentWordLetters: any[] = [];
+    private currentWord: string;
+    private hightlightDict = { 'public': 'red' }
 
     constructor(public sanitizer: DomSanitizer, private renderer: Renderer2) {}
 
@@ -43,17 +46,25 @@ export class EditorComponent implements OnInit, OnChanges, AfterViewInit {
     }
 
     loadCSSOnce(cssId){
-        if (!document.getElementById(cssId)){
-           const head  = document.getElementsByTagName('head')[0];
-           const link  = document.createElement('link');
+        const link = document.getElementById(cssId);
 
-           link.id   = cssId;
-           link.rel  = 'stylesheet';
-           link.type = 'text/css';
-           link.href = this.cssUrl;
-           
-           head.appendChild(link);
-       }
+        if (!link || link.getAttribute("href") !== this.cssUrl) {
+
+            if(link) {
+                link.remove();
+            }
+
+            const newLink  = document.createElement('link');
+            const head  = document.getElementsByTagName('head')[0];
+
+            newLink.id   = cssId;
+            newLink.rel  = 'stylesheet';
+            newLink.type = 'text/css';
+            newLink.href = this.cssUrl;
+
+            head.appendChild(newLink);
+
+        }
     }
 
     setValueInEditor(value) {
@@ -222,12 +233,51 @@ export class EditorComponent implements OnInit, OnChanges, AfterViewInit {
     }
 
     onKeyDown(event) {
+        const isBackspace = event.keyCode === 8;
+        const isEnter = event.keyCode === 13;
+        let input = ' ';
+
+        if(!isBackspace && !isEnter) {
+            input = String.fromCharCode(event.keyCode);
+
+            if(!event.getModifierState('CapsLock')) {
+                input = input.toLowerCase();
+            }
+        }
+
         if (event.keyCode === 9 && event.shiftKey) {
             this.handleDeleteTab(event);
         } else if(event.keyCode === 9) {
             this.handleInsertTab(event);
         } else if(this.editor.nativeElement.querySelectorAll('.view-line').length === 0) {
             this.initFirstViewLine(event, false);
+            this.currentWordLetters.push(input);
+        } else if(/[a-zA-Z0-9-_@#$%^&*=()!~`:;"',\./?<>}{} ]/.test(input) || event.keyCode === 13 || event.keyCode === 8) {
+            if(event.keyCode === 8) {
+                this.currentWordLetters.pop();
+            } else if(input === ' ') {
+                this.currentWord = this.currentWordLetters.join("");
+                const highlightColor = this.hightlightDict[this.currentWord];
+
+                if(highlightColor) {
+                    const text = this.renderer.createText(this.currentWord);
+                    const span = this.renderer.createElement('span');
+                    const sel = document.getSelection();
+                    const editor = this.editor.nativeElement;
+                    const range = new Range();
+                    
+                    this.renderer.appendChild(span, text);
+                    this.renderer.setStyle(span, 'color', highlightColor);
+                    this.renderer.appendChild(editor, span);
+                    range.setStartAfter(text);
+                    range.collapse(true);
+                    sel.removeAllRanges();
+                    sel.addRange(range);
+                }
+            } else {
+                this.currentWordLetters.push(input);
+            }
+
         }
     }
 }
