@@ -1,6 +1,7 @@
 import {Component, OnInit, OnDestroy, ElementRef, AfterViewInit} from '@angular/core';
 import {Tag} from "./tag.component";
 import {DatePipe} from "@angular/common";
+import {AuthService} from "../auth/auth.service";
 
 
 export interface Date{
@@ -22,7 +23,7 @@ export class ForumComponent implements OnInit, OnDestroy, AfterViewInit {
   selectedPost : Tag;
   titleDefaultValue: string;
   messageDefaultValue : string;
-  constructor(private elementRef: ElementRef, private datePipe: DatePipe) {}
+  constructor(private elementRef: ElementRef, private datePipe: DatePipe, private authService: AuthService) {}
 
   text = 'asdas \n asdas \nasdas \nasdas \nasdas \n' ;
   tags: Array<Tag> = [{content: this.text, title:'Eli-post', author:'eli', date:{date:'10/1/2020',time:'10:30'},
@@ -47,7 +48,7 @@ export class ForumComponent implements OnInit, OnDestroy, AfterViewInit {
 
   onSubmitMessage(title : string, message: string, type:string) {
     //get author from user name
-    let author = 'dor-tal';
+    let author = this.authService.getUsername();
     let myDate = new Date();
     let date = {date: this.datePipe.transform(myDate, 'dd/MM/yy'), time: myDate.getHours() + ':'+ myDate.getMinutes()};
     let tagToAdd : Tag= {title:title, content: message, author:author, date:date, comments:[]};
