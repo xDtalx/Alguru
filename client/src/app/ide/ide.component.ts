@@ -1,39 +1,68 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewEncapsulation, Renderer2 } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { CodeService } from './code.service';
 import { ExecuteResponse } from './execute-response.model';
-import { NgModel } from '@angular/forms';
 import { QuestionsService } from '../questions/questions.service';
 import { Question } from '../questions/question.model';
 import { ActivatedRoute, ParamMap } from '@angular/router';
+import * as $ from 'jquery';
+
 
 @Component({
   selector: 'ide',
   templateUrl: './ide.component.html',
-  styleUrls: [ './ide.component.css' ]
+  styleUrls: [ './ide.component.css' ],
+  encapsulation: ViewEncapsulation.None
 })
 export class IDEComponent implements OnInit, OnDestroy {
   private executeListenerSubs: Subscription;
-  executeResponse: ExecuteResponse;
-  currentOutput: string;
-  solutionCode: string;
-  testsCode: string;
-  lang: string = 'java';
-  questionId: string;
-  questionToSolve: Question;
-  theme: string = 'dark';
-  solutionTemplate: string;
-  code: string;
-  solValue: string;
-  testsValue: string;
+  private setResizeEvent: boolean = false;
+  public executeResponse: ExecuteResponse;
+  public currentOutput: string;
+  public solutionCode: string;
+  public testsCode: string;
+  public lang: string = 'java';
+  public  questionId: string;
+  public questionToSolve: Question;
+  public theme: string = 'dark';
+  public solutionTemplate: string;
+  public code: string;
+  public solValue: string;
+  public testsValue: string;
 
   constructor(
     private route: ActivatedRoute, 
     private questionsService: QuestionsService, 
-    private codeService: CodeService
-  ) {}
+    private codeService: CodeService,
+    private renderer: Renderer2
+  ) {
+    $(document).ready(() => { 
+      $('.container').each(this.makeContainerWithFixHeight.bind(this));
+    });
+  }
 
-  ngOnInit() {
+  makeContainerWithFixHeight(index, container): void {
+    const style = getComputedStyle(container);
+    
+    if(!this.setResizeEvent) {
+      this.setResizeEvent = true;
+      
+      $(window).resize(() => {
+        this.renderer.setStyle(container, 'max-height', '100%');
+        setTimeout(() => {
+          this.renderer.setStyle(container, 'max-height', style.height);
+        }, 
+        500);
+      });
+    }
+
+    setTimeout(() => {
+      this.renderer.setStyle(container, 'max-height', style.height);
+    }, 
+    500);
+  }
+
+  ngOnInit(): void {
     this.route.paramMap.subscribe((paramMap: ParamMap) => {
       if(paramMap.has('questionId')) {
         this.questionId = paramMap.get('questionId');
@@ -70,35 +99,35 @@ export class IDEComponent implements OnInit, OnDestroy {
     });
   }
 
-  onValueChanged1(value) {
+  onValueChanged1(value): void {
     console.log('editor1', value);
   }
 
-  onValueChanged2(value) {
+  onValueChanged2(value): void {
     console.log('editor2', value);
   }
 
-  ngOnDestroy() {
+  ngOnDestroy(): void {
     this.executeListenerSubs.unsubscribe();
   }
 
-  onRunCode() {
+  onRunCode(): void {
     this.codeService.runCode(this.lang, this.solutionCode, this.testsCode);
   }
 
-  onCustomClick() {
+  onCustomClick(): void {
     this.currentOutput = "Custom> " + this.executeResponse.message;
   }
 
-  onRawOutputClick() {
+  onRawOutputClick(): void {
     this.currentOutput = "Output> " + (this.executeResponse.errors === '' ? this.executeResponse.output : this.executeResponse.errors);
   }
 
-  onSolutionCodeChanged(value: string) {
+  onSolutionCodeChanged(value: string): void {
     this.solutionCode = value;
   }
 
-  onTestsCodeChanged(value: string) {
+  onTestsCodeChanged(value: string): void {
     this.testsCode = value;
   }
 }

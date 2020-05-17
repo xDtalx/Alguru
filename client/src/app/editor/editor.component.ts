@@ -7,10 +7,13 @@ import { DomSanitizer } from '@angular/platform-browser';
 })
 export class EditorComponent implements OnInit, OnChanges, AfterViewInit {
 
-    @Input() public highlights: boolean = false;
-    @Input() public lineNumbering: boolean = false;
+    @Input() public highlights: string = 'false';
+    @Input() public editable: string = 'true';
+    @Input() public lineNumbering: string = 'false';
+    @Input() public deletePrevValueOnChange: string = 'false';
     @Input() public value: string = '';
     @Input() public theme: string = 'default';
+    @Input() public initialValue: string = '';
     @Output() public valueChanged = new EventEmitter<string>();
     @ViewChild('editor', {read: ElementRef}) editor: ElementRef;
 
@@ -35,7 +38,12 @@ export class EditorComponent implements OnInit, OnChanges, AfterViewInit {
     }
 
     ngAfterViewInit(): void {
-        this.setValueInEditor(this.value);
+        this.setValueInEditor(this.initialValue);
+
+        if(this.editable === 'false') {
+            this.renderer.setAttribute(this.editor.nativeElement, 'contenteditable', this.editable);
+            this.renderer.addClass(this.editor.nativeElement, 'uneditable');
+        }
     }
 
     // When code is requested from the server it takes time for it to reach the client.
@@ -72,6 +80,10 @@ export class EditorComponent implements OnInit, OnChanges, AfterViewInit {
         if(this.editor && value && value !== '') {
             const editor = this.editor.nativeElement;
             let valueLength: number = value.length;
+
+            if(this.deletePrevValueOnChange === 'true') {
+                editor.innerHTML = '';
+            }
 
             if(value.charAt(valueLength - 1) !== '\n') {
                 valueLength++;
@@ -128,7 +140,7 @@ export class EditorComponent implements OnInit, OnChanges, AfterViewInit {
     }
 
     refreshLineNumbers(editor) {
-        if(this.lineNumbering) {
+        if(this.lineNumbering === 'true') {
             const lines = editor.querySelectorAll('.view-line').length;
             const numbers = this.linesNumbers.length;        
 
@@ -248,7 +260,7 @@ export class EditorComponent implements OnInit, OnChanges, AfterViewInit {
             }
         }
 
-        const hightlightCode = this.highlights && (/[a-zA-Z0-9-_@#$%^&*=()!~`:;"',\./?<>}{} ]/.test(input) || isBackspace || isEnter)
+        const hightlightCode = this.highlights === 'true' && (/[a-zA-Z0-9-_@#$%^&*=()!~`:;"',\./?<>}{} ]/.test(input) || isBackspace || isEnter)
         
         if (event.keyCode === 9 && event.shiftKey) {
             this.handleDeleteTab(event);

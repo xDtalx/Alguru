@@ -1,14 +1,15 @@
 <div id="ide">
   <div id="first-col">
-      <div class="container" id="solution">
+      <div class="container editable-editor" #solutionContainer>
         <div class="head top">
           <span class="title">Your Solution:</span>
           <span class="spacer"></span>
           <a (click)="onRunCode()" class="run-code btn">Run Code</a>
         </div>
       <editor 
-      highlights=true 
-      lineNumbering=true 
+      class="editable-editor"
+      highlights="true" 
+      lineNumbering="true"
       [value]="solValue" 
       [theme]="theme" 
       (valueChanged)="onValueChanged1($event)"></editor>
@@ -20,7 +21,13 @@
           <a (click)="onCustomClick()" class="btn">Custom</a>
           <a  (click)="onRawOutputClick()" class="btn">Raw Output</a>
         </div>
-        <textarea class="editor" readonly [(ngModel)]="currentOutput"></textarea>
+        <editor 
+        highlights="false"
+        deletePrevValueOnChange="true"
+        initialValue="Custom>"
+        editable="false"
+        [value]="currentOutput" 
+        [theme]="theme"></editor>
       </div>
   </div>
   <div id="second-col">
@@ -29,16 +36,22 @@
         <span class="title">Question:</span>
         <span class="spacer"></span>
       </div>
-      <textarea class="editor" readonly>{{ questionToSolve?.content }}</textarea>
+      <editor 
+      highlights="false" 
+      deletePrevValueOnChange="true"
+      editable="false"
+      [value]="questionToSolve?.content" 
+      [theme]="theme"></editor>
     </div>
-    <div class="container">
+    <div class="container editable-editor" ng-class="container">
       <div class="head">
         <span class="title">Tests:</span>
         <span class="spacer"></span>
       </div>
       <editor 
-      highlights=true 
-      lineNumbering=true 
+      class="editable-editor"
+      highlights="true"
+      lineNumbering="true" 
       [value]="testsValue" 
       [theme]="theme" 
       (valueChanged)="onValueChanged2($event)"></editor>
@@ -48,7 +61,12 @@
         <span class="title">Hints:</span>
         <span class="spacer"></span>
       </div>
-      <textarea class="editor" readonly>{{ questionToSolve?.hints }}</textarea>
+      <editor 
+      highlights="false" 
+      deletePrevValueOnChange="true"
+      editable="false"
+      [value]="questionToSolve?.hints" 
+      [theme]="theme"></editor>
     </div>
   </div>
 </div>

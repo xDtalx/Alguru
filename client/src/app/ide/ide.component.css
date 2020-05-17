@@ -1,15 +1,50 @@
+
+html {
+  background-color: rgb(53, 58, 66);
+}
+
+main {
+  display: flex;
+  position: relative;
+  width: 100vw !important;
+  max-width: 100%;
+  height: 100%;
+  margin: auto;
+}
+
 * {
   padding: 0;
   margin: 0;
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
 #ide {
-  padding: 1rem;
   position: relative;
   display: flex;
+  padding-bottom: 1rem;
+  position: relative;
   flex-direction: row;
-  width: 100%;
-  background-color: rgb(78, 82, 102);
+  width: 100vw;
+  height: 100%;
+  background-color: rgb(53, 58, 66);
+}
+
+@media only screen and (max-width: 800px) {
+  #ide {
+    flex-direction: column;
+  }
+}
+
+editor {
+  display: flex;
+  height: 100%;
+  overflow: auto;
+  background-color: rgb(80, 80, 94);
+}
+
+.editable-editor {
+  flex: 1 !important;
 }
 
 #first-col {
@@ -17,22 +52,30 @@
   flex-direction: column;
   flex-grow: 1;
   height: 100%;
+  width: 100%;
+  min-width: 50vw;
+  padding: 1rem;
 }
 
 #second-col {
-  margin-left: 1rem;
   display: flex;
   flex-direction: column;
   flex-grow: 1;
   height: 100%;
+  width: 100%;
+  padding: 1rem;
 }
 
 div.container {
-  flex-grow: 1;
   display: flex;
   flex-direction: column;
   position: relative;
   width: 100%;
+  padding: 0;
+  max-height: inherit;
+  min-width: fit-content;
+  max-width: 100%;
+  flex: 0;
 }
 
 .title {
@@ -45,36 +88,19 @@ div.container {
   align-items: center;
   justify-content: center;
   display: flex;
+  min-width: fit-content;
 }
 
 .top {
   border-top-left-radius: 1rem;
   border-top-right-radius: 1rem;
+  min-width: fit-content;
 }
 
 a.run-code {
   border-radius: 0;
   border-top-right-radius: 1rem;
   padding: 1rem 2rem 1rem 2rem;
-}
-
-.editor {
-  font-size: 1rem;
-  padding: 1rem;
-  border: none;
-  -webkit-border-radius: 0;
-  -moz-border-radius: 0;
-  border-radius: 0;
-  resize: none;
-  flex-direction: row;
-  flex-grow: 1;
-  background-color: rgb(110, 115, 129);
-  color: rgb(39, 39, 39);
-}
-
-.editor:focus,
-.editor:active {
-  outline: none;
 }
 
 .spacer {
@@ -87,5 +113,7 @@ a.run-code {
   border: none;
   padding: 1rem;
   color: white;
+  min-width: fit-content;
+  height: 100%;
   margin-left: 0.5rem;
 }
