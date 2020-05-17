@@ -89,6 +89,7 @@ div.container {
   justify-content: center;
   display: flex;
   min-width: fit-content;
+  height: 3.5rem;
 }
 
 .top {
@@ -97,23 +98,49 @@ div.container {
   min-width: fit-content;
 }
 
-a.run-code {
-  border-radius: 0;
-  border-top-right-radius: 1rem;
-  padding: 1rem 2rem 1rem 2rem;
-}
-
 .spacer {
   flex: 1 1 auto;
 }
 
 .btn {
-  background-color: rgb(34, 41, 46);
+  z-index: 1;
+  border-radius: 0;
+  padding: 1rem 2rem 1rem 2rem;
+  background-color: rgba(0, 0, 0, 0.158);
   cursor: pointer;
   border: none;
   padding: 1rem;
   color: white;
+  height: 100%;
+  margin-left: 0.5rem;
+}
+
+.top .btn, .top .loading-btn {
+  width: 8rem;
+  border-top-right-radius: 1rem;
+}
+
+.loader {
+  border: 5px solid #f3f3f3;
+  border-radius: 50%;
+  border-top: 5px solid #f0564b;
+  border-left: 5px solid #f0564b;
+  width: 30px;
+  height: 30px;
+  -webkit-animation: spin 0.5s linear infinite; /* Safari */
+  animation: spin 0.5s linear infinite;
+}
+
+.btn:hover {
+  color: white;
+  background-color: rgba(0, 0, 0, 0.342);
+}
+
+.loading-btn {
+  display: flex;
+  background-color: rgba(0, 0, 0, 0.158);
   min-width: fit-content;
   height: 100%;
+  max-height: 100%;
   margin-left: 0.5rem;
 }

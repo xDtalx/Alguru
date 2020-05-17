@@ -22,13 +22,14 @@ export class IDEComponent implements OnInit, OnDestroy {
   public solutionCode: string;
   public testsCode: string;
   public lang: string = 'java';
-  public  questionId: string;
+  public questionId: string;
   public questionToSolve: Question;
   public theme: string = 'dark';
   public solutionTemplate: string;
   public code: string;
   public solValue: string;
   public testsValue: string;
+  public loading: boolean = false;
 
   constructor(
     private route: ActivatedRoute, 
@@ -36,30 +37,31 @@ export class IDEComponent implements OnInit, OnDestroy {
     private codeService: CodeService,
     private renderer: Renderer2
   ) {
-    $(document).ready(() => { 
-      $('.container').each(this.makeContainerWithFixHeight.bind(this));
+    $(document).ready(this.onPageLoaded.bind(this));
+  }
+
+  onPageLoaded(): void {
+    $('.container').each((index, container) => {
+      this.makeContainerWithFixHeight(container);
+      $(window).resize(() => this.onWindowResize(container));
     });
   }
 
-  makeContainerWithFixHeight(index, container): void {
+  makeContainerWithFixHeight(container): void {
     const style = getComputedStyle(container);
-    
-    if(!this.setResizeEvent) {
-      this.setResizeEvent = true;
-      
-      $(window).resize(() => {
-        this.renderer.setStyle(container, 'max-height', '100%');
-        setTimeout(() => {
-          this.renderer.setStyle(container, 'max-height', style.height);
-        }, 
-        500);
-      });
-    }
 
     setTimeout(() => {
       this.renderer.setStyle(container, 'max-height', style.height);
-    }, 
-    500);
+    }, 500);
+  }
+
+  onWindowResize(container): void {
+    const style = getComputedStyle(container);
+
+    this.renderer.setStyle(container, 'max-height', '100%');
+    setTimeout(() => {
+      this.renderer.setStyle(container, 'max-height', style.height);
+    }, 500);
   }
 
   ngOnInit(): void {
@@ -88,23 +90,22 @@ export class IDEComponent implements OnInit, OnDestroy {
     this.executeResponse = { message: "", output: "", errors: "" };
     this.currentOutput = "";
     this.executeListenerSubs =
-    this.codeService
-    .getExecuteResponseListener()
-    .subscribe(response => {
-      this.executeResponse = response;
-
-      if(this.executeResponse !== null) {
-        this.currentOutput = "Custom> " + this.executeResponse.message;
-      }
-    });
+      this.codeService.getExecuteResponseListener().subscribe(response => {
+        this.executeResponse = response;
+        this.loading = false;
+        
+        if(this.executeResponse !== null) {
+          this.currentOutput = "Custom> " + this.executeResponse.message;
+        }
+      });
   }
 
-  onValueChanged1(value): void {
-    console.log('editor1', value);
+  onSolutionChanged(value): void {
+    this.solutionCode = value;
   }
 
-  onValueChanged2(value): void {
-    console.log('editor2', value);
+  onTestsChanged(value): void {
+    this.testsCode = value;
   }
 
   ngOnDestroy(): void {
@@ -112,6 +113,7 @@ export class IDEComponent implements OnInit, OnDestroy {
   }
 
   onRunCode(): void {
+    this.loading = true;
     this.codeService.runCode(this.lang, this.solutionCode, this.testsCode);
   }
 
