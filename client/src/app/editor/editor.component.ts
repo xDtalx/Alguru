@@ -103,7 +103,7 @@ export class EditorComponent implements OnInit, OnChanges, AfterViewInit {
                 }
                 
                 const currentChar = value.charAt(i);
-
+                
                 if(currentChar === '\n' || currentChar === '\t') {
                     const textElem = this.renderer.createText(text.join(""));
                     this.renderer.appendChild(viewLine, textElem);

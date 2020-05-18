@@ -6,6 +6,7 @@ import { QuestionsService } from '../questions/questions.service';
 import { Question } from '../questions/question.model';
 import { ActivatedRoute, ParamMap } from '@angular/router';
 import * as $ from 'jquery';
+import { max } from 'rxjs/operators';
 
 
 @Component({
@@ -17,6 +18,7 @@ import * as $ from 'jquery';
 export class IDEComponent implements OnInit, OnDestroy {
   private executeListenerSubs: Subscription;
   private setResizeEvent: boolean = false;
+  private prevHeight: number = 0;
   public executeResponse: ExecuteResponse;
   public currentOutput: string;
   public solutionCode: string;
@@ -42,26 +44,70 @@ export class IDEComponent implements OnInit, OnDestroy {
 
   onPageLoaded(): void {
     $('.container').each((index, container) => {
-      this.makeContainerWithFixHeight(container);
-      $(window).resize(() => this.onWindowResize(container));
+      const style = getComputedStyle(container);
+      this.makeContainerWithFixHeight(container, style);
+      $(window).resize(() => this.refreshContainerSize(container, style));
     });
   }
 
-  makeContainerWithFixHeight(container): void {
-    const style = getComputedStyle(container);
-
+  makeContainerWithFixHeight(container, style): void {
     setTimeout(() => {
-      this.renderer.setStyle(container, 'max-height', style.height);
+      if(!$(container).hasClass('static-size')) {
+        this.renderer.setStyle(container, 'max-height', style.height);
+      }
     }, 500);
   }
 
-  onWindowResize(container): void {
-    const style = getComputedStyle(container);
+  calcVH(v) {
+    var h = Math.max(document.documentElement.clientHeight, window.innerHeight || 0);
+    return (v * h) / 100;
+  }
+  
+  calcVW(v) {
+    var w = Math.max(document.documentElement.clientWidth, window.innerWidth || 0);
+    return (v * w) / 100;
+  }
+  
 
-    this.renderer.setStyle(container, 'max-height', '100%');
-    setTimeout(() => {
-      this.renderer.setStyle(container, 'max-height', style.height);
-    }, 500);
+  refreshContainerSize(container, style): void {
+    if(!$(container).hasClass('static-size')) {
+      this.renderer.setStyle(container, 'max-height', '100%');
+      
+      if($(container).is('#solution-container')) {
+        this.setContainerStartingHeight(container, 50);
+      } else if($(container).is('#tests-container')) {
+        this.setContainerStartingHeight(container, 30);
+      }
+
+      setTimeout(() => {
+        this.renderer.setStyle(container, 'max-height', style.height);
+      }, 500);
+    }
+  }
+
+  setContainerStartingHeight(container, vh) {
+    const fitContentHeight = this.calcSolutionContainerHeight(container);
+    const startingHeight = this.calcVH(vh);
+    const currentHeight = this.calcVH(100);
+    let newMinHeight;
+
+    if(currentHeight > this.prevHeight) {
+      newMinHeight = Math.max(startingHeight, fitContentHeight);
+    } else {
+      newMinHeight = startingHeight < fitContentHeight ? fitContentHeight : Math.max(startingHeight, fitContentHeight);
+    }
+
+    this.renderer.setStyle(container, 'min-height', `${newMinHeight}px`);
+    this.prevHeight = currentHeight;
+  }
+
+  calcSolutionContainerHeight(element): number {
+    let height = 0;
+
+    height += $(element).find('.head').outerHeight();
+    height += $(element).find('.editor').outerHeight();
+
+    return height;
   }
 
   ngOnInit(): void {
@@ -93,11 +139,18 @@ export class IDEComponent implements OnInit, OnDestroy {
       this.codeService.getExecuteResponseListener().subscribe(response => {
         this.executeResponse = response;
         this.loading = false;
-        
+
         if(this.executeResponse !== null) {
           this.currentOutput = "Custom> " + this.executeResponse.message;
         }
       });
+  }
+
+  refreshAllContainersSize() {
+    $('.container').each((index, container) => {
+      const style = getComputedStyle(container);
+      this.refreshContainerSize(container, style);
+    });
   }
 
   onSolutionChanged(value): void {
@@ -114,6 +167,15 @@ export class IDEComponent implements OnInit, OnDestroy {
 
   onRunCode(): void {
     this.loading = true;
+
+    if(!this.testsCode || this.testsCode.trim() === '') {
+      this.testsCode = this.questionToSolve.tests[0];
+    }
+
+    if(!this.solutionCode || this.solutionCode.trim() === '') {
+      this.solutionCode = this.questionToSolve.solutionTemplate[0];
+    }
+
     this.codeService.runCode(this.lang, this.solutionCode, this.testsCode);
   }
 

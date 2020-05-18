@@ -1,6 +1,6 @@
 <div id="ide">
   <div id="first-col">
-      <div class="container editable-editor" #solutionContainer>
+      <div class="container editable-editor" id="solution-container">
         <div class="head top">
           <span class="title">Your Solution:</span>
           <span class="spacer"></span>
@@ -15,7 +15,7 @@
       [theme]="theme" 
       (valueChanged)="onSolutionChanged($event)"></editor>
       </div>
-      <div class="container">
+      <div class="container static-size" id="output-container">
         <div class="head">
           <span class="title">Output:</span>
           <span class="spacer"></span>
@@ -44,7 +44,7 @@
       [value]="questionToSolve?.content" 
       [theme]="theme"></editor>
     </div>
-    <div class="container editable-editor" ng-class="container">
+    <div class="container editable-editor" id="tests-container">
       <div class="head">
         <span class="title">Tests:</span>
         <span class="spacer"></span>
