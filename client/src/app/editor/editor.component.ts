@@ -1,10 +1,7 @@
-import { Component, Input, Output, EventEmitter, OnInit, Renderer2, OnChanges, SimpleChanges, AfterViewInit, ViewChild, ViewContainerRef, TemplateRef, ElementRef, OnDestroy } from '@angular/core';
+import { Component, Input, Output, EventEmitter, OnInit, Renderer2, OnChanges, SimpleChanges, AfterViewInit, ViewChild, ElementRef, OnDestroy } from '@angular/core';
 import { DomSanitizer } from '@angular/platform-browser';
+import { EditorService, ChildPosition, EventType } from './editor.service';
 
-enum ChildPosition {
-    first,
-    last
-}
 
 @Component({
     selector: 'editor',
@@ -23,41 +20,33 @@ export class EditorComponent implements OnInit, OnDestroy, OnChanges, AfterViewI
     @Output() public valueChanged = new EventEmitter<string>();
     @ViewChild('editor', {read: ElementRef}) editor: ElementRef;
 
-    private cssUrl: string;
     private currentWordLetters: any[] = [];
     private currentWord: string;
     private hightlightDict = { 'public': 'red' }
     private tabsInsideCurrentLine: number = 0;
     public linesNumbers: number[] = [1];
 
-    constructor(public sanitizer: DomSanitizer, private renderer: Renderer2) {}
+    constructor(public sanitizer: DomSanitizer, private renderer: Renderer2, private editorService: EditorService) {}
 
     ngOnInit() {
-        switch(this.theme) {
-            case 'dark':
-                this.cssUrl = '/assets/editor/editor-dark.css';
-                break;
-            default:
-                this.cssUrl = '/assets/editor/editor-default.css';
-        }
-
-        this.loadCSSOnce('theme');
+        this.editorService.selectTheme(this.theme);
     }
 
     ngOnDestroy() {
-        this.removeCSS('theme');
-    }
-
-    removeCSS(cssId) {
-        const cssLink = document.querySelector(`head #${cssId}`);
-
-        if(cssLink) {
-            cssLink.remove();
-        }
+        this.editorService.unloadCSS()
     }
 
     ngAfterViewInit(): void {
         this.setValueInEditor(this.initialValue);
+        this.editorService.addEventHandler(this.editor, EventType.KeyDown, this.initFirstViewLine.bind(this));
+        this.editorService.addEventHandler(this.editor, EventType.KeyDown, this.handleTabs.bind(this));
+        this.editorService.addEventHandler(this.editor, EventType.KeyDown, this.outTheTabSpan.bind(this));
+        this.editorService.addEventHandler(this.editor, EventType.KeyDown, this.highlightCode.bind(this));
+        this.editorService.addEventHandler(this.editor, EventType.KeyDown, this.refreshTabsCount.bind(this));
+        this.editorService.addEventHandler(this.editor, EventType.KeyUp, this.insertTabsOnNewLine.bind(this));
+        this.editorService.addEventHandler(this.editor, EventType.KeyUp, () => this.valueChanged.emit(this.getEditorCode()));
+        this.editorService.addEventHandler(this.editor, EventType.Input, this.setViewLineClassToAll.bind(this));
+        this.editorService.addEventHandler(this.editor, EventType.Input, this.refreshLineNumbers.bind(this));
 
         if(this.editable === 'false') {
             this.renderer.setAttribute(this.editor.nativeElement, 'contenteditable', this.editable);
@@ -77,20 +66,19 @@ export class EditorComponent implements OnInit, OnDestroy, OnChanges, AfterViewI
         }
     }
 
-    loadCSSOnce(cssId){
-        this.removeCSS(cssId)
-        const newLink  = document.createElement('link');
-        const head  = document.getElementsByTagName('head')[0];
-
-        newLink.id   = cssId;
-        newLink.rel  = 'stylesheet';
-        newLink.type = 'text/css';
-        newLink.href = this.cssUrl;
-
-        head.appendChild(newLink);
+    onInput(event): void {
+        this.editorService.handleEvent(this.editor, event);
     }
 
-    onInput(event) {
+    onKeyUp(event): void {
+        this.editorService.handleEvent(this.editor, event);
+    }
+
+    onKeyDown(event): void {
+        this.editorService.handleEvent(this.editor, event);
+    }
+
+    setViewLineClassToAll(event): void {
         const editor = event.target;
 
         editor.childNodes.forEach(element => {
@@ -98,85 +86,64 @@ export class EditorComponent implements OnInit, OnDestroy, OnChanges, AfterViewI
                 element.classList.add('view-line');
             }
         });
-        
-        this.refreshLineNumbers(editor);
     }
 
-    onKeyUp(event) {
-        this.insertTabsOnNewLine(event);
-        this.valueChanged.emit(this.getEditorCode());
-    }
-
-    onKeyDown(event) {
-        const isBackspace = event.keyCode === 8;
-        const isEnter = event.keyCode === 13;
-        let input = ' ';
-        
-        if(!isBackspace && !isEnter) {
-            input = String.fromCharCode(event.keyCode);
-            
-            if(!event.getModifierState('CapsLock')) {
-                input = input.toLowerCase();
-            }
-        }
-
-        const hightlightCode = this.highlights === 'true' && (/[a-zA-Z0-9-_@#$%^&*=()!~`:;"',\./?<>}{} ]/.test(input) || isBackspace || isEnter);
-
+    handleTabs(event): void {
         if (event.keyCode === 9 && event.shiftKey) {
             this.handleDeleteTab(event);
         } else if(event.keyCode === 9) {
             this.handleInsertTab(event, 1);
-        } else if(this.editor.nativeElement.querySelectorAll('.view-line').length === 0) {
-            this.initFirstViewLine(event, false);
+        }
+    }
 
-            if(hightlightCode) {
-                this.currentWordLetters.push(input);
-            }
-        } else if(hightlightCode) {
+    outTheTabSpan(): void {
+        const sel = document.getSelection();
 
-            // if(isBackspace) {
-            //     this.currentWordLetters.pop();
-            // } else if(input === ' ') {
-            //     this.currentWord = this.currentWordLetters.join("");
-            //     const highlightColor = this.hightlightDict[this.currentWord];
+        if(sel.anchorNode.nodeName === 'span' && !sel.anchorNode.isSameNode(this.editor.nativeElement)) {
+            const range = sel.getRangeAt(0);
+            range.setStartAfter(sel.anchorNode);
+            range.collapse(true);
+            sel.removeAllRanges();
+            sel.addRange(range);
+        }
+    }
 
-            //     if(highlightColor) {
-            //         const text = this.renderer.createText(this.currentWord);
-            //         const span = this.renderer.createElement('span');
-            //         const sel = document.getSelection();
-            //         const editor = this.editor.nativeElement;
-            //         const range = new Range();
+    highlightCode(event): void {
+        const input = this.editorService.applyCapsLock(event);
+        const isBackspace = event.keyCode === 8;
+        const isEnter = event.keyCode === 13;
+        const hightlightCode = 
+            this.highlights === 'true' && (/[a-zA-Z0-9-_@#$%^&*=()!~`:;"',\./?<>}{} ]/.test(input) || isBackspace || isEnter);
 
-            //         this.renderer.appendChild(span, text);
-            //         this.renderer.setStyle(span, 'color', highlightColor);
-            //         this.renderer.appendChild(editor, span);
-            //         range.setStartAfter(text);
-            //         range.collapse(true);
-            //         sel.removeAllRanges();
-            //         sel.addRange(range);
-            //     }
-            // } else {
-            //     this.currentWordLetters.push(input);
-            // }
+        if(isBackspace) {
+            this.currentWordLetters.pop();
+        } else if(input === ' ') {
+            this.currentWord = this.currentWordLetters.join('');
+            const highlightColor = this.hightlightDict[this.currentWord];
 
-        } else {
-            const sel = document.getSelection();
+            if(highlightColor) {
+                const text = this.renderer.createText(this.currentWord);
+                const span = this.renderer.createElement('span');
+                const sel = document.getSelection();
+                const editor = this.editor.nativeElement;
+                const range = new Range();
 
-            if(sel.anchorNode.nodeName === 'span' && !sel.anchorNode.isSameNode(this.editor.nativeElement)) {
-                const range = sel.getRangeAt(0);
-                range.setStartAfter(sel.anchorNode);
+                this.renderer.appendChild(span, text);
+                this.renderer.setStyle(span, 'color', highlightColor);
+                this.renderer.appendChild(editor, span);
+                range.setStartAfter(text);
                 range.collapse(true);
                 sel.removeAllRanges();
                 sel.addRange(range);
             }
+        } else {
+            this.currentWordLetters.push(input);
         }
-
-        this.refreshTabsCount();
     }
 
-    refreshLineNumbers(editor) {
+    refreshLineNumbers(): void {
         if(this.lineNumbering === 'true') {
-            const lines = editor.querySelectorAll('.view-line').length;
+            const lines = this.editor.nativeElement.querySelectorAll('.view-line').length;
             const numbers = this.linesNumbers.length;        
 
             if(lines != numbers) {
@@ -214,7 +181,7 @@ export class EditorComponent implements OnInit, OnDestroy, OnChanges, AfterViewI
         }
     }
 
-    insertTabsOnNewLine(event) {
+    insertTabsOnNewLine(event): void {
         if(event.keyCode === 13) {
             const sel = document.getSelection();
             let newViewLine = sel.anchorNode;
@@ -236,15 +203,7 @@ export class EditorComponent implements OnInit, OnDestroy, OnChanges, AfterViewI
         }
     }
 
-    createTab() {
-        const span = document.createElement('span');
-        span.appendChild(document.createTextNode('\t'));
-        span.style.whiteSpace = 'pre';
-
-        return span;
-    }
-
-    getEditorCode() {
+    getEditorCode(): string {
         const editor = this.editor.nativeElement;
         const lines = editor.querySelectorAll('.view-line');
         let code = [];
@@ -257,25 +216,27 @@ export class EditorComponent implements OnInit, OnDestroy, OnChanges, AfterViewI
         return code.join("");
     }
 
-    initFirstViewLine(event, isTab): void {
-        let input: string;
+    initFirstViewLine(event): void {
+        if(this.editor.nativeElement.querySelectorAll('.view-line').length === 0) {
+            const isTab = event.keyCode === 9;
+            let input: string;
 
-        if(isTab) {
-            input = "";
-        } else if(event.keyCode === 219 && event.shiftKey) {
-            input = "{";
-        } else {
-            input = String.fromCharCode(event.keyCode);
-        }
-    
-        if(input && !event.getModifierState('CapsLock')) {
-            input = input.toLowerCase();
-        }
+            if(isTab) {
+                input = "";
+            } else if(event.keyCode === 219 && event.shiftKey) {
+                input = "{";
+            } else {
+                input = String.fromCharCode(event.keyCode);
+            }
+        
+            if(input && !event.getModifierState('CapsLock')) {
+                input = input.toLowerCase();
+            }
 
-
-        if(/[a-zA-Z0-9-_@#$%^&*=()!~`:;"',\./?<>}{} ]/.test(input) || isTab) {
-            this.createViewLine(input, input !== null)
-            event.preventDefault();
+            if(/[a-zA-Z0-9-_@#$%^&*=()!~`:;"',\./?<>}{} ]/.test(input) || isTab) {
+                this.createViewLine(input, input !== null)
+                event.preventDefault();
+            }
         }
     }
 
@@ -323,41 +284,7 @@ export class EditorComponent implements OnInit, OnDestroy, OnChanges, AfterViewI
         event.preventDefault();
     }
 
-    findClosestPrevNode(anchorNode, tagToLook) {
-        let nodeTypeCheck = tagToLook.toLowerCase() === 'text' ? 
-        anchorNode.nodeType !== Node.TEXT_NODE : anchorNode.nodeName.toLowerCase() !== tagToLook.toLowerCase();
-
-        while(anchorNode && anchorNode.previousSibling && nodeTypeCheck) {
-            anchorNode = anchorNode.previousSibling;
-            nodeTypeCheck = tagToLook.toLowerCase() === 'text' ? 
-        anchorNode.nodeType !== Node.TEXT_NODE : anchorNode.nodeName.toLowerCase() !== tagToLook.toLowerCase();
-        }
-
-        return anchorNode;
-    }
-
-    findElement(parent: Node, elementType: string, position: ChildPosition) {
-        const children: NodeListOf<ChildNode> = parent.childNodes;
-        let child;
-
-        if(children) {
-            const length = children.length;
-
-            for(let i = 0; i < length; i++) {
-                if(children[i].nodeName.toLowerCase() === elementType.toLowerCase()) {
-                    child = children[i];
-
-                    if(position == ChildPosition.first) {
-                        break;
-                    }
-                }
-            }
-        }
-
-        return child;
-    }
-
-    setValueInEditor(value) {
+    setValueInEditor(value): void {
         if(this.editor && value && value !== '') {
             const editor = this.editor.nativeElement;
             let valueLength: number = value.length;
@@ -395,7 +322,7 @@ export class EditorComponent implements OnInit, OnDestroy, OnChanges, AfterViewI
                         viewLineOpened = false;
                         text = []
                     } else {
-                        const firstSpan = this.findElement(viewLine, 'span', ChildPosition.first);
+                        const firstSpan = this.editorService.findElement(viewLine, 'span', ChildPosition.first);
                         let span;
 
                         if(firstSpan) {
@@ -414,16 +341,12 @@ export class EditorComponent implements OnInit, OnDestroy, OnChanges, AfterViewI
                 }
             }
 
-            this.refreshLineNumbers(editor);
+            this.refreshLineNumbers();
         }
     }
 
     handleInsertTab(event, tabs: number): void {
         if(tabs > 0) {
-            if(this.editor.nativeElement.querySelectorAll('.view-line').length === 0) {
-                this.initFirstViewLine(event, true);
-            }
-        
             const sel = document.getSelection();
             const range = sel.getRangeAt(0);
             let anchorNode = sel.anchorNode;
@@ -432,7 +355,7 @@ export class EditorComponent implements OnInit, OnDestroy, OnChanges, AfterViewI
             range.collapse(true);
 
             if(anchorNode.nodeName.toLowerCase() === 'div' 
-            && !this.findElement(anchorNode, 'span', ChildPosition.first)
+            && !this.editorService.findElement(anchorNode, 'span', ChildPosition.first)
             || anchorNode.nodeType === Node.TEXT_NODE) {
                 span = this.renderer.createElement('span');
                 this.renderer.addClass(span, 'tab');
