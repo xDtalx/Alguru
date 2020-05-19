@@ -49,15 +49,15 @@ button {
 }
 
 label {
-  border: 1px solid rgba(0, 0, 0, 0.3);
+  border: 1px solid #0000004d;
   cursor: auto;
 }
 
-app-question-create div.editor {
+app-question-create .editor {
   border-bottom: 2px solid rgb(159, 196, 243);
 }
 
-app-question-create div.editor:focus {
+app-question-create .editor:focus {
   border-bottom: 2px solid rgb(159, 196, 243);
   animation: fadein 0.5s forwards;
 }
