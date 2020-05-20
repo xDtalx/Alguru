@@ -1,8 +1,8 @@
-import { Injectable, ElementRef } from '@angular/core';
+import { Injectable, ElementRef, Renderer2, RendererFactory2  } from '@angular/core';
 
 export enum ChildPosition {
-    first,
-    last
+    First,
+    Last
 }
 
 export enum EventType {
@@ -17,10 +17,16 @@ export enum EventType {
 
 @Injectable({ providedIn: 'root' })
 export class EditorService {
+    private renderer: Renderer2;
     private defaultCssId: string = 'theme';
+    private stringBuilder = [];
     private eventsCallbacks: Map<ElementRef, Map<string, ((event: Event) => void)[]>> = new Map<ElementRef, Map<string, ((event: Event) => void)[]>>();
 
-    addEventHandler(element: ElementRef, eventType: EventType, callback: (event: Event) => void) {
+    constructor(private rendererFactory: RendererFactory2) {
+        this.renderer = rendererFactory.createRenderer(null, null);
+    }
+
+    addEventHandler(element: ElementRef, eventType: EventType, callback: (event: Event) => void): void {
         if(this.eventsCallbacks.get(element)) {
             const eventHandlers = this.eventsCallbacks.get(element);
             const callbacks = eventHandlers.get(eventType);
@@ -37,7 +43,7 @@ export class EditorService {
         }
     }
 
-    handleEvent(element: ElementRef, event: Event) {
+    handleEvent(element: ElementRef, event: Event): void {
         const eventHandlers = this.eventsCallbacks.get(element);
 
         if(eventHandlers) {
@@ -109,7 +115,7 @@ export class EditorService {
         return anchorNode;
     }
 
-    findElement(parent: Node, elementType: string, position: ChildPosition) {
+    findElement(parent: Node, elementType: string, position: ChildPosition): HTMLElement {
         const children: NodeListOf<ChildNode> = parent.childNodes;
         let child;
 
@@ -120,7 +126,7 @@ export class EditorService {
                 if(children[i].nodeName.toLowerCase() === elementType.toLowerCase()) {
                     child = children[i];
 
-                    if(position == ChildPosition.first) {
+                    if(position == ChildPosition.First) {
                         break;
                     }
                 }
@@ -128,5 +134,54 @@ export class EditorService {
         }
 
         return child;
+    }
+
+    addNewLine(editor: HTMLElement): HTMLDivElement {
+        const newLine = this.renderer.createElement('div');
+        this.renderer.addClass(newLine, 'view-line');
+        this.renderer.appendChild(editor, newLine);
+        
+        return newLine;
+    }
+
+    appendText(line: HTMLDivElement, text?: string): void {
+        let newText: HTMLElement;
+
+        if(text) {
+            newText = this.renderer.createText(text);
+        } else {
+            const str = this.stringBuilder.join("");
+            newText = this.renderer.createText(str);
+            this.stringBuilder = [];
+        }
+
+        this.renderer.appendChild(line, newText);
+    }
+
+    buildString(char): void {
+        this.stringBuilder.push(char);
+    }
+
+    appendTab(line: HTMLDivElement): void {
+        const lastSpan = this.findElement(line, 'span', ChildPosition.Last);
+
+        if(lastSpan) {
+            if(lastSpan.nextSibling && lastSpan.nextSibling.nodeType === Node.TEXT_NODE) {
+                this.createSpanWithTab(line);
+            } else {
+                const tab = this.renderer.createText('\t');
+                this.renderer.appendChild(lastSpan, tab);
+            }
+        } else {
+            this.createSpanWithTab(line);
+        }
+    }
+
+    createSpanWithTab(line: HTMLDivElement): void {
+        const span = this.renderer.createElement('span');
+        const tab = this.renderer.createText('\t');
+        this.renderer.addClass(span, 'tab');
+        this.renderer.appendChild(span, tab);
+        this.renderer.appendChild(line, span);
     }
 }

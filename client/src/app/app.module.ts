@@ -26,8 +26,7 @@ import { ComingSoonComponent } from './coming-soon/coming-soon.component';
 import { IDEComponent } from './ide/ide.component';
 import { AdminPageComponent } from './admin-page/admin-page.component';
 import { EditorComponent } from './editor/editor.component';
-import {ForumComponent} from "./forum/forum.component";
-
+import { ForumComponent } from "./forum/forum.component";
 
 
 @NgModule({
@@ -59,7 +58,7 @@ import {ForumComponent} from "./forum/forum.component";
     MatSortModule,
     MatPaginatorModule,
     MatInputModule,
-    MatSidenavModule,
+    MatSidenavModule
   ],
   providers: [
     { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },

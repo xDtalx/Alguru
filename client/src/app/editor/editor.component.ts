@@ -12,7 +12,7 @@ export class EditorComponent implements OnInit, OnDestroy, OnChanges, AfterViewI
     @Input() public highlights: string = 'false';
     @Input() public fitEditorToContainer: string = 'false';
     @Input() public editable: string = 'true';
-    @Input() public lineNumbering: string = 'true';
+    @Input() public lineNumbering: string = 'false';
     @Input() public deletePrevValueOnChange: string = 'false';
     @Input() public value: string = '';
     @Input() public theme: string = 'default';
@@ -26,7 +26,7 @@ export class EditorComponent implements OnInit, OnDestroy, OnChanges, AfterViewI
     private tabsInsideCurrentLine: number = 0;
     public linesNumbers: number[] = [1];
 
-    constructor(public sanitizer: DomSanitizer, private renderer: Renderer2, private editorService: EditorService) {}
+    constructor(public sanitizer: DomSanitizer, private renderer: Renderer2, public editorService: EditorService) {}
 
     ngOnInit() {
         this.editorService.selectTheme(this.theme);
@@ -284,62 +284,38 @@ export class EditorComponent implements OnInit, OnDestroy, OnChanges, AfterViewI
         event.preventDefault();
     }
 
-    setValueInEditor(value): void {
+    setValueInEditor(value: string): void {
         if(this.editor && value && value !== '') {
-            const editor = this.editor.nativeElement;
-            let valueLength: number = value.length;
+            const editor: HTMLElement = this.editor.nativeElement;
+            let viewLineOpened: boolean = false;
+            let viewLine: HTMLDivElement;
 
             if(this.deletePrevValueOnChange === 'true') {
                 editor.innerHTML = '';
             }
 
-            if(value.charAt(valueLength - 1) !== '\n') {
-                valueLength++;
+            if(value.charAt(value.length - 1) !== '\n') {
                 value += '\n';
             }
 
-            let viewLineOpened = false;
-            let text = [];
-            let viewLine;
-
-            for(let i = 0; i < valueLength; i++) {
+            Array.from(value).forEach(char => {
                 if(!viewLineOpened) {
                     viewLineOpened = true;
-                    viewLine = this.renderer.createElement('div');
-                    this.renderer.addClass(viewLine, 'view-line');
-                    editor.appendChild(viewLine);
+                    viewLine = this.editorService.addNewLine(editor);
                 }
-                
-                const currentChar = value.charAt(i);
-                
-                if(currentChar === '\n' || currentChar === '\t') {
-                    const textElem = this.renderer.createText(text.join(""));
-                    this.renderer.appendChild(viewLine, textElem);
 
-                    if(currentChar === '\n') {
-                        let br = this.renderer.createElement('br');
-                        this.renderer.appendChild(viewLine, br);
+                if(char === '\n' || char === '\t') {
+                    this.editorService.appendText(viewLine);
+
+                    if(char === '\n') {
                         viewLineOpened = false;
-                        text = []
                     } else {
-                        const firstSpan = this.editorService.findElement(viewLine, 'span', ChildPosition.first);
-                        let span;
-
-                        if(firstSpan) {
-                            span = firstSpan;
-                        } else {
-                            span = this.renderer.createElement('span');
-                            this.renderer.addClass(span, 'tab');
-                        }
-
-                        const tab = this.renderer.createText('\t');
-                        this.renderer.appendChild(span, tab);
-                        this.renderer.appendChild(viewLine, span);
+                        this.editorService.appendTab(viewLine);
                     }
                 } else {
-                    text.push(currentChar)
+                    this.editorService.buildString(char);
                 }
-            }
+            });
 
             this.refreshLineNumbers();
         }
@@ -355,7 +331,7 @@ export class EditorComponent implements OnInit, OnDestroy, OnChanges, AfterViewI
             range.collapse(true);
 
             if(anchorNode.nodeName.toLowerCase() === 'div' 
-            && !this.editorService.findElement(anchorNode, 'span', ChildPosition.first)
+            && !this.editorService.findElement(anchorNode, 'span', ChildPosition.First)
             || anchorNode.nodeType === Node.TEXT_NODE) {
                 span = this.renderer.createElement('span');
                 this.renderer.addClass(span, 'tab');
