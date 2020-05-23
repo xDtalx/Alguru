@@ -1,5 +1,5 @@
 import { Injectable, ElementRef, Renderer2, RendererFactory2  } from '@angular/core';
-import { hightlights } from './highlights';
+import { hightlights, KeywordType } from './highlights';
 import { version } from 'punycode';
 
 export enum ChildPosition {
@@ -7,8 +7,8 @@ export enum ChildPosition {
     Last
 }
 
-export enum Hightlighter {
-    Java = 'Java'
+export enum CodeType {
+    Java = 'java'
 }
 
 export enum EventType {
@@ -58,7 +58,7 @@ export class EditorService {
             isKBArrowEvent = kbEvent.keyCode >= 37 &&  kbEvent.keyCode <= 40;
         }
 
-        if (!isKBArrowEvent) {
+        if (!isKBArrowEvent && !(isKBArrowEvent && kbEvent.ctrlKey)) {
             const eventHandlers = this.eventsCallbacks.get(element);
 
             if (eventHandlers) {
@@ -121,17 +121,54 @@ export class EditorService {
         return child;
     }
 
-    addNewLine(editor: HTMLElement, setCaretIn: boolean = false): HTMLDivElement {
-        const newLine = this.renderer.createElement('div');
-        const br = this.renderer.createElement('br');
-        this.renderer.appendChild(newLine, br);
+    createNewLine(content?: any): HTMLDivElement {
+        const newLine: HTMLDivElement = this.renderer.createElement('div');
         this.renderer.addClass(newLine, 'view-line');
-        this.renderer.appendChild(editor, newLine);
+
+        if (content) {
+            if (typeof content === 'string') {
+                const text = this.renderer.createText(content);
+                this.renderer.appendChild(newLine, text);
+            } else {
+                newLine.appendChild(content);
+            }
+        } else {
+            const br = this.renderer.createElement('br');
+            this.renderer.appendChild(newLine, br);
+        }
+
+        return newLine;
+    }
+
+    getSelectedElementParentLine(editor: HTMLElement, selection: Selection): HTMLElement {
+        let element = selection.anchorNode as HTMLElement;
+        let line;
+
+        while (element && !element.isSameNode(editor)) {
+            line = element;
+            element = element.parentElement;
+        }
+
+        return line;
+    }
+
+    addNewLine(editor: HTMLElement, content?: any, setCaretIn?: boolean, after?: Node): HTMLDivElement {
+        const newLine: HTMLDivElement = this.createNewLine(content);
+
+        if (after) {
+            if (after.nextSibling) {
+                this.renderer.insertBefore(editor, newLine, after.nextSibling);
+            } else {
+                this.renderer.appendChild(editor, newLine);
+            }
+        } else {
+            this.renderer.appendChild(editor, newLine);
+        }
 
         if (setCaretIn) {
             const sel = document.getSelection();
 
-            if (sel && sel.anchorNode && !sel.anchorNode.isSameNode(editor)) {
+            if (sel && sel.anchorNode) {
                 const range = sel.getRangeAt(0);
                 range.setStart(newLine, 0);
                 range.collapse(true);
@@ -143,19 +180,19 @@ export class EditorService {
         return newLine;
     }
 
-    appendText(line: HTMLDivElement, text?: string, hightlighter?: Hightlighter): void {
+    appendText(line: HTMLDivElement, text?: string, codeType?: CodeType): void {
         let newText: HTMLElement;
 
         if (text) {
             newText = this.renderer.createText(text);
         } else if (this.stringBuilder.length > 0) {
-            newText = this.getText(hightlighter);
+            newText = this.getText(codeType);
         }
 
-        if (this.stringBuilder.length > 0 && this.stringBuilder[0].length > 0) {
+        if (this.stringBuilder.length > 0 && this.stringBuilder[0].length > 0 || text) {
             this.removeBR(line);
 
-            if (hightlighter) {
+            if (codeType) {
                 Array.from(newText.childNodes).forEach(value => this.renderer.appendChild(line, value));
             } else {
                 this.renderer.appendChild(line, newText);
@@ -172,11 +209,15 @@ export class EditorService {
         this.renderer.appendChild(line, span);
     }
 
-    private getText(hightlighter?: Hightlighter): HTMLElement {
+    isStructuralChar(char: any, codeType: CodeType): boolean {
+        return hightlights[codeType][char] === KeywordType.Structural;
+    }
+
+    private getText(codeType?: CodeType): HTMLElement {
         let container: HTMLElement;
         let words: string[] = [];
 
-        if (hightlighter) {
+        if (codeType) {
             container = this.renderer.createElement('div');
         }
 
@@ -184,8 +225,8 @@ export class EditorService {
             this.stringBuilder.forEach((letters, index) => {
                 const word = letters.join('');
 
-                if (hightlighter) {
-                    const keyWordType = hightlights[hightlighter][word];
+                if (codeType) {
+                    const keyWordType = hightlights[codeType][word];
 
                     if (keyWordType) {
                         if (words.length > 0) {
@@ -217,8 +258,7 @@ export class EditorService {
             });
         }
 
-
-        return hightlighter ? container : this.renderer.createText(words.join(' '));
+        return codeType ? container : this.renderer.createText(words.join(' '));
     }
 
     removeBR(line: HTMLDivElement) {
@@ -229,7 +269,7 @@ export class EditorService {
         }
     }
 
-    buildString(char): void {
+    buildString(char: any): void {
         if (char === ' ') {
             this.stringBuilder.push([]);
         } else {

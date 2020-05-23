@@ -72,6 +72,10 @@
     color: rgb(255, 186, 121);
 }
 
+.structural {
+    color:rgb(195, 204, 218);
+}
+
 .view-line {
     white-space: pre;
     caret-color: var(--caret-color);

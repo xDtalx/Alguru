@@ -13,7 +13,7 @@ import {
     ViewEncapsulation,
     OnDestroy} from '@angular/core';
 import { DomSanitizer } from '@angular/platform-browser';
-import { EditorService, EventType, Hightlighter } from './editor.service';
+import { EditorService, EventType, CodeType } from './editor.service';
 import { ThemeService } from '../theme/theme.service';
 
 
@@ -25,7 +25,7 @@ import { ThemeService } from '../theme/theme.service';
 })
 export class EditorComponent implements OnInit, OnDestroy, OnChanges, AfterViewInit {
 
-    @Input() public highlights = 'false';
+    @Input() public highlightsFor;
     @Input() public fitEditorToContainer = 'false';
     @Input() public editable = 'true';
     @Input() public lineNumbering = 'false';
@@ -34,11 +34,9 @@ export class EditorComponent implements OnInit, OnDestroy, OnChanges, AfterViewI
     @Input() public theme = 'light';
     @Input() public initialValue = '';
     @Output() public valueChanged = new EventEmitter<string>();
+
     @ViewChild('editor', {read: ElementRef}) editor: ElementRef;
 
-    private currentWordLetters: any[] = [];
-    private currentWord: string;
-    private hightlightDict = { public: 'red' };
     private tabsInsideCurrentLine = 0;
     private currentLine = -1;
     private anchorIndex: number;
@@ -62,16 +60,17 @@ export class EditorComponent implements OnInit, OnDestroy, OnChanges, AfterViewI
 
     ngAfterViewInit(): void {
         this.renderText(this.initialValue);
+        this.editorService.addEventHandler(this.editor, EventType.KeyDown, this.preventAllLinesDeletion.bind(this));
+        this.editorService.addEventHandler(this.editor, EventType.KeyDown, this.autoComplete.bind(this));
         this.editorService.addEventHandler(this.editor, EventType.KeyDown, this.initFirstViewLine.bind(this));
         this.editorService.addEventHandler(this.editor, EventType.KeyDown, this.handleLineCut.bind(this));
         this.editorService.addEventHandler(this.editor, EventType.KeyDown, this.handleTabs.bind(this));
-        this.editorService.addEventHandler(this.editor, EventType.KeyDown, this.outTheTabSpan.bind(this));
         this.editorService.addEventHandler(this.editor, EventType.KeyDown, this.refreshTabsCount.bind(this));
-        this.editorService.addEventHandler(this.editor, EventType.KeyUp, this.insertTabsOnNewLine.bind(this));
+        this.editorService.addEventHandler(this.editor, EventType.KeyDown, this.onEnterPressedCreateNewLine.bind(this));
+        this.editorService.addEventHandler(this.editor, EventType.KeyDown, this.insertTabsOnNewLine.bind(this));
+        this.editorService.addEventHandler(this.editor, EventType.KeyDown, this.refreshLineNumbers.bind(this));
         this.editorService.addEventHandler(this.editor, EventType.KeyUp, this.refreshLocation.bind(this));
         this.editorService.addEventHandler(this.editor, EventType.KeyUp, this.onTextChanged.bind(this));
-        this.editorService.addEventHandler(this.editor, EventType.Input, this.setViewLineClassToAll.bind(this));
-        this.editorService.addEventHandler(this.editor, EventType.Input, this.refreshLineNumbers.bind(this));
 
         if (this.editable === 'false') {
             this.renderer.setAttribute(this.editor.nativeElement, 'contenteditable', this.editable);
@@ -80,6 +79,102 @@ export class EditorComponent implements OnInit, OnDestroy, OnChanges, AfterViewI
 
         if (this.fitEditorToContainer === 'true') {
             this.renderer.setStyle(this.editor.nativeElement, 'height', '100%');
+        }
+    }
+
+    // When code is requested from the server it takes time for it to reach the client.
+    // Because of this reason we'll listen to changes in 'value' and update the editor accordingly.
+    ngOnChanges(changes: SimpleChanges): void {
+        if (changes.value) {
+            this.renderText(changes.value.currentValue);
+        }
+    }
+
+    onInput(event): void {
+        this.editorService.handleEvent(this.editor, event);
+    }
+
+    onKeyUp(event): void {
+        this.editorService.handleEvent(this.editor, event);
+    }
+
+    onKeyDown(event): void {
+        this.editorService.handleEvent(this.editor, event);
+    }
+
+    handleLineCut(event): void {
+        if (event.ctrlKey && event.keyCode === 88) {
+            const sel = document.getSelection();
+            const notEditor = sel && sel.anchorNode && !sel.anchorNode.isSameNode(this.editor.nativeElement);
+            const lines = this.editor.nativeElement.querySelectorAll('.view-line');
+            const linesCount = lines.length;
+            const singleLineEmpty = linesCount === 1 && lines[0].textContent === '';
+
+            if (notEditor && !singleLineEmpty) {
+                const range = sel.getRangeAt(0);
+                let node: HTMLElement = sel.anchorNode as HTMLElement;
+
+                if (range.startOffset === range.endOffset) {
+                    while ((!node.classList || !node.classList.contains('view-line'))
+                    && !node.isSameNode(this.editor.nativeElement)) {
+                        node = node.parentElement;
+                    }
+
+                    if (!node.isSameNode(this.editor.nativeElement)) {
+                        const sibling = node.nextSibling ? node.nextSibling : node.previousSibling;
+                        node.parentElement.removeChild(node);
+
+                        if (sibling) {
+                            if (sibling.firstChild && sibling.firstChild.nodeName.toLowerCase() !== 'br') {
+                                range.setStart(sibling.firstChild, 0);
+                            } else {
+                                range.setStart(sibling, 0);
+                            }
+
+                            range.collapse(true);
+                            sel.removeAllRanges();
+                            sel.addRange(range);
+                            this.setLineNumberToReturn(sibling);
+                        }
+
+                        this.refreshLineNumbers();
+                    }
+                }
+            }
+
+            if (this.editor.nativeElement.querySelectorAll('.view-line').length === 0) {
+                this.editorService.addNewLine(this.editor.nativeElement, null, true);
+            }
+        }
+    }
+
+    autoComplete(event) {
+        let opening;
+        let closure;
+
+        if (event.shiftKey && event.keyCode === 219) {
+            opening = this.renderer.createText('{');
+            closure = this.renderer.createText('}');
+        } else if (event.keyCode === 219) {
+            opening = this.renderer.createText('[');
+            closure = this.renderer.createText(']');
+        } else if (event.shiftKey && event.keyCode === 57) {
+            opening = this.renderer.createText('(');
+            closure = this.renderer.createText(')');
+        }
+
+        if (opening) {
+            const sel = document.getSelection();
+            const range = sel.getRangeAt(0);
+
+            range.insertNode(closure);
+            range.insertNode(opening);
+            range.collapse(true);
+            range.setStartBefore(closure);
+            range.collapse(true);
+            sel.removeAllRanges();
+            sel.addRange(range);
+            event.preventDefault();
         }
     }
 
@@ -101,18 +196,6 @@ export class EditorComponent implements OnInit, OnDestroy, OnChanges, AfterViewI
         }
     }
 
-    getSelectedElementParentLine(selection: Selection): HTMLElement {
-        let element = selection.anchorNode as HTMLElement;
-        let line;
-
-        while (element && !element.isSameNode(this.editor.nativeElement)) {
-            line = element;
-            element = element.parentElement;
-        }
-
-        return line;
-    }
-
     refreshCurrentLine(lineElement: Node): void {
         const lines: NodeList = this.editor.nativeElement.querySelectorAll('.view-line');
         const linesCount = lines.length;
@@ -128,7 +211,7 @@ export class EditorComponent implements OnInit, OnDestroy, OnChanges, AfterViewI
 
     refreshLocation(): void {
         const sel: Selection = document.getSelection();
-        const line: HTMLElement = this.getSelectedElementParentLine(sel);
+        const line: HTMLElement = this.editorService.getSelectedElementParentLine(this.editor.nativeElement, sel);
 
         if (line) {
             this.refreshCurrentLine(line);
@@ -194,74 +277,6 @@ export class EditorComponent implements OnInit, OnDestroy, OnChanges, AfterViewI
         sel.setBaseAndExtent(anchorNode, anchorIndex, focusNode, focusIndex);
     }
 
-    // When code is requested from the server it takes time for it to reach the client.
-    // Because of this reason we'll listen to changes in 'value' and update the editor accordingly.
-    ngOnChanges(changes: SimpleChanges): void {
-        if (changes.value) {
-            this.renderText(changes.value.currentValue);
-        }
-    }
-
-    onInput(event): void {
-        this.editorService.handleEvent(this.editor, event);
-    }
-
-    onKeyUp(event): void {
-        this.editorService.handleEvent(this.editor, event);
-    }
-
-    onKeyDown(event): void {
-        this.editorService.handleEvent(this.editor, event);
-    }
-
-    setViewLineClassToAll(event): void {
-        const editor = event.target;
-
-        editor.childNodes.forEach(element => {
-            if (element.nodeName.toLowerCase() === 'div') {
-                element.classList.add('view-line');
-            }
-        });
-    }
-
-    handleLineCut(event): void {
-        if (event.ctrlKey && event.keyCode === 88) {
-            const sel = document.getSelection();
-
-            if (sel && sel.anchorNode && !sel.anchorNode.isSameNode(this.editor.nativeElement)) {
-                const range = sel.getRangeAt(0);
-                let node: HTMLElement = sel.anchorNode as HTMLElement;
-
-                if (range.startOffset === range.endOffset) {
-                    while ((!node.classList || !node.classList.contains('view-line'))
-                    && !node.isSameNode(this.editor.nativeElement)) {
-                        node = node.parentElement;
-                    }
-
-                    if (!node.isSameNode(this.editor.nativeElement)) {
-                        const sibling = node.nextSibling ? node.nextSibling : node.previousSibling;
-                        node.parentElement.removeChild(node);
-
-                        if (sibling) {
-                            if (sibling.firstChild && sibling.firstChild.nodeName.toLowerCase() !== 'br') {
-                                range.setStart(sibling.firstChild, 0);
-                            } else {
-                                range.setStart(sibling, 0);
-                            }
-
-                            range.collapse(true);
-                            sel.removeAllRanges();
-                            sel.addRange(range);
-                            this.setLineNumberToReturn(sibling);
-                        }
-
-                        this.refreshLineNumbers();
-                    }
-                }
-            }
-        }
-    }
-
     setLineNumberToReturn(line: Node) {
         const lines = this.editor.nativeElement.querySelectorAll('.view-line');
 
@@ -279,56 +294,6 @@ export class EditorComponent implements OnInit, OnDestroy, OnChanges, AfterViewI
             this.handleDeleteTab(event);
         } else if (event.keyCode === 9) {
             this.handleInsertTab(event, 1);
-        }
-    }
-
-    outTheTabSpan(): void {
-        const sel = document.getSelection();
-
-        if (sel.anchorNode &&
-            sel.anchorNode.nodeName === 'span' &&
-            !sel.anchorNode.isSameNode(this.editor.nativeElement)) {
-
-            const range = sel.getRangeAt(0);
-
-            range.setStartAfter(sel.anchorNode);
-            range.collapse(true);
-            sel.removeAllRanges();
-            sel.addRange(range);
-        }
-    }
-
-    highlightCode(event): void {
-        const input = this.editorService.applyCapsLock(event);
-        const isBackspace = event.keyCode === 8;
-        const isEnter = event.keyCode === 13;
-        const hightlightCode =
-            this.highlights === 'true' &&
-            (/[a-zA-Z0-9-_@#$%^&*=()!~`:;"',\./?<>}{} ]/.test(input) || isBackspace || isEnter);
-
-        if (isBackspace) {
-            this.currentWordLetters.pop();
-        } else if (input === ' ') {
-            this.currentWord = this.currentWordLetters.join('');
-            const highlightColor = this.hightlightDict[this.currentWord];
-
-            if (highlightColor) {
-                const text = this.renderer.createText(this.currentWord);
-                const span = this.renderer.createElement('span');
-                const sel = document.getSelection();
-                const editor = this.editor.nativeElement;
-                const range = new Range();
-
-                this.renderer.appendChild(span, text);
-                this.renderer.setStyle(span, 'color', highlightColor);
-                this.renderer.appendChild(editor, span);
-                range.setStartAfter(text);
-                range.collapse(true);
-                sel.removeAllRanges();
-                sel.addRange(range);
-            }
-        } else {
-            this.currentWordLetters.push(input);
         }
     }
 
@@ -372,6 +337,27 @@ export class EditorComponent implements OnInit, OnDestroy, OnChanges, AfterViewI
         }
     }
 
+    onEnterPressedCreateNewLine(event) {
+        if (event.keyCode === 13) {
+            const sel = document.getSelection();
+            const range = sel.getRangeAt(0);
+            const currentLine = this.editorService.getSelectedElementParentLine(this.editor.nativeElement, sel);
+            range.setEndAfter(currentLine.lastChild);
+            const content = range.extractContents();
+            range.collapse(false);
+            const textContent = content.textContent;
+
+            if (textContent.lastIndexOf('}') !== -1) {
+                const insideContent = textContent.substring(0, textContent.lastIndexOf('}'));
+                this.editorService.addNewLine(this.editor.nativeElement, '}', true, currentLine);
+                this.insertTabsOnNewLine(event);
+                this.editorService.addNewLine(this.editor.nativeElement, insideContent, true, currentLine);
+            } else {
+                this.editorService.addNewLine(this.editor.nativeElement, textContent, true, currentLine);
+            }
+        }
+    }
+
     insertTabsOnNewLine(event): void {
         if (event.keyCode === 13) {
             const sel = document.getSelection();
@@ -386,12 +372,15 @@ export class EditorComponent implements OnInit, OnDestroy, OnChanges, AfterViewI
             if (previousSibling) {
                 const prevSiblingText = previousSibling.textContent;
 
-                if (prevSiblingText.lastIndexOf('{') !== -1) {
+                if (prevSiblingText.lastIndexOf('{') !== -1
+                    && sel.anchorNode.textContent.lastIndexOf('}') === -1) {
                     this.tabsInsideCurrentLine++;
                 }
 
                 this.handleInsertTab(event, this.tabsInsideCurrentLine);
             }
+
+            event.preventDefault();
         }
     }
 
@@ -447,7 +436,17 @@ export class EditorComponent implements OnInit, OnDestroy, OnChanges, AfterViewI
             }
 
             if (/[a-zA-Z0-9-_@#$%^&*=()!~`:;"',\./?<>}{} ]/.test(input) || isTab) {
-                this.editorService.addNewLine(this.editor.nativeElement, true);
+                this.editorService.addNewLine(this.editor.nativeElement, null, true);
+            }
+        }
+    }
+
+    preventAllLinesDeletion(event): void {
+        if (event.keyCode === 8) {
+            const lines = this.editor.nativeElement.querySelectorAll('.view-line');
+
+            if (lines.length === 1 && lines[0].textContent === '') {
+                event.preventDefault();
             }
         }
     }
@@ -485,13 +484,19 @@ export class EditorComponent implements OnInit, OnDestroy, OnChanges, AfterViewI
         event.preventDefault();
     }
 
+    shouldHightlight() {
+        return this.highlightsFor
+        && this.highlightsFor.trim().length > 0
+        && Object.keys(CodeType).map(value => value.toLowerCase()).includes(this.highlightsFor);
+    }
+
     renderText(value: string): void {
         if (this.editor && value && value !== '') {
             const editor: HTMLElement = this.editor.nativeElement;
             let viewLineOpened = false;
             let viewLine: HTMLDivElement;
 
-            if (this.deletePrevValueOnChange === 'true' || this.highlights === 'true') {
+            if (this.deletePrevValueOnChange === 'true' || this.shouldHightlight()) {
                 editor.innerHTML = '';
             }
 
@@ -505,21 +510,32 @@ export class EditorComponent implements OnInit, OnDestroy, OnChanges, AfterViewI
                     viewLine = this.editorService.addNewLine(editor);
                 }
 
-                if (! /^\s+$/.test(char)) {
-                    this.editorService.buildString(char);
-                } else {
-                    if (this.highlights === 'true') {
-                        this.editorService.appendText(viewLine, null, Hightlighter.Java);
+                const isWhitesapce = /^\s+$/.test(char);
+                const shouldHightlight = this.shouldHightlight();
+                const isStructuralChar = shouldHightlight && this.editorService.isStructuralChar(char, this.highlightsFor.toLowerCase());
+                const appendText = isWhitesapce || isStructuralChar;
+
+                if (appendText) {
+                    if (shouldHightlight) {
+                        this.editorService.appendText(viewLine, null, this.highlightsFor.toLowerCase());
                     } else {
                         this.editorService.appendText(viewLine);
                     }
+                }
 
+                if (isWhitesapce) {
                     if (char === '\n') {
                         viewLineOpened = false;
                     } else if (char === '\t') {
                         this.editorService.appendTab(viewLine);
                     } else if (char === ' ') {
                         this.editorService.addSpace(viewLine);
+                    }
+                } else {
+                    this.editorService.buildString(char);
+
+                    if (isStructuralChar) {
+                        this.editorService.appendText(viewLine, null, this.highlightsFor.toLowerCase());
                     }
                 }
             });

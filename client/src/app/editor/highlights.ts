@@ -4,11 +4,12 @@ export enum KeywordType {
     Primitive = 'primitive',
     PrimitiveWrapper = 'primitive-wrapper',
     Literal = 'literal',
-    Other = 'other'
+    Other = 'other',
+    Structural = 'structural'
 }
 
 export const hightlights: object = {
-    Java: {
+    java: {
         Integer: KeywordType.PrimitiveWrapper,
         Double: KeywordType.PrimitiveWrapper,
         String: KeywordType.PrimitiveWrapper,
@@ -68,6 +69,15 @@ export const hightlights: object = {
         throws: KeywordType.Other,
         transient: KeywordType.Other,
         try: KeywordType.Other,
-        while: KeywordType.Other
+        while: KeywordType.Other,
+        ';': KeywordType.Structural,
+        '{': KeywordType.Structural,
+        '}': KeywordType.Structural,
+        '(': KeywordType.Structural,
+        ')': KeywordType.Structural,
+        '[': KeywordType.Structural,
+        ']': KeywordType.Structural,
+        ':': KeywordType.Structural,
+        '.': KeywordType.Structural
     }
 };
