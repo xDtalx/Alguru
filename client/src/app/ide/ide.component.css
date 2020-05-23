@@ -23,7 +23,7 @@
   }
 }
 
-editor {
+app-editor {
   display: flex;
   height: 100%;
   overflow: auto;

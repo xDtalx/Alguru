@@ -9,30 +9,30 @@ import * as $ from 'jquery';
 
 
 @Component({
-  selector: 'ide',
+  selector: 'app-ide',
   templateUrl: './ide.component.html',
   styleUrls: [ './ide.component.css' ]
 })
 export class IDEComponent implements OnInit, OnDestroy {
   private executeListenerSubs: Subscription;
-  private prevHeight: number = 0;
+  private prevHeight = 0;
   public executeResponse: ExecuteResponse;
   public currentOutput: string;
   public solutionCode: string;
   public testsCode: string;
-  public lang: string = 'java';
+  public lang = 'java';
   public questionId: string;
   public questionToSolve: Question;
-  public theme: string = 'dark';
+  public theme = 'dark';
   public solutionTemplate: string;
   public code: string;
   public solValue: string;
   public testsValue: string;
-  public loading: boolean = false;
+  public loading = false;
 
   constructor(
-    private route: ActivatedRoute, 
-    private questionsService: QuestionsService, 
+    private route: ActivatedRoute,
+    private questionsService: QuestionsService,
     private codeService: CodeService,
     private renderer: Renderer2
   ) {
@@ -41,7 +41,7 @@ export class IDEComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.route.paramMap.subscribe((paramMap: ParamMap) => {
-      if(paramMap.has('questionId')) {
+      if (paramMap.has('questionId')) {
         this.questionId = paramMap.get('questionId');
 
         this.questionsService.getQuestion(this.questionId).subscribe(questionData => {
@@ -62,15 +62,15 @@ export class IDEComponent implements OnInit, OnDestroy {
       }
      });
 
-    this.executeResponse = { message: "", output: "", errors: "" };
-    this.currentOutput = "";
+    this.executeResponse = { message: '', output: '', errors: '' };
+    this.currentOutput = '';
     this.executeListenerSubs =
       this.codeService.getExecuteResponseListener().subscribe(response => {
         this.executeResponse = response;
         this.loading = false;
 
-        if(this.executeResponse !== null) {
-          this.currentOutput = "Custom> " + this.executeResponse.message;
+        if (this.executeResponse !== null) {
+          this.currentOutput = 'Custom> ' + this.executeResponse.message;
         }
       });
   }
@@ -85,29 +85,29 @@ export class IDEComponent implements OnInit, OnDestroy {
 
   makeContainerWithFixHeight(container, style): void {
     setTimeout(() => {
-      if(!$(container).hasClass('static-size')) {
+      if (!$(container).hasClass('static-size')) {
         this.renderer.setStyle(container, 'max-height', style.height);
       }
     }, 500);
   }
 
   calcVH(v): number {
-    var h = Math.max(document.documentElement.clientHeight, window.innerHeight || 0);
+    const h = Math.max(document.documentElement.clientHeight, window.innerHeight || 0);
     return (v * h) / 100;
   }
-  
+
   calcVW(v): number {
-    var w = Math.max(document.documentElement.clientWidth, window.innerWidth || 0);
+    const w = Math.max(document.documentElement.clientWidth, window.innerWidth || 0);
     return (v * w) / 100;
   }
-  
+
   refreshContainerSize(container, style): void {
-    if(!$(container).hasClass('static-size')) {
+    if (!$(container).hasClass('static-size')) {
       this.renderer.setStyle(container, 'max-height', '100%');
-      
-      if($(container).is('#solution-container')) {
+
+      if ($(container).is('#solution-container')) {
         this.setContainerStartingHeight(container, 50);
-      } else if($(container).is('#tests-container')) {
+      } else if ($(container).is('#tests-container')) {
         this.setContainerStartingHeight(container, 30);
       }
 
@@ -123,7 +123,7 @@ export class IDEComponent implements OnInit, OnDestroy {
     const currentHeight = this.calcVH(100);
     let newMinHeight;
 
-    if(currentHeight > this.prevHeight) {
+    if (currentHeight > this.prevHeight) {
       newMinHeight = Math.max(startingHeight, fitContentHeight);
     } else {
       newMinHeight = startingHeight < fitContentHeight ? fitContentHeight : Math.max(startingHeight, fitContentHeight);
@@ -150,6 +150,7 @@ export class IDEComponent implements OnInit, OnDestroy {
   }
 
   onSolutionChanged(value): void {
+    console.log('solution', value);
     this.solutionCode = value;
   }
 
@@ -164,11 +165,11 @@ export class IDEComponent implements OnInit, OnDestroy {
   onRunCode(): void {
     this.loading = true;
 
-    if(!this.testsCode || this.testsCode.trim() === '') {
+    if (!this.testsCode || this.testsCode.trim() === '') {
       this.testsCode = this.questionToSolve.tests[0];
     }
 
-    if(!this.solutionCode || this.solutionCode.trim() === '') {
+    if (!this.solutionCode || this.solutionCode.trim() === '') {
       this.solutionCode = this.questionToSolve.solutionTemplate[0];
     }
 
@@ -176,11 +177,11 @@ export class IDEComponent implements OnInit, OnDestroy {
   }
 
   onCustomClick(): void {
-    this.currentOutput = "Custom> " + this.executeResponse.message;
+    this.currentOutput = 'Custom> ' + this.executeResponse.message;
   }
 
   onRawOutputClick(): void {
-    this.currentOutput = "Output> " + (this.executeResponse.errors === '' ? this.executeResponse.output : this.executeResponse.errors);
+    this.currentOutput = 'Output> ' + (this.executeResponse.errors === '' ? this.executeResponse.output : this.executeResponse.errors);
   }
 
   onSolutionCodeChanged(value: string): void {

@@ -69,8 +69,11 @@ export class EditorComponent implements OnInit, OnDestroy, OnChanges, AfterViewI
         this.editorService.addEventHandler(this.editor, EventType.KeyDown, this.onEnterPressedCreateNewLine.bind(this));
         this.editorService.addEventHandler(this.editor, EventType.KeyDown, this.insertTabsOnNewLine.bind(this));
         this.editorService.addEventHandler(this.editor, EventType.KeyDown, this.refreshLineNumbers.bind(this));
-        this.editorService.addEventHandler(this.editor, EventType.KeyUp, this.refreshLocation.bind(this));
-        this.editorService.addEventHandler(this.editor, EventType.KeyUp, this.onTextChanged.bind(this));
+        this.editorService.addEventHandler(this.editor, EventType.KeyDown, this.refreshLocation.bind(this));
+        this.editorService.addEventHandler(this.editor, EventType.KeyDown, this.onTextChanged.bind(this));
+        this.editorService.addEventHandler(this.editor, EventType.KeyDown, this.refreshLocation.bind(this));
+        this.editorService.addEventHandler(this.editor, EventType.KeyUp, this.hightlightFocusedLine.bind(this));
+        this.editorService.addEventHandler(this.editor, EventType.KeyUp, () => this.valueChanged.emit(this.getEditorText()));
 
         if (this.editable === 'false') {
             this.renderer.setAttribute(this.editor.nativeElement, 'contenteditable', this.editable);
@@ -100,6 +103,26 @@ export class EditorComponent implements OnInit, OnDestroy, OnChanges, AfterViewI
 
     onKeyDown(event): void {
         this.editorService.handleEvent(this.editor, event);
+    }
+
+    onMouseUp(event) {
+        this.hightlightFocusedLine(event);
+    }
+
+    hightlightFocusedLine(event) {
+        this.refreshLocation();
+        const lines = this.editor.nativeElement.querySelectorAll('.view-line');
+        const currentLine = lines[this.currentLine];
+
+        if (currentLine) {
+            lines.forEach(line => {
+                if (line === currentLine) {
+                    this.renderer.addClass(line, 'focus');
+                } else {
+                    this.renderer.removeClass(line, 'focus');
+                }
+            });
+        }
     }
 
     handleLineCut(event): void {
@@ -179,6 +202,16 @@ export class EditorComponent implements OnInit, OnDestroy, OnChanges, AfterViewI
     }
 
     onTextChanged(event) {
+        const text = this.getEditorText();
+
+        if (text !== this.previousText) {
+            this.renderText(text);
+            this.restoreSelection();
+            this.previousText = text;
+        }
+    }
+
+    getEditorText() {
         const lines = [];
 
         this.getTextSegments(this.editor.nativeElement, true).forEach(line => {
@@ -186,14 +219,7 @@ export class EditorComponent implements OnInit, OnDestroy, OnChanges, AfterViewI
             lines.push('\n');
         });
 
-        const text = lines.join('');
-
-        if (text !== this.previousText) {
-            this.valueChanged.emit(text);
-            this.renderText(text);
-            this.restoreSelection();
-            this.previousText = text;
-        }
+        return lines.join('');
     }
 
     refreshCurrentLine(lineElement: Node): void {
@@ -346,15 +372,18 @@ export class EditorComponent implements OnInit, OnDestroy, OnChanges, AfterViewI
             const content = range.extractContents();
             range.collapse(false);
             const textContent = content.textContent;
+            let newLine;
 
             if (textContent.lastIndexOf('}') !== -1) {
                 const insideContent = textContent.substring(0, textContent.lastIndexOf('}'));
                 this.editorService.addNewLine(this.editor.nativeElement, '}', true, currentLine);
                 this.insertTabsOnNewLine(event);
-                this.editorService.addNewLine(this.editor.nativeElement, insideContent, true, currentLine);
+                newLine = this.editorService.addNewLine(this.editor.nativeElement, insideContent, true, currentLine);
             } else {
-                this.editorService.addNewLine(this.editor.nativeElement, textContent, true, currentLine);
+                newLine = this.editorService.addNewLine(this.editor.nativeElement, textContent, true, currentLine);
             }
+
+            // newLine.scrollIntoView();
         }
     }
 

@@ -77,7 +77,6 @@ export const hightlights: object = {
         ')': KeywordType.Structural,
         '[': KeywordType.Structural,
         ']': KeywordType.Structural,
-        ':': KeywordType.Structural,
-        '.': KeywordType.Structural
+        ':': KeywordType.Structural
     }
 };

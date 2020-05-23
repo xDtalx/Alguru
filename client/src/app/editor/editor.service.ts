@@ -1,6 +1,5 @@
 import { Injectable, ElementRef, Renderer2, RendererFactory2  } from '@angular/core';
 import { hightlights, KeywordType } from './highlights';
-import { version } from 'punycode';
 
 export enum ChildPosition {
     First,
@@ -50,25 +49,15 @@ export class EditorService {
     }
 
     handleEvent(element: ElementRef, event: Event): void {
-        const kbEvent = event as KeyboardEvent;
-        let isKBArrowEvent = false;
+        const eventHandlers = this.eventsCallbacks.get(element);
 
-        if (kbEvent) {
-            // tslint:disable-next-line: deprecation
-            isKBArrowEvent = kbEvent.keyCode >= 37 &&  kbEvent.keyCode <= 40;
-        }
+        if (eventHandlers) {
+            const callBacks = eventHandlers.get(event.type);
 
-        if (!isKBArrowEvent && !(isKBArrowEvent && kbEvent.ctrlKey)) {
-            const eventHandlers = this.eventsCallbacks.get(element);
-
-            if (eventHandlers) {
-                const callBacks = eventHandlers.get(event.type);
-
-                if (callBacks) {
-                    callBacks.forEach(callback => {
-                        callback(event);
-                    });
-                }
+            if (callBacks) {
+                callBacks.forEach(callback => {
+                    callback(event);
+                });
             }
         }
     }
@@ -141,7 +130,7 @@ export class EditorService {
     }
 
     getSelectedElementParentLine(editor: HTMLElement, selection: Selection): HTMLElement {
-        let element = selection.anchorNode as HTMLElement;
+        let element = selection.focusNode as HTMLElement;
         let line;
 
         while (element && !element.isSameNode(editor)) {
