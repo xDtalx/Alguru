@@ -1,18 +1,4 @@
 
-html {
-  background-color: rgb(53, 58, 66);
-}
-
-main {
-  background-color: red;
-  display: flex;
-  position: relative;
-  width: 100vw !important;
-  max-width: 100%;
-  height: 100%;
-  margin: auto;
-}
-
 * {
   padding: 0;
   margin: 0;

@@ -47,3 +47,32 @@
 .tab {
     white-space: pre;
 }
+
+.access-modifier {
+    color: rgb(103, 194, 255);
+}
+
+.non-access-modifier {
+    color: rgb(103, 194, 255);
+}
+
+.other {
+    color: rgb(103, 194, 255);
+}
+
+.literal {
+    color: rgb(245, 114, 186);
+}
+
+.primitive {
+    color: rgb(255, 186, 121);
+}
+
+.primitive-wrapper {
+    color: rgb(255, 186, 121);
+}
+
+.view-line {
+    white-space: pre;
+    caret-color: var(--caret-color);
+}
