@@ -72,6 +72,7 @@ export class EditorComponent implements OnInit, OnDestroy, OnChanges, AfterViewI
         this.editorService.addEventHandler(this.editor, EventType.KeyDown, this.refreshLocation.bind(this));
         this.editorService.addEventHandler(this.editor, EventType.KeyDown, this.onTextChanged.bind(this));
         this.editorService.addEventHandler(this.editor, EventType.KeyDown, this.refreshLocation.bind(this));
+        this.editorService.addEventHandler(this.editor, EventType.MouseUp, this.hightlightFocusedLine.bind(this));
         this.editorService.addEventHandler(this.editor, EventType.KeyUp, this.hightlightFocusedLine.bind(this));
         this.editorService.addEventHandler(this.editor, EventType.KeyUp, () => this.valueChanged.emit(this.getEditorText()));
 
@@ -106,22 +107,24 @@ export class EditorComponent implements OnInit, OnDestroy, OnChanges, AfterViewI
     }
 
     onMouseUp(event) {
-        this.hightlightFocusedLine(event);
+        this.editorService.handleEvent(this.editor, event);
     }
 
     hightlightFocusedLine(event) {
-        this.refreshLocation();
-        const lines = this.editor.nativeElement.querySelectorAll('.view-line');
-        const currentLine = lines[this.currentLine];
+        if (this.editable === 'true') {
+            this.refreshLocation();
+            const lines = this.editor.nativeElement.querySelectorAll('.view-line');
+            const currentLine = lines[this.currentLine];
 
-        if (currentLine) {
-            lines.forEach(line => {
-                if (line === currentLine) {
-                    this.renderer.addClass(line, 'focus');
-                } else {
-                    this.renderer.removeClass(line, 'focus');
-                }
-            });
+            if (currentLine) {
+                lines.forEach(line => {
+                    if (line === currentLine) {
+                        this.renderer.addClass(line, 'focus');
+                    } else {
+                        this.renderer.removeClass(line, 'focus');
+                    }
+                });
+            }
         }
     }
 
