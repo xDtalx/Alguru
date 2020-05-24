@@ -24,10 +24,18 @@
 }
 
 app-editor {
+  position: relative;
   display: flex;
   height: 100%;
-  overflow: auto;
-  background-color: rgb(80, 80, 94);
+  width: 100%;
+  max-width: calc((100vw - 4rem)/2);
+  background-color: var(--editor-background);
+}
+
+@media only screen and (max-width: 800px) {
+  app-editor {
+    max-width: calc(100vw - 2rem - 10px);
+  }
 }
 
 .editable-editor {
@@ -35,6 +43,7 @@ app-editor {
 }
 
 #first-col {
+  position: relative;
   display: flex;
   flex-direction: column;
   flex-grow: 1;
@@ -45,6 +54,7 @@ app-editor {
 }
 
 #second-col {
+  position: relative;
   display: flex;
   flex-direction: column;
   flex-grow: 1;

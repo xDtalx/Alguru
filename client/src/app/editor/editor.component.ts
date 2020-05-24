@@ -34,6 +34,11 @@ export class EditorComponent implements OnInit, OnDestroy, OnChanges, AfterViewI
     @Input() public theme = 'light';
     @Input() public initialValue = '';
     @Output() public valueChanged = new EventEmitter<string>();
+    @Output() public editorKeyDown = new EventEmitter<KeyboardEvent>();
+    @Output() public editorKeyUp = new EventEmitter<KeyboardEvent>();
+    @Output() public editorInput = new EventEmitter<KeyboardEvent>();
+    @Output() public editorMouseDown = new EventEmitter<MouseEvent>();
+    @Output() public editorMouseUp = new EventEmitter<MouseEvent>();
 
     @ViewChild('editor', {read: ElementRef}) editor: ElementRef;
 
@@ -73,6 +78,8 @@ export class EditorComponent implements OnInit, OnDestroy, OnChanges, AfterViewI
         this.editorService.addEventHandler(this.editor, EventType.KeyDown, this.onTextChanged.bind(this));
         this.editorService.addEventHandler(this.editor, EventType.KeyDown, this.refreshLocation.bind(this));
         this.editorService.addEventHandler(this.editor, EventType.MouseUp, this.hightlightFocusedLine.bind(this));
+        this.editorService.addEventHandler(this.editor, EventType.KeyUp, this.refreshLocation.bind(this));
+        this.editorService.addEventHandler(this.editor, EventType.KeyUp, this.onTextChanged.bind(this));
         this.editorService.addEventHandler(this.editor, EventType.KeyUp, this.hightlightFocusedLine.bind(this));
         this.editorService.addEventHandler(this.editor, EventType.KeyUp, () => this.valueChanged.emit(this.getEditorText()));
 
@@ -94,20 +101,38 @@ export class EditorComponent implements OnInit, OnDestroy, OnChanges, AfterViewI
         }
     }
 
-    onInput(event): void {
+    onInput(event: KeyboardEvent): void {
         this.editorService.handleEvent(this.editor, event);
+        this.editorInput.emit(event);
     }
 
-    onKeyUp(event): void {
+    onKeyUp(event: KeyboardEvent): void {
         this.editorService.handleEvent(this.editor, event);
+        this.editorKeyUp.emit(event);
     }
 
-    onKeyDown(event): void {
+    onKeyDown(event: KeyboardEvent): void {
         this.editorService.handleEvent(this.editor, event);
+        this.editorKeyDown.emit(event);
     }
 
-    onMouseUp(event) {
+    onMouseUp(event: MouseEvent) {
         this.editorService.handleEvent(this.editor, event);
+        this.editorMouseUp.emit(event);
+    }
+
+    onMouseDown(event: MouseEvent) {
+        this.editorService.handleEvent(this.editor, event);
+        this.editorMouseDown.emit(event);
+    }
+
+    scrollToEnd(event) {
+        const line: HTMLElement = this.editorService.getSelectedElementParentLine(this.editor.nativeElement, document.getSelection());
+        const lines: NodeList = this.editor.nativeElement.querySelectorAll('.view-line');
+
+        if (line === lines[lines.length - 1]) {
+            this.editor.nativeElement.scrollTop = line.offsetTop;
+        }
     }
 
     hightlightFocusedLine(event) {

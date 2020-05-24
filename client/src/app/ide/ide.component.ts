@@ -6,6 +6,7 @@ import { QuestionsService } from '../questions/questions.service';
 import { Question } from '../questions/question.model';
 import { ActivatedRoute, ParamMap } from '@angular/router';
 import * as $ from 'jquery';
+import { EditorService } from '../editor/editor.service';
 
 
 @Component({
@@ -34,7 +35,8 @@ export class IDEComponent implements OnInit, OnDestroy {
     private route: ActivatedRoute,
     private questionsService: QuestionsService,
     private codeService: CodeService,
-    private renderer: Renderer2
+    private renderer: Renderer2,
+    private editorService: EditorService
   ) {
     $(document).ready(this.onPageLoaded.bind(this));
   }
@@ -77,76 +79,37 @@ export class IDEComponent implements OnInit, OnDestroy {
 
   onPageLoaded(): void {
     $('.container').each((index, container) => {
-      const style = getComputedStyle(container);
+      const style: CSSStyleDeclaration = getComputedStyle(container);
       this.makeContainerWithFixHeight(container, style);
-      $(window).resize(() => this.refreshContainerSize(container, style));
     });
   }
 
-  makeContainerWithFixHeight(container, style): void {
+  makeContainerWithFixHeight(container: HTMLElement, style: CSSStyleDeclaration): void {
     setTimeout(() => {
       if (!$(container).hasClass('static-size')) {
-        this.renderer.setStyle(container, 'max-height', style.height);
+        const editor: HTMLElement = $(container).find('app-editor')[0];
+        const editorStyle: CSSStyleDeclaration = getComputedStyle(editor);
+
+        this.renderer.setStyle(container, 'height', style.height);
+        this.renderer.setStyle(editor, 'height', editorStyle.height);
       }
     }, 500);
   }
 
-  calcVH(v): number {
-    const h = Math.max(document.documentElement.clientHeight, window.innerHeight || 0);
-    return (v * h) / 100;
-  }
+  onKeyDown(event: KeyboardEvent) {
+    const editor: HTMLElement = event.target as HTMLElement;
+    const lastLine: HTMLElement = $(editor).find('.view-line').last()[0];
+    const sel: Selection = document.getSelection();
+    const currentLine: HTMLElement = this.editorService.getSelectedElementParentLine(editor, sel);
+    let editorContainer = editor;
 
-  calcVW(v): number {
-    const w = Math.max(document.documentElement.clientWidth, window.innerWidth || 0);
-    return (v * w) / 100;
-  }
-
-  refreshContainerSize(container, style): void {
-    if (!$(container).hasClass('static-size')) {
-      this.renderer.setStyle(container, 'max-height', '100%');
-
-      if ($(container).is('#solution-container')) {
-        this.setContainerStartingHeight(container, 50);
-      } else if ($(container).is('#tests-container')) {
-        this.setContainerStartingHeight(container, 30);
-      }
-
-      setTimeout(() => {
-        this.renderer.setStyle(container, 'max-height', style.height);
-      }, 500);
-    }
-  }
-
-  setContainerStartingHeight(container, vh): void {
-    const fitContentHeight = this.calcSolutionContainerHeight(container);
-    const startingHeight = this.calcVH(vh);
-    const currentHeight = this.calcVH(100);
-    let newMinHeight;
-
-    if (currentHeight > this.prevHeight) {
-      newMinHeight = Math.max(startingHeight, fitContentHeight);
-    } else {
-      newMinHeight = startingHeight < fitContentHeight ? fitContentHeight : Math.max(startingHeight, fitContentHeight);
+    while (!$(editorContainer).hasClass('editor-container')) {
+      editorContainer = editorContainer.parentElement;
     }
 
-    this.renderer.setStyle(container, 'min-height', `${newMinHeight}px`);
-    this.prevHeight = currentHeight;
-  }
-
-  calcSolutionContainerHeight(element): number {
-    let height = 0;
-
-    height += $(element).find('.head').outerHeight();
-    height += $(element).find('.editor').outerHeight();
-
-    return height;
-  }
-
-  refreshAllContainersSize(): void {
-    $('.container').each((index, container) => {
-      const style = getComputedStyle(container);
-      this.refreshContainerSize(container, style);
-    });
+    if (currentLine === lastLine) {
+      editorContainer.scrollTop = lastLine.offsetTop;
+    }
   }
 
   onSolutionChanged(value): void {

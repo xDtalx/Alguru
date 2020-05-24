@@ -13,7 +13,8 @@
       lineNumbering="true"
       [value]="solValue" 
       [theme]="theme" 
-      (valueChanged)="onSolutionChanged($event)"></app-editor>
+      (valueChanged)="onSolutionChanged($event)"
+      (editorKeyDown)="onKeyDown($event)"></app-editor>
       </div>
       <div class="container static-size" id="output-container">
         <div class="head">
@@ -55,7 +56,8 @@
       lineNumbering="true" 
       [value]="testsValue" 
       [theme]="theme" 
-      (valueChanged)="onTestsChanged($event)"></app-editor>
+      (valueChanged)="onTestsChanged($event)"
+      (editorKeyDown)="onKeyDown($event)"></app-editor>
     </div>
     <div class="container">
       <div class="head">
