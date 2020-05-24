@@ -107,7 +107,7 @@ export class IDEComponent implements OnInit, OnDestroy {
       editorContainer = editorContainer.parentElement;
     }
 
-    if (currentLine === lastLine) {
+    if (currentLine && currentLine === lastLine) {
       editorContainer.scrollTop = lastLine.offsetTop;
     }
   }

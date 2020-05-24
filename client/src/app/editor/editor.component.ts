@@ -73,10 +73,11 @@ export class EditorComponent implements OnInit, OnDestroy, OnChanges, AfterViewI
         this.eventsToSkipSaveState.push((event) => (event as KeyboardEvent).ctrlKey);
         this.eventsToSkipSaveState.push((event) => (event as KeyboardEvent).key === 'Backspace');
 
+        this.editorService.addEventHandler(this.editor, EventType.KeyDown, () => this.previousText = this.getEditorText());
         this.editorService.addEventHandler(this.editor, EventType.KeyDown, this.handleDeletion.bind(this));
         this.editorService.addEventHandler(this.editor, EventType.KeyDown, this.putCharOnKeyDown.bind(this));
         this.editorService.addEventHandler(this.editor, EventType.KeyDown, this.initFirstViewLine.bind(this));
-        this.editorService.addEventHandler(this.editor, EventType.KeyDown, this.handleLineCut.bind(this));
+        this.editorService.addEventHandler(this.editor, EventType.KeyDown, this.cutSelectedLines.bind(this));
         this.editorService.addEventHandler(this.editor, EventType.KeyDown, this.handleTabs.bind(this));
         this.editorService.addEventHandler(this.editor, EventType.KeyDown, this.refreshTabsCount.bind(this));
         this.editorService.addEventHandler(this.editor, EventType.KeyDown, this.onEnterPressedCreateNewLine.bind(this));
@@ -85,8 +86,9 @@ export class EditorComponent implements OnInit, OnDestroy, OnChanges, AfterViewI
         this.editorService.addEventHandler(this.editor, EventType.KeyDown, this.refreshLocation.bind(this));
         this.editorService.addEventHandler(this.editor, EventType.KeyDown, this.onTextChanged.bind(this));
         this.editorService.addEventHandler(this.editor, EventType.KeyDown, this.refreshLineNumbers.bind(this));
-        this.editorService.addEventHandler(this.editor, EventType.KeyDown, this.refreshLocation.bind(this));
         this.editorService.addEventHandler(this.editor, EventType.MouseUp, this.hightlightFocusedLine.bind(this));
+        this.editorService.addEventHandler(this.editor, EventType.KeyUp, this.refreshLocation.bind(this));
+        this.editorService.addEventHandler(this.editor, EventType.KeyUp, this.onTextChanged.bind(this));
         this.editorService.addEventHandler(this.editor, EventType.KeyUp, this.refreshLineNumbers.bind(this));
         this.editorService.addEventHandler(this.editor, EventType.KeyUp, this.hightlightFocusedLine.bind(this));
         this.editorService.addEventHandler(this.editor, EventType.KeyUp, () => this.valueChanged.emit(this.getEditorText()));
@@ -135,19 +137,22 @@ export class EditorComponent implements OnInit, OnDestroy, OnChanges, AfterViewI
         this.editorMouseDown.emit(event);
     }
 
-    onTextChanged(event) {
+    onTextChanged(event: KeyboardEvent) {
         let text;
-        const undo = event.ctrlKey && event.key === 'z' && this.history.length > 0;
-        const redo = event.ctrlKey && event.key === 'y' && this.future.length > 0;
+        const undo = event.ctrlKey && event.key === 'z';
+        const redo = event.ctrlKey && event.key === 'y';
 
         if (undo) {
-            const prevState = this.history.pop();
-            text = prevState.value;
-            this.tabsInsideCurrentLine = prevState.tabsInsideCurrentLine;
-            this.anchorIndex = prevState.anchorIndex;
-            this.focusIndex = prevState.focusIndex;
-            this.previousText = prevState.previousText;
-            this.currentLine = prevState.currentLine;
+            if (event.type === 'keydown' && this.history.length > 0) {
+                const prevState = this.history.pop();
+                text = prevState.value;
+                this.tabsInsideCurrentLine = prevState.tabsInsideCurrentLine;
+                this.anchorIndex = prevState.anchorIndex;
+                this.focusIndex = prevState.focusIndex;
+                this.previousText = prevState.previousText;
+                this.currentLine = prevState.currentLine;
+            }
+
             event.preventDefault();
         } else if (redo) {
             // TO-DO
@@ -155,7 +160,7 @@ export class EditorComponent implements OnInit, OnDestroy, OnChanges, AfterViewI
             text = this.getEditorText();
         }
 
-        if (this.previousText !== text || undo) {
+        if (text !== this.previousText || event.type === 'keydown' && undo) {
             this.renderText(text, this.deletePrevValueOnChange === 'true' || this.shouldHightlight());
             this.restoreSelection();
         }
@@ -163,13 +168,28 @@ export class EditorComponent implements OnInit, OnDestroy, OnChanges, AfterViewI
 
     putCharOnKeyDown(event: KeyboardEvent) {
         const sel = document.getSelection();
-        const range = sel.getRangeAt(0);
         const input = event.key;
 
-        this.previousText = this.getEditorText();
-
         if (!event.ctrlKey && input.length === 1 && /[a-zA-Z0-9-_@#$%^&*=()!~`:;"',\./?<>}{} ]/.test(input)) {
+            let range;
+
+            if (!sel.anchorNode) {
+                range = new Range();
+                const lines = this.editor.nativeElement.querySelectorAll('.view-line');
+
+                if (lines.length > 0) {
+                    range.setStart(lines[0], 0);
+                    range.collapse(true);
+                }
+
+                sel.removeAllRanges();
+                sel.addRange(range);
+            } else {
+                range = sel.getRangeAt(0);
+            }
+
             if (!this.autoComplete(event)) {
+
                 const textNode = this.renderer.createText(input);
                 range.insertNode(textNode);
                 range.setStartAfter(textNode);
@@ -235,7 +255,7 @@ export class EditorComponent implements OnInit, OnDestroy, OnChanges, AfterViewI
         }
     }
 
-    saveState(event): void {
+    saveState(event: KeyboardEvent): void {
         let saveState = true;
         this.eventsToSkipSaveState.forEach(check => saveState = saveState && !check(event));
 
@@ -251,7 +271,7 @@ export class EditorComponent implements OnInit, OnDestroy, OnChanges, AfterViewI
         }
     }
 
-    scrollToEnd(event): void {
+    scrollToEnd(): void {
         const line: HTMLElement = this.editorService.getSelectedElementParentLine(this.editor.nativeElement, document.getSelection());
         const lines: NodeList = this.editor.nativeElement.querySelectorAll('.view-line');
 
@@ -262,7 +282,7 @@ export class EditorComponent implements OnInit, OnDestroy, OnChanges, AfterViewI
 
     hightlightFocusedLine(event): void {
         if (this.editable === 'true') {
-            this.refreshLocation();
+            this.refreshLocation(event);
             const lines = this.editor.nativeElement.querySelectorAll('.view-line');
             const currentLine = lines[this.currentLine];
 
@@ -278,75 +298,90 @@ export class EditorComponent implements OnInit, OnDestroy, OnChanges, AfterViewI
         }
     }
 
-    handleLineCut(event): void {
-        if (event.ctrlKey && event.keyCode === 88) {
-            const sel = document.getSelection();
-            const notEditor = sel && sel.anchorNode && !sel.anchorNode.isSameNode(this.editor.nativeElement);
+    getParentLine(node: HTMLElement): HTMLElement {
+        let anchorLine: HTMLElement = node;
+
+        while ((!anchorLine.classList || !anchorLine.classList.contains('view-line'))
+        && !anchorLine.isSameNode(this.editor.nativeElement)) {
+            anchorLine = anchorLine.parentElement;
+        }
+
+        if (node.isSameNode(this.editor.nativeElement)) {
+            anchorLine = null;
+        }
+
+        return anchorLine;
+    }
+
+    selectLines(anchorLine: HTMLDivElement, focusLine: HTMLDivElement): Range {
+        const range = new Range();
+        range.setStartBefore(anchorLine);
+        range.setEndAfter(focusLine);
+        return range;
+    }
+
+    cutSelectedLines(event): void {
+        if (event.ctrlKey && event.key === 'x') {
             const lines = this.editor.nativeElement.querySelectorAll('.view-line');
-            const linesCount = lines.length;
-            const singleLineEmpty = linesCount === 1 && lines[0].textContent === '';
 
-            if (notEditor && !singleLineEmpty) {
-                const range = sel.getRangeAt(0);
-                let node: HTMLElement = sel.anchorNode as HTMLElement;
+            if (!(lines.length === 1 && lines[0].textContent === '')) {
+                const sel = document.getSelection();
+                const anchorLine = this.getParentLine(sel.anchorNode as HTMLElement);
+                const focusLine = this.getParentLine(sel.focusNode as HTMLElement);
 
-                if (range.startOffset === range.endOffset) {
-                    while ((!node.classList || !node.classList.contains('view-line'))
-                    && !node.isSameNode(this.editor.nativeElement)) {
-                        node = node.parentElement;
-                    }
+                if (anchorLine && focusLine) {
+                    this.history.push({
+                        currentLine: this.currentLine,
+                        value: this.previousText,
+                        tabsInsideCurrentLine: this.tabsInsideCurrentLine,
+                        anchorIndex: this.anchorIndex,
+                        focusIndex: this.focusIndex,
+                        previousText: this.previousText
+                    });
 
-                    if (!node.isSameNode(this.editor.nativeElement)) {
-                        let sibling;
+                    const range = this.selectLines(anchorLine as HTMLDivElement, focusLine as HTMLDivElement);
+                    sel.removeAllRanges();
+                    sel.addRange(range);
+                    document.execCommand('cut');
 
-                        if (node.nextSibling) {
-                            sibling = node.nextSibling;
-
-                            this.history.push({
-                                currentLine: this.currentLine,
-                                value: this.previousText,
-                                tabsInsideCurrentLine: this.tabsInsideCurrentLine,
-                                anchorIndex: this.anchorIndex,
-                                focusIndex: this.anchorIndex,
-                                previousText: this.previousText
-                            });
-                        } else {
-                            sibling = node.previousSibling;
-
-                            this.history.push({
-                                currentLine: this.currentLine,
-                                value: this.previousText,
-                                tabsInsideCurrentLine: this.tabsInsideCurrentLine,
-                                anchorIndex: 0,
-                                focusIndex: 0,
-                                previousText: this.previousText
-                            });
-                        }
-
-                        node.parentElement.removeChild(node);
-
-                        if (sibling) {
-                            if (sibling.firstChild && sibling.firstChild.nodeName.toLowerCase() !== 'br') {
-                                range.setStart(sibling.firstChild, 0);
-                            } else {
-                                range.setStart(sibling, 0);
-                            }
-
-                            range.collapse(true);
-                            sel.removeAllRanges();
-                            sel.addRange(range);
-                            this.setLineNumberToReturn(sibling);
-                        }
-
-                        this.refreshLineNumbers();
+                    if (focusLine === lines[lines.length - 1]) {
+                        focusLine.parentElement.removeChild(focusLine);
                     }
                 }
             }
 
-            if (this.editor.nativeElement.querySelectorAll('.view-line').length === 0) {
-                this.editorService.addNewLine(this.editor.nativeElement, null, true);
-            }
+            event.preventDefault();
         }
+    }
+
+    getSiblingToMoveToAfterCut(anchorNode, focusNode): HTMLElement {
+        let sibling: HTMLElement;
+
+        if (focusNode.nextSibling) {
+            sibling = focusNode.nextSibling;
+
+            this.history.push({
+                currentLine: this.currentLine,
+                value: this.previousText,
+                tabsInsideCurrentLine: this.tabsInsideCurrentLine,
+                anchorIndex: this.anchorIndex,
+                focusIndex: this.focusIndex,
+                previousText: this.previousText
+            });
+        } else {
+            sibling = anchorNode.previousSibling;
+
+            this.history.push({
+                currentLine: this.currentLine,
+                value: this.previousText,
+                tabsInsideCurrentLine: this.tabsInsideCurrentLine,
+                anchorIndex: 0,
+                focusIndex: 0,
+                previousText: this.previousText
+            });
+        }
+
+        return sibling;
     }
 
     autoComplete(event): boolean {
@@ -407,39 +442,41 @@ export class EditorComponent implements OnInit, OnDestroy, OnChanges, AfterViewI
         }
     }
 
-    refreshLocation(): void {
+    refreshLocation(event): void {
         const sel: Selection = document.getSelection();
         const line: HTMLElement = this.editorService.getSelectedElementParentLine(this.editor.nativeElement, sel);
 
-        if (line) {
-            this.refreshCurrentLine(line);
+        if (event.key !== 'Backspace') {
+            if (line) {
+                this.refreshCurrentLine(line);
 
-            let currentIndex = 0;
-            const textSegments = this.getTextSegments(line, false);
+                let currentIndex = 0;
+                const textSegments = this.getTextSegments(line, false);
 
-            textSegments.forEach(({text, node}) => {
-                if (node === sel.anchorNode) {
-                    this.anchorIndex = currentIndex + sel.anchorOffset;
-                } else if (node.parentElement === sel.anchorNode) {
-                    const range = new Range();
-                    range.selectNode(node);
-                    this.anchorIndex = currentIndex + sel.anchorOffset - range.startOffset;
-                }
+                textSegments.forEach(({text, node}) => {
+                    if (node === sel.anchorNode) {
+                        this.anchorIndex = currentIndex + sel.anchorOffset;
+                    } else if (node.parentElement === sel.anchorNode) {
+                        const range = new Range();
+                        range.selectNode(node);
+                        this.anchorIndex = currentIndex + sel.anchorOffset - range.startOffset;
+                    }
 
-                if (node === sel.focusNode) {
-                    this.focusIndex = currentIndex + sel.focusOffset;
-                } else if (node.parentElement === sel.focusNode) {
-                    const range = new Range();
-                    range.selectNode(node);
-                    this.focusIndex = currentIndex + sel.focusOffset - range.startOffset;
-                }
+                    if (node === sel.focusNode) {
+                        this.focusIndex = currentIndex + sel.focusOffset;
+                    } else if (node.parentElement === sel.focusNode) {
+                        const range = new Range();
+                        range.selectNode(node);
+                        this.focusIndex = currentIndex + sel.focusOffset - range.startOffset;
+                    }
 
-                currentIndex += text.length;
-            });
-        } else {
-            this.currentLine = 0;
-            this.anchorIndex = 0;
-            this.focusIndex = 0;
+                    currentIndex += text.length;
+                });
+            } else {
+                this.currentLine = 0;
+                this.anchorIndex = 0;
+                this.focusIndex = 0;
+            }
         }
     }
 
@@ -642,29 +679,44 @@ export class EditorComponent implements OnInit, OnDestroy, OnChanges, AfterViewI
         }
     }
 
-    handleDeletion(event): void {
-        if (event.keyCode === 8) {
+    handleDeletion(event: KeyboardEvent): void {
+        if (event.key === 'Backspace') {
             const lines = this.editor.nativeElement.querySelectorAll('.view-line');
             const currentLine = lines[this.currentLine];
-            this.previousText = this.getEditorText();
 
-            this.history.push({
-                currentLine: this.currentLine,
-                value: this.previousText,
-                tabsInsideCurrentLine: this.tabsInsideCurrentLine,
-                anchorIndex: this.anchorIndex,
-                focusIndex: this.focusIndex,
-                previousText: this.previousText
-            });
+            if (currentLine && currentLine.textContent !== '') {
+                this.history.push({
+                    currentLine: this.currentLine,
+                    value: this.previousText,
+                    tabsInsideCurrentLine: this.tabsInsideCurrentLine,
+                    anchorIndex: this.anchorIndex,
+                    focusIndex: this.focusIndex,
+                    previousText: this.previousText
+                });
+            }
+
+            if (this.focusIndex === this.anchorIndex) {
+                if (this.focusIndex > 0) {
+                    this.focusIndex--;
+                    this.anchorIndex--;
+                } else if (currentLine && currentLine.previousSibling) {
+                    this.focusIndex = currentLine.previousSibling.textContent.length;
+                    this.anchorIndex = this.focusIndex;
+                    this.currentLine--;
+                }
+            }
 
             if (lines.length === 1 && lines[0].textContent === '') {
                 event.preventDefault();
-            } else if (currentLine && currentLine.textContent === '' && this.currentLine > 0) {
+            } else if (currentLine
+                && !currentLine.previousSibling
+                && currentLine.textContent === ''
+                && this.currentLine > 0) {
+
                 currentLine.parentElement.removeChild(currentLine);
                 this.currentLine--;
-                this.focusIndex = lines[this.currentLine].textContent.length;
-                this.anchorIndex = this.focusIndex;
-                this.restoreSelection();
+                this.focusIndex = 0;
+                this.anchorIndex = 0;
                 this.refreshLineNumbers();
                 event.preventDefault();
             }
