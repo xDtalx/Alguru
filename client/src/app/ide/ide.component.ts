@@ -113,7 +113,6 @@ export class IDEComponent implements OnInit, OnDestroy {
   }
 
   onSolutionChanged(value): void {
-    console.log('solution', value);
     this.solutionCode = value;
   }
 
