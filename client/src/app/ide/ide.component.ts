@@ -16,7 +16,6 @@ import { EditorService } from '../editor/editor.service';
 })
 export class IDEComponent implements OnInit, OnDestroy {
   private executeListenerSubs: Subscription;
-  private prevHeight = 0;
   public executeResponse: ExecuteResponse;
   public currentOutput: string;
   public solutionCode: string;
@@ -77,23 +76,15 @@ export class IDEComponent implements OnInit, OnDestroy {
       });
   }
 
+  ngOnDestroy(): void {
+    this.executeListenerSubs.unsubscribe();
+  }
+
   onPageLoaded(): void {
     $('.container').each((index, container) => {
       const style: CSSStyleDeclaration = getComputedStyle(container);
       this.makeContainerWithFixHeight(container, style);
     });
-  }
-
-  makeContainerWithFixHeight(container: HTMLElement, style: CSSStyleDeclaration): void {
-    setTimeout(() => {
-      if (!$(container).hasClass('static-size')) {
-        const editor: HTMLElement = $(container).find('app-editor')[0];
-        const editorStyle: CSSStyleDeclaration = getComputedStyle(editor);
-
-        this.renderer.setStyle(container, 'height', style.height);
-        this.renderer.setStyle(editor, 'height', editorStyle.height);
-      }
-    }, 500);
   }
 
   onKeyDown(event: KeyboardEvent) {
@@ -112,16 +103,24 @@ export class IDEComponent implements OnInit, OnDestroy {
     }
   }
 
+  makeContainerWithFixHeight(container: HTMLElement, style: CSSStyleDeclaration): void {
+    setTimeout(() => {
+      if (!$(container).hasClass('static-size')) {
+        const editor: HTMLElement = $(container).find('app-editor')[0];
+        const editorStyle: CSSStyleDeclaration = getComputedStyle(editor);
+
+        this.renderer.setStyle(container, 'height', style.height);
+        this.renderer.setStyle(editor, 'height', editorStyle.height);
+      }
+    }, 500);
+  }
+
   onSolutionChanged(value): void {
     this.solutionCode = value;
   }
 
   onTestsChanged(value): void {
     this.testsCode = value;
-  }
-
-  ngOnDestroy(): void {
-    this.executeListenerSubs.unsubscribe();
   }
 
   onRunCode(): void {

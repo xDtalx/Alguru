@@ -88,7 +88,11 @@
     caret-color: var(--caret-color);
 }
 
-.focus {
-    background-color: rgba(0, 0, 0, 0.020);
-    outline: 1px solid rgba(0, 0, 0, 0.150);
+.view-line * {
+    pointer-events: none;
+}
+
+.line-focus {
+    background-color: var(--line-focus-bg-color);
+    outline: var(--line-focus-border);
 }

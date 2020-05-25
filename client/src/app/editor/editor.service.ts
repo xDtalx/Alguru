@@ -113,7 +113,7 @@ export class EditorService {
     createNewLine(content?: any): HTMLDivElement {
         const newLine: HTMLDivElement = this.renderer.createElement('div');
         this.renderer.addClass(newLine, 'view-line');
-
+        
         if (content) {
             if (typeof content === 'string') {
                 const text = this.renderer.createText(content);

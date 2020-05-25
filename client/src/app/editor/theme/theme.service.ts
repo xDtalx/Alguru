@@ -7,7 +7,7 @@ import { Theme, light, dark } from './theme';
 export class ThemeService {
   private active: Theme = light;
   private availableThemes: Theme[] = [light, dark];
-  private initialProperties: Map<string, string>;
+  private previousProperties: Map<string, string>;
 
   getAvailableThemes(): Theme[] {
     return this.availableThemes;
@@ -30,22 +30,21 @@ export class ThemeService {
   }
 
   setActiveTheme(theme: Theme): void {
-    const saveInitialProperties = !this.initialProperties;
     this.active = theme;
 
-    if(saveInitialProperties) {
-      this.initialProperties = new Map<string, string>();
+    if (!this.previousProperties) {
+      this.previousProperties = new Map<string, string>();
+
+      Object.keys(this.active.properties).forEach(property => {
+        const prevPropertyValue = document.documentElement.style.getPropertyValue(property);
+
+        if (prevPropertyValue) {
+          this.previousProperties.set(property, prevPropertyValue);
+        }
+      });
     }
 
     Object.keys(this.active.properties).forEach(property => {
-      if(saveInitialProperties) {
-        const prevValue: string = document.documentElement.style.getPropertyValue(property);
-
-        if(prevValue) {
-          this.initialProperties.set(property, prevValue);
-        }
-      }
-
       document.documentElement.style.setProperty(
         property,
         this.active.properties[property]
@@ -55,11 +54,13 @@ export class ThemeService {
 
   reset() {
     Object.keys(this.active.properties).forEach(property => {
-      const prevValue: string = this.initialProperties.get(property);
-
-      if(prevValue) {
-        document.documentElement.style.setProperty(property, prevValue);
+      if (document.documentElement.style.getPropertyValue(property)) {
+        document.documentElement.style.removeProperty(property);
       }
+    });
+
+    this.previousProperties.forEach((value, key) => {
+      document.documentElement.style.setProperty(key, value);
     });
   }
 
@@ -67,8 +68,8 @@ export class ThemeService {
     const availables: Theme[] = this.getAvailableThemes();
     const count = availables.length;
 
-    for(let i = 0; i < count; i++) {
-      if(availables[i].name === name) {
+    for (let i = 0; i < count; i++) {
+      if (availables[i].name === name) {
         this.setActiveTheme(availables[i]);
         break;
       }
