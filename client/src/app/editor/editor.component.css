@@ -83,6 +83,18 @@
     color:rgb(195, 204, 218);
 }
 
+.string-literal {
+    color: rgb(255, 186, 121);
+}
+
+.annotation {
+    color: rgb(255, 242, 121);
+}
+
+.comment {
+    color: rgb(121, 255, 132);
+}
+
 .view-line {
     white-space: pre;
     caret-color: var(--caret-color);

@@ -1,5 +1,5 @@
 import { Injectable, ElementRef, Renderer2, RendererFactory2  } from '@angular/core';
-import { hightlights, KeywordType } from './highlights';
+import { hightlights, KeywordType, Specials } from './highlights';
 
 export enum ChildPosition {
     First,
@@ -113,7 +113,7 @@ export class EditorService {
     createNewLine(content?: any): HTMLDivElement {
         const newLine: HTMLDivElement = this.renderer.createElement('div');
         this.renderer.addClass(newLine, 'view-line');
-        
+
         if (content) {
             if (typeof content === 'string') {
                 const text = this.renderer.createText(content);
@@ -169,7 +169,7 @@ export class EditorService {
         return newLine;
     }
 
-    appendText(line: HTMLDivElement, text?: string, codeType?: CodeType): void {
+    appendText(line: HTMLDivElement, text?: string, codeType?: CodeType): string {
         let newText: HTMLElement;
 
         if (text) {
@@ -178,24 +178,43 @@ export class EditorService {
             newText = this.getText(codeType);
         }
 
+        text = newText.textContent;
+
         if (this.stringBuilder.length > 0 && this.stringBuilder[0].length > 0 || text) {
             this.removeBR(line);
 
             if (codeType) {
-                Array.from(newText.childNodes).forEach(value => this.renderer.appendChild(line, value));
+                const contained = this.getContained(codeType, text);
+
+                if (contained) {
+                    const span = this.renderer.createElement('span');
+                    const textElement = this.renderer.createText(text);
+                    this.renderer.addClass(span, contained.type);
+                    this.renderer.appendChild(span, textElement);
+                    this.renderer.appendChild(line, span);
+                } else {
+                    Array.from(newText.childNodes).forEach(value => this.renderer.appendChild(line, value));
+                }
             } else {
                 this.renderer.appendChild(line, newText);
             }
 
             this.stringBuilder = [[]];
         }
+
+        return text;
     }
 
-    addSpace(line: HTMLDivElement) {
-        const span = this.renderer.createElement('span');
+    addSpace(line: HTMLDivElement, asTextNode: boolean) {
         const space = this.renderer.createText(' ');
-        this.renderer.appendChild(span, space);
-        this.renderer.appendChild(line, span);
+
+        if (asTextNode) {
+            this.renderer.appendChild(line, space);
+        } else {
+            const span = this.renderer.createElement('span');
+            this.renderer.appendChild(span, space);
+            this.renderer.appendChild(line, span);
+        }
     }
 
     isStructuralChar(char: any, codeType: CodeType): boolean {
@@ -207,7 +226,7 @@ export class EditorService {
         let words: string[] = [];
 
         if (codeType) {
-            container = this.renderer.createElement('div');
+            container = this.renderer.createElement('span');
         }
 
         if (this.stringBuilder[0].length > 0) {
@@ -215,7 +234,7 @@ export class EditorService {
                 const word = letters.join('');
 
                 if (codeType) {
-                    const keyWordType = hightlights[codeType][word];
+                    const keyWordType: KeywordType = hightlights[codeType].keywords[word];
 
                     if (keyWordType) {
                         if (words.length > 0) {
@@ -250,6 +269,33 @@ export class EditorService {
         return codeType ? container : this.renderer.createText(words.join(' '));
     }
 
+    getContained(codeType: CodeType, word: string): {str: string, type: Specials} {
+        let result: {str: string, type: Specials};
+
+        if (word && word.length > 0) {
+            const wordLength = word.length;
+
+            for (let i = 1; i <= wordLength; i++) {
+                const subString: string = word.substring(0, i);
+                let containedType = hightlights[codeType];
+
+                if (containedType) {
+                    containedType = hightlights[codeType].special[subString];
+                }
+
+                if (containedType) {
+                    result = {
+                        str: subString,
+                        type: containedType
+                    };
+                    break;
+                }
+            }
+        }
+
+        return result;
+    }
+
     removeBR(line: HTMLDivElement) {
         const br = this.findElement(line, 'br', ChildPosition.First);
 
@@ -266,12 +312,17 @@ export class EditorService {
         }
     }
 
-    appendTab(line: HTMLDivElement): void {
+    appendTab(line: HTMLDivElement, asTextNode: boolean): void {
         this.removeBR(line);
-        const span = this.renderer.createElement('span');
         const tab = this.renderer.createText('\t');
-        this.renderer.addClass(span, 'tab');
-        this.renderer.appendChild(span, tab);
-        this.renderer.appendChild(line, span);
+
+        if (asTextNode) {
+            this.renderer.appendChild(line, tab);
+        } else {
+            const span = this.renderer.createElement('span');
+            this.renderer.addClass(span, 'tab');
+            this.renderer.appendChild(span, tab);
+            this.renderer.appendChild(line, span);
+        }
     }
 }

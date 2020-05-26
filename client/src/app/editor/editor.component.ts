@@ -16,6 +16,7 @@ import { DomSanitizer } from '@angular/platform-browser';
 import { EditorService, EventType, CodeType } from './editor.service';
 import { ThemeService } from './theme/theme.service';
 import { EditorState } from './editor-state';
+import { hightlights, Specials } from './highlights';
 
 
 @Component({
@@ -68,7 +69,7 @@ export class EditorComponent implements OnInit, OnDestroy, OnChanges, AfterViewI
     }
 
     ngAfterViewInit(): void {
-        this.renderText(this.initialValue, this.deletePrevValueOnChange === 'true' || this.shouldHightlight());
+        this.renderText(this.initialValue, this.deletePrevValueOnChange === 'true' || this.shouldHighlight());
         this.eventsToSkipSaveState.push((event) => this.getEditorText() === this.previousText);
         this.eventsToSkipSaveState.push((event) => (event as KeyboardEvent).ctrlKey);
         this.eventsToSkipSaveState.push((event) => (event as KeyboardEvent).key === 'Backspace');
@@ -108,7 +109,7 @@ export class EditorComponent implements OnInit, OnDestroy, OnChanges, AfterViewI
     ngOnChanges(changes: SimpleChanges): void {
         if (changes.value) {
             this.renderText(changes.value.currentValue,
-                this.deletePrevValueOnChange === 'true' || this.shouldHightlight());
+                this.deletePrevValueOnChange === 'true' || this.shouldHighlight());
         }
     }
 
@@ -161,7 +162,7 @@ export class EditorComponent implements OnInit, OnDestroy, OnChanges, AfterViewI
         }
 
         if (text !== this.previousText || event.type === 'keydown' && undo) {
-            this.renderText(text, this.deletePrevValueOnChange === 'true' || this.shouldHightlight());
+            this.renderText(text, this.deletePrevValueOnChange === 'true' || this.shouldHighlight());
             this.restoreSelection();
         }
     }
@@ -225,37 +226,46 @@ export class EditorComponent implements OnInit, OnDestroy, OnChanges, AfterViewI
                 }
 
                 const isWhitesapce = /^\s+$/.test(char);
-                const shouldHightlight = this.shouldHightlight();
+                const shouldHightlight = this.shouldHighlight();
                 const isStructuralChar = shouldHightlight && this.editorService.isStructuralChar(char, this.highlightsFor.toLowerCase());
                 const appendText = isWhitesapce || isStructuralChar;
+                let appendedText: string;
 
                 if (appendText) {
-                    if (shouldHightlight) {
-                        this.editorService.appendText(viewLine, null, this.highlightsFor.toLowerCase());
-                    } else {
-                        this.editorService.appendText(viewLine);
-                    }
+                    appendedText = this.appendText(viewLine, shouldHightlight);
                 }
 
                 if (isWhitesapce) {
                     if (char === '\n') {
                         viewLineOpened = false;
                     } else if (char === '\t') {
-                        this.editorService.appendTab(viewLine);
+                        this.editorService.appendTab(viewLine, false);
                     } else if (char === ' ') {
-                        this.editorService.addSpace(viewLine);
+                        this.editorService.addSpace(viewLine, false);
                     }
                 } else {
                     this.editorService.buildString(char);
 
                     if (isStructuralChar) {
-                        this.editorService.appendText(viewLine, null, this.highlightsFor.toLowerCase());
+                        appendedText = this.editorService.appendText(viewLine, null, this.highlightsFor.toLowerCase());
                     }
                 }
             });
 
             this.refreshLineNumbers();
         }
+    }
+
+    appendText(line: HTMLDivElement, hightLight: boolean): string {
+        let appendedText: string;
+
+        if (hightLight) {
+            appendedText = this.editorService.appendText(line, null, this.highlightsFor.toLowerCase());
+        } else {
+            appendedText = this.editorService.appendText(line);
+        }
+
+        return appendedText;
     }
 
     saveState(event: KeyboardEvent): void {
@@ -406,14 +416,20 @@ export class EditorComponent implements OnInit, OnDestroy, OnChanges, AfterViewI
                         previousText: this.previousText
                     });
 
-                    const range = this.selectLines(anchorLine as HTMLDivElement, focusLine as HTMLDivElement);
-                    sel.removeAllRanges();
-                    sel.addRange(range);
-                    document.execCommand('cut');
-                    isSingleLineAndEmpty = lines.length === 1 && lines[0].textContent === '';
+                    const selRange = sel.getRangeAt(0);
 
-                    if (focusLine === lines[lines.length - 1] && !isSingleLineAndEmpty) {
-                        focusLine.parentElement.removeChild(focusLine);
+                    if (anchorLine === focusLine && selRange.endOffset !== selRange.startOffset) {
+                        document.execCommand('cut');
+                    } else {
+                        const range = this.selectLines(anchorLine as HTMLDivElement, focusLine as HTMLDivElement);
+                        sel.removeAllRanges();
+                        sel.addRange(range);
+                        document.execCommand('cut');
+                        isSingleLineAndEmpty = lines.length === 1 && lines[0].textContent === '';
+
+                        if (focusLine === lines[lines.length - 1] && !isSingleLineAndEmpty) {
+                            focusLine.parentElement.removeChild(focusLine);
+                        }
                     }
                 }
             }
@@ -826,7 +842,7 @@ export class EditorComponent implements OnInit, OnDestroy, OnChanges, AfterViewI
         event.preventDefault();
     }
 
-    shouldHightlight(): boolean {
+    shouldHighlight(): boolean {
         return this.highlightsFor
         && this.highlightsFor.trim().length > 0
         && Object.keys(CodeType).map(value => value.toLowerCase()).includes(this.highlightsFor);
