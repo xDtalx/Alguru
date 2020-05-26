@@ -91,6 +91,7 @@ export class EditorComponent implements OnInit, OnDestroy, OnChanges, AfterViewI
         this.editorService.addEventHandler(this.editor, EventType.KeyUp, this.onTextChanged.bind(this));
         this.editorService.addEventHandler(this.editor, EventType.KeyUp, this.refreshLineNumbers.bind(this));
         this.editorService.addEventHandler(this.editor, EventType.KeyUp, () => this.valueChanged.emit(this.getEditorText()));
+        this.editorService.addEventHandler(this.editor, EventType.MouseUp, this.refreshLocation.bind(this));
 
         if (this.editable === 'false') {
             this.renderer.setAttribute(this.editor.nativeElement, 'contenteditable', this.editable);
@@ -335,7 +336,6 @@ export class EditorComponent implements OnInit, OnDestroy, OnChanges, AfterViewI
 
     hightlightLineOnMouseDown(event): void {
         if (this.editable === 'true') {
-            this.refreshLocation(event);
             const anchorLine = event.target;
             this.hightlightLine(anchorLine);
         }
