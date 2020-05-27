@@ -1,13 +1,11 @@
 import { Injectable, ElementRef, Renderer2, RendererFactory2  } from '@angular/core';
-import { hightlights, KeywordType, Specials } from './highlights';
+import { getHighlights } from './highlighters/highlights';
+import { Highlighter } from './highlighters/highlighter';
+import { CodeType } from './highlighters/code.type';
 
 export enum ChildPosition {
     First,
     Last
-}
-
-export enum CodeType {
-    Java = 'java'
 }
 
 export enum EventType {
@@ -169,37 +167,16 @@ export class EditorService {
         return newLine;
     }
 
-    appendText(line: HTMLDivElement, text?: string, codeType?: CodeType): string {
+    appendText(line: HTMLDivElement, text: string): string {
         let newText: HTMLElement;
 
         if (text) {
             newText = this.renderer.createText(text);
-        } else if (this.stringBuilder.length > 0) {
-            newText = this.getText(codeType);
         }
 
-        text = newText.textContent;
-
-        if (this.stringBuilder.length > 0 && this.stringBuilder[0].length > 0 || text) {
+        if (newText) {
             this.removeBR(line);
-
-            if (codeType) {
-                const contained = this.getContained(codeType, text);
-
-                if (contained) {
-                    const span = this.renderer.createElement('span');
-                    const textElement = this.renderer.createText(text);
-                    this.renderer.addClass(span, contained.type);
-                    this.renderer.appendChild(span, textElement);
-                    this.renderer.appendChild(line, span);
-                } else {
-                    Array.from(newText.childNodes).forEach(value => this.renderer.appendChild(line, value));
-                }
-            } else {
-                this.renderer.appendChild(line, newText);
-            }
-
-            this.stringBuilder = [[]];
+            this.renderer.appendChild(line, newText);
         }
 
         return text;
@@ -217,84 +194,79 @@ export class EditorService {
         }
     }
 
-    isStructuralChar(char: any, codeType: CodeType): boolean {
-        return hightlights[codeType][char] === KeywordType.Structural;
-    }
+    // isStructuralChar(char: any, codeType: CodeType): boolean {
+    //     return hightlights[codeType][char] === KeywordType.Structural;
+    // }
 
     private getText(codeType?: CodeType): HTMLElement {
         let container: HTMLElement;
-        let words: string[] = [];
-
-        if (codeType) {
-            container = this.renderer.createElement('span');
-        }
+        let line: string;
 
         if (this.stringBuilder[0].length > 0) {
-            this.stringBuilder.forEach((letters, index) => {
-                const word = letters.join('');
+            line = this.stringBuilder.map(letters => letters.join('')).join(' ');
 
-                if (codeType) {
-                    const keyWordType: KeywordType = hightlights[codeType].keywords[word];
+            if (codeType) {
+                container = this.renderer.createElement('span');
+                const highlighter: Highlighter = getHighlights().getByCodeType(codeType, this.renderer);
 
-                    if (keyWordType) {
-                        if (words.length > 0) {
-                            words.push(' ');
-                            this.renderer.appendChild(container, this.renderer.createText(words.join('')));
-                            words = [];
-                        }
-
-                        const highlightSpan = this.renderer.createElement('span');
-                        this.renderer.addClass(highlightSpan, keyWordType);
-                        this.renderer.addClass(highlightSpan, 'hightlight');
-                        this.renderer.appendChild(highlightSpan, this.renderer.createText(word));
-                        this.renderer.appendChild(container, highlightSpan);
-                    } else {
-                        if (index > 0) {
-                            words.push(' ');
-                        }
-
-                        words.push(word);
-                    }
-
-                    if (words.length > 0) {
-                        this.renderer.appendChild(container, this.renderer.createText(words.join('')));
-                        words = [];
-                    }
-                } else {
-                    words.push(word);
-                }
-            });
-        }
-
-        return codeType ? container : this.renderer.createText(words.join(' '));
-    }
-
-    getContained(codeType: CodeType, word: string): {str: string, type: Specials} {
-        let result: {str: string, type: Specials};
-
-        if (word && word.length > 0) {
-            const wordLength = word.length;
-
-            for (let i = 1; i <= wordLength; i++) {
-                const subString: string = word.substring(0, i);
-                let containedType = hightlights[codeType];
-
-                if (containedType) {
-                    containedType = hightlights[codeType].special[subString];
-                }
-
-                if (containedType) {
-                    result = {
-                        str: subString,
-                        type: containedType
-                    };
-                    break;
+                if (highlighter) {
+                    highlighter.highlight(line, container);
+                    this.stringBuilder = [[]];
                 }
             }
         }
 
-        return result;
+        return codeType ? container : this.renderer.createText(line);
     }
+
+    // private findSpecials(word: string, codeType?: CodeType): string[] {
+    //     const specials: string[] = [];
+
+    //     Object.keys(hightlights[codeType].special).forEach(special => {
+    //         const lastIndex = word.lastIndexOf(special);
+
+    //         if (lastIndex) {
+    //             specials.push(special);
+    //         }
+    //     });
+
+    //     return specials;
+    // }
+
+    private appendHighlitedText(container: HTMLElement, text: string, styleClass: string) {
+        const highlightSpan = this.renderer.createElement('span');
+        this.renderer.addClass(highlightSpan, styleClass);
+        this.renderer.addClass(highlightSpan, 'hightlight');
+        this.renderer.appendChild(highlightSpan, this.renderer.createText(text));
+        this.renderer.appendChild(container, highlightSpan);
+    }
+
+    // getContained(codeType: CodeType, word: string): {str: string, type: Specials} {
+    //     let result: {str: string, type: Specials};
+
+    //     if (word && word.length > 0) {
+    //         const wordLength = word.length;
+
+    //         for (let i = 1; i <= wordLength; i++) {
+    //             const subString: string = word.substring(0, i);
+    //             let containedType = hightlights[codeType];
+
+    //             if (containedType) {
+    //                 containedType = hightlights[codeType].special[subString];
+    //             }
+
+    //             if (containedType) {
+    //                 result = {
+    //                     str: subString,
+    //                     type: containedType
+    //                 };
+    //                 break;
+    //             }
+    //         }
+    //     }
+
+    //     return result;
+    // }
 
     removeBR(line: HTMLDivElement) {
         const br = this.findElement(line, 'br', ChildPosition.First);

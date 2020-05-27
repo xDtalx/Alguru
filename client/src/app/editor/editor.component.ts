@@ -13,10 +13,12 @@ import {
     ViewEncapsulation,
     OnDestroy} from '@angular/core';
 import { DomSanitizer } from '@angular/platform-browser';
-import { EditorService, EventType, CodeType } from './editor.service';
+import { EditorService, EventType } from './editor.service';
 import { ThemeService } from './theme/theme.service';
 import { EditorState } from './editor-state';
-import { hightlights, Specials } from './highlights';
+import { CodeType } from './highlighters/code.type';
+import { getHighlights } from './highlighters/highlights';
+import { Highlighter } from './highlighters/highlighter';
 
 
 @Component({
@@ -207,66 +209,122 @@ export class EditorComponent implements OnInit, OnDestroy, OnChanges, AfterViewI
     renderText(value: string, deleteOnChange: boolean): void {
         if (this.editor && value && value !== '') {
             const editor: HTMLElement = this.editor.nativeElement;
-            let viewLineOpened = false;
-            let viewLine: HTMLDivElement;
+            const lines: string[] = value.split('\n');
+            const viewLines: HTMLDivElement[] = [];
+            let highlighter;
 
             if (deleteOnChange) {
                 editor.innerHTML = '';
             }
 
-            if (value.charAt(value.length - 1) !== '\n') {
-                value += '\n';
+            if (this.highlightsFor) {
+                highlighter = getHighlights().getByCodeType(this.highlightsFor.toLowerCase(), this.renderer);
             }
 
-            Array.from(value).forEach(char => {
-                if (!viewLineOpened) {
-                    viewLineOpened = true;
-                    viewLine = this.editorService.addNewLine(editor);
-                    this.renderer.listen(viewLine, 'mousedown', this.hightlightLineOnMouseDown.bind(this));
-                }
+            lines.forEach((line, index) => {
+                viewLines.push(this.editorService.createNewLine());
+                let builder = [];
 
-                const isWhitesapce = /^\s+$/.test(char);
-                const shouldHightlight = this.shouldHighlight();
-                const isStructuralChar = shouldHightlight && this.editorService.isStructuralChar(char, this.highlightsFor.toLowerCase());
-                const appendText = isWhitesapce || isStructuralChar;
-                let appendedText: string;
+                Array.from(line).forEach(letter => {
+                    if (letter === '\t') {
+                        if (builder.length > 0) {
+                            this.appendCurrentText(builder, viewLines[index], highlighter);
+                            builder = [];
+                        }
 
-                if (appendText) {
-                    appendedText = this.appendText(viewLine, shouldHightlight);
-                }
-
-                if (isWhitesapce) {
-                    if (char === '\n') {
-                        viewLineOpened = false;
-                    } else if (char === '\t') {
-                        this.editorService.appendTab(viewLine, false);
-                    } else if (char === ' ') {
-                        this.editorService.addSpace(viewLine, false);
+                        this.editorService.appendTab(viewLines[index], false);
+                    } else {
+                        builder.push(letter);
                     }
-                } else {
-                    this.editorService.buildString(char);
+                });
 
-                    if (isStructuralChar) {
-                        appendedText = this.editorService.appendText(viewLine, null, this.highlightsFor.toLowerCase());
-                    }
+                if (builder.length > 0) {
+                    this.appendCurrentText(builder, viewLines[index], highlighter);
+                    builder = [];
                 }
             });
 
+            viewLines.forEach(viewLine => {
+                this.renderer.listen(viewLine, 'mousedown', this.hightlightLineOnMouseDown.bind(this));
+                this.renderer.appendChild(editor, viewLine);
+            });
             this.refreshLineNumbers();
         }
     }
 
-    appendText(line: HTMLDivElement, hightLight: boolean): string {
-        let appendedText: string;
+    appendCurrentText(builder: any[], line: HTMLDivElement, highlighter: Highlighter) {
+        this.editorService.removeBR(line);
 
-        if (hightLight) {
-            appendedText = this.editorService.appendText(line, null, this.highlightsFor.toLowerCase());
+        if (highlighter) {
+            highlighter.highlight(builder.join(''), line);
         } else {
-            appendedText = this.editorService.appendText(line);
+            this.editorService.appendText(line, builder.join(''));
         }
-
-        return appendedText;
     }
+
+    // renderText(value: string, deleteOnChange: boolean): void {
+    //     if (this.editor && value && value !== '') {
+    //         const editor: HTMLElement = this.editor.nativeElement;
+    //         let viewLineOpened = false;
+    //         let viewLine: HTMLDivElement;
+
+    //         if (deleteOnChange) {
+    //             editor.innerHTML = '';
+    //         }
+
+    //         if (value.charAt(value.length - 1) !== '\n') {
+    //             value += '\n';
+    //         }
+
+    //         Array.from(value).forEach(char => {
+    //             if (!viewLineOpened) {
+    //                 viewLineOpened = true;
+    //                 viewLine = this.editorService.addNewLine(editor);
+    //                 this.renderer.listen(viewLine, 'mousedown', this.hightlightLineOnMouseDown.bind(this));
+    //             }
+
+    //             const isWhitesapce = /^\s+$/.test(char);
+    //             const shouldHightlight = this.shouldHighlight();
+    //             // const isStructuralChar = shouldHightlight && this.editorService.isStructuralChar(char, this.highlightsFor.toLowerCase());
+    //             const appendText = isWhitesapce; // || isStructuralChar;
+    //             let appendedText: string;
+
+    //             if (appendText) {
+    //                 appendedText = this.appendText(viewLine, shouldHightlight);
+    //             }
+
+    //             if (isWhitesapce) {
+    //                 if (char === '\n') {
+    //                     viewLineOpened = false;
+    //                 } else if (char === '\t') {
+    //                     this.editorService.appendTab(viewLine, false);
+    //                 } else if (char === ' ') {
+    //                     this.editorService.addSpace(viewLine, false);
+    //                 }
+    //             } else {
+    //                 this.editorService.buildString(char);
+
+    //                 // if (isStructuralChar) {
+    //                 //     appendedText = this.editorService.appendText(viewLine, null, this.highlightsFor.toLowerCase());
+    //                 // }
+    //             }
+    //         });
+
+    //         this.refreshLineNumbers();
+    //     }
+    // }
+
+    // appendText(line: HTMLDivElement, hightLight: boolean): string {
+    //     let appendedText: string;
+
+    //     if (hightLight) {
+    //         appendedText = this.editorService.appendText(line, null, this.highlightsFor.toLowerCase());
+    //     } else {
+    //         appendedText = this.editorService.appendText(line);
+    //     }
+
+    //     return appendedText;
+    // }
 
     saveState(event: KeyboardEvent): void {
         let saveState = true;
@@ -505,12 +563,11 @@ export class EditorComponent implements OnInit, OnDestroy, OnChanges, AfterViewI
     getEditorText(): string {
         const lines: string[] = [];
 
-        this.getTextSegments(this.editor.nativeElement, true).forEach(line => {
+        this.getTextSegments(this.editor.nativeElement, true).forEach((line, index) => {
             lines.push(line.text);
-            lines.push('\n');
         });
 
-        return lines.join('');
+        return lines.join('\n');
     }
 
     refreshCurrentLine(lineElement: Node): void {

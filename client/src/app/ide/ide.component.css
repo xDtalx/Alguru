@@ -76,7 +76,7 @@ div.container {
 }
 
 .title {
-  padding: 1rem;
+  padding: 1.5rem;
 }
 
 .head {
@@ -86,7 +86,10 @@ div.container {
   justify-content: center;
   display: flex;
   min-width: fit-content;
-  height: 3.5rem;
+}
+
+.head * {
+  font-size: 1.8rem;
 }
 
 .top {
@@ -109,7 +112,8 @@ div.container {
   color: white;
   height: 100%;
   margin-left: 0.5rem;
-  width: 8rem;
+  width: 13rem;
+
 }
 
 .top .btn, .top .loading-btn {
@@ -125,6 +129,7 @@ div.container {
   height: 30px;
   -webkit-animation: spin 0.5s linear infinite; /* Safari */
   animation: spin 0.5s linear infinite;
+  margin: auto;
 }
 
 .btn:hover {
@@ -139,6 +144,7 @@ div.container {
   height: 100%;
   max-height: 100%;
   margin-left: 0.5rem;
+  width: 13rem;
 }
 
 #output-container {
