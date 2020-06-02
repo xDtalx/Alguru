@@ -28,7 +28,7 @@ export class RegisterComponent implements OnInit, OnDestroy {
   }
 
   onRegister(registerForm: NgForm) {
-    if(registerForm.invalid) {
+    if (registerForm.invalid) {
       return;
     }
 
@@ -40,7 +40,7 @@ export class RegisterComponent implements OnInit, OnDestroy {
     this.authService.deleteUser(userId);
   }
 
-  hide(){
+  hide() {
     this.onCloseModal.emit();
   }
 

@@ -7,7 +7,7 @@ import * as $ from 'jquery';
 
 enum ModalTypes {
   LoginModal = 'loginModal',
-  RegisterModal ='registerModal'
+  RegisterModal = 'registerModal'
 }
 
 @Component({
@@ -21,7 +21,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
   private adminListenerSubs: Subscription;
   showLoginModal: boolean;
   showRegister: boolean;
-  showModal : boolean;
+  showModal: boolean;
   ModalTypes = ModalTypes;
   isUserAuth: boolean;
   isRelease: boolean;
@@ -40,12 +40,12 @@ export class HeaderComponent implements OnInit, OnDestroy {
     .subscribe(isAuth => {
       this.isUserAuth = isAuth;
 
-      if(isAuth) {
+      if (isAuth) {
         this.hide();
       }
     });
     this.adminListenerSubs = this.authService.getAdminListener()
-    .subscribe(isAdmin => { this.isAdmin = isAdmin; console.log(this.isAdmin)});
+    .subscribe(isAdmin => { this.isAdmin = isAdmin; console.log(this.isAdmin);});
   }
 
   ngOnDestroy() {
@@ -57,7 +57,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
     const length = 200;
     this.showSmallHeader = isShow;
 
-    if(this.showSmallHeader) {
+    if (this.showSmallHeader) {
       const header = $('div.header');
       const background = $('div.background');
       const container = $('#container');
@@ -72,7 +72,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
     } else {
       const header = $('div.header');
       const background = $('div.background');
-      
+
       background.css('display', 'block');
       header.addClass('hide-header-color');
       header.removeClass('show-header-color');
@@ -86,10 +86,10 @@ export class HeaderComponent implements OnInit, OnDestroy {
     this.authService.logout();
   }
 
-  show(type : ModalTypes) {
+  show(type: ModalTypes) {
     this.showModal = true;
 
-    if (type == ModalTypes.LoginModal) {
+    if (type === ModalTypes.LoginModal) {
       this.showLoginModal = true;
     } else {
       this.showRegister = true;
@@ -102,7 +102,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
     this.showRegister = false;
   }
 
-  openRegister(){
+  openRegister() {
     this.showLoginModal = false;
     this.showRegister = true;
   }

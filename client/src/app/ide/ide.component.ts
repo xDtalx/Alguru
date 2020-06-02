@@ -41,10 +41,6 @@ export class IDEComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    window.onbeforeunload = () => {
-      return '';
-    };
-
     this.route.paramMap.subscribe((paramMap: ParamMap) => {
       if (paramMap.has('questionId')) {
         this.questionId = paramMap.get('questionId');

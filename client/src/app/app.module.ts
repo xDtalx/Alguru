@@ -65,4 +65,5 @@ import { ForumComponent } from './forum/forum.component';
   ],
   bootstrap: [AppComponent]
 })
-export class AppModule { }
+export class AppModule {
+}
