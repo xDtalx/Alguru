@@ -31,9 +31,15 @@ export class RegisterComponent implements OnInit, OnDestroy {
     if (registerForm.invalid) {
       return;
     }
-
+    
     this.isLoading = true;
-    this.authService.createUserAndSave(registerForm.value.username, registerForm.value.email, registerForm.value.password);
+    this.authService
+      .createUserAndSave(
+        registerForm.value.username,
+        registerForm.value.email,
+        registerForm.value.password,
+        registerForm.value.confirmPassword
+      );
   }
 
   onDelete(userId: string) {

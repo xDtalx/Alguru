@@ -4,10 +4,29 @@ const UserController = require('../controllers/users');
 const checkAuth = require('../filters/check-auth');
 const { check } = require('express-validator');
 const validations =  [
-  check('username', 'Username should be at least 6 characters').exists().trim().isLength({ min: 6 }),
-  check('password', 'Password should be at least 6 characters').exists().trim().isLength({ min: 6 })
+  check('username', 'Username should be at least 6 characters')
+  .exists()
+  .trim()
+  .isLength({ min: 6 }),
+  check('password', 'Password should be at least 6 characters')
+  .exists()
+  .trim()
+  .isLength({ min: 6 })
 ]
 const registerCheck = [
+  check('confirmPassword', 'Password should be at least 6 characters')
+  .exists()
+  .trim()
+  .isLength({ min: 6 })
+  .custom((value, {req}) => {
+    const confirmPassword = value;
+
+    if (confirmPassword !== req.body.password) {
+        throw new Error("Passwords don't match");
+    } else {
+        return value;
+    }
+}),
   check('email', 'Invalid email').exists().isEmail().normalizeEmail({ gmail_remove_dots: false })
 ]
 
