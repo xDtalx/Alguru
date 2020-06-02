@@ -7,7 +7,7 @@ exports.createUser = (req, res, next) => {
   const errors = validationResult(req);
   
   if(!errors.isEmpty()) {
-    return res.status(422).json({ errors: errors.array() });
+    return res.status(422).json({ errors: errors.array({ onlyFirstError: true }) });
   }
 
   bcrypt.hash(req.body.password, 10).then(hash => {
@@ -44,7 +44,7 @@ exports.updateUser = (req, res, next) => {
   const errors = validationResult(req);
 
   if(!errors.isEmpty()) {
-    return res.status(422).json({ errors: errors.array() })
+    return res.status(422).json({ errors: errors.array({ onlyFirstError: true }) })
   }
 
   bcrypt.hash(req.body.password, 10).then(hash => {
@@ -79,7 +79,7 @@ exports.userLogin = (req, res, next) => {
   const errors = validationResult(req);
 
   if(!errors.isEmpty()) {
-    return res.status(422).json({ errors: errors.array() });
+    return res.status(422).json({ errors: errors.array({ onlyFirstError: true }) });
   }
 
   if(process.env.RELEASE == 'false' && req.body.username !== process.env.ADMIN) {

@@ -7,7 +7,7 @@ exports.createPost = (req, res, next) => {
   const errors = validationResult(req);
 
   if(!errors.isEmpty()) {
-    return res.status(422).json({ errors: errors.array() })
+    return res.status(422).json({ errors: errors.array({ onlyFirstError: true }) })
   }
 
   const post = new Post({
@@ -32,7 +32,7 @@ exports.createComment = (req, res, next) => {
   const errors = validationResult(req);
 
   if(!errors.isEmpty()) {
-    return res.status(422).json({ errors: errors.array() })
+    return res.status(422).json({ errors: errors.array({ onlyFirstError: true }) })
   }
   
   //need to load the specific post from db by it's ID
@@ -142,7 +142,7 @@ exports.updatePost = (req, res, next) => {
   const errors = validationResult(req);
 
   if(!errors.isEmpty()) {
-    return res.status(422).json({ errors: errors.array() })
+    return res.status(422).json({ errors: errors.array({ onlyFirstError: true }) })
   }
 
   Post
@@ -158,7 +158,7 @@ exports.updateComment = (req, res, next) => {
   const errors = validationResult(req);
 
   if(!errors.isEmpty()) {
-    return res.status(422).json({ errors: errors.array() })
+    return res.status(422).json({ errors: errors.array({ onlyFirstError: true }) })
   }
   
   //first we need to use the old comment instance and remove it from the post comments array
