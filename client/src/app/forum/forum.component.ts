@@ -161,5 +161,4 @@ export class ForumComponent {
     this.selectedPost.comments[index].content = message;
     this.selectedPost.comments[index].onEditTagMode = false;
   }
-
 }

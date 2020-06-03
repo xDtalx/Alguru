@@ -17,7 +17,9 @@
       <div class="message">Message:</div>
       <angular-editor id="editor1" [config]="editorConfig" [(ngModel)]="messageDefaultValue"></angular-editor>
     </div>
-    <button class="submit-button" (click)="onSubmitMessage(titleTextarea.value, messageDefaultValue, 'Post')">Submit</button>
+    <button class="submit-button" (click)="onSubmitMessage(titleTextarea.value, messageDefaultValue, 'Post')">
+      Submit
+    </button>
   </div>
   <!--  Regular Mode-->
   <div class="container" *ngFor="let post of tags">
@@ -42,7 +44,9 @@
       ></textarea>
       <div class="message">Message:</div>
       <angular-editor id="editor3" [config]="editorConfig" [(ngModel)]="post.content"></angular-editor>
-      <button class="submit-button" (click)="onSubmitEditMessage(post, titleTextarea.value, post.content)">Submit</button>
+      <button class="submit-button" (click)="onSubmitEditMessage(post, titleTextarea.value, post.content)">
+        Submit
+      </button>
     </div>
   </div>
 </div>
@@ -76,7 +80,9 @@
       <textarea class="form-control text-area" id="titleTextarea4" rows="1" [(ngModel)]="comment.title"></textarea>
       <div>Message:</div>
       <angular-editor id="editor4" [config]="editorConfig" [(ngModel)]="comment.content"></angular-editor>
-      <button class="submit-button" (click)="onSubmitEditComment(comment, comment.content, comment.title)">Submit</button>
+      <button class="submit-button" (click)="onSubmitEditComment(comment, comment.content, comment.title)">
+        Submit
+      </button>
     </div>
   </div>
   <!--  New Comment-->
@@ -94,7 +100,9 @@
       <div>Message:</div>
       <angular-editor id="editor2" [config]="editorConfig" [(ngModel)]="messageDefaultValue"></angular-editor>
     </div>
-    <button class="submit-button" (click)="onSubmitMessage(titleTextarea.value, messageDefaultValue, 'Comment')">Submit</button>
+    <button class="submit-button" (click)="onSubmitMessage(titleTextarea.value, messageDefaultValue, 'Comment')">
+      Submit
+    </button>
   </div>
   <button class="col-1" (click)="onPostClick(null)">Back</button>
 </div>
