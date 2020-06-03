@@ -6,7 +6,7 @@ export const environment = {
   production: false,
   apiUrl: 'http://localhost:3000',
   runCodeApi: 'http://localhost:3000/code',
-  isRelease: true
+  isRelease: true,
 };
 
 /*

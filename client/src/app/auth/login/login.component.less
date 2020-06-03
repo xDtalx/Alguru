@@ -1,49 +1,118 @@
-.login-form {
-  width: 385px;
-  margin: 30px auto;
+.background-unclickable {
+  height: 100vh;
+  width: 100vw;
+  max-width: 100%;
+  max-height: 100%;
+  display: flex;
+  justify-content: center;
+  background-color: rgba(0, 0, 0, 0);
+  animation: show-background-color 0.3s linear forwards;
 }
+
+@keyframes show-background-color {
+  from {background: rgba(0, 0, 0, 0);}
+  to {background: rgba(0, 0, 0, 0.5);}
+}
+
+.login-form {
+  margin: auto;
+  width: 385px;
+}
+
 .login-form form {
-  margin-bottom: 15px;
-  background: white;
-  box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.3);
+  background-color: white;
+  box-shadow: 0px 2px 2px rgba(36, 13, 13, 0.3);
   padding: 30px;
 }
-.login-form h2 {
-  margin: 0 0 15px;
+
+.login-options {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  text-align: center;
 }
+
+.option * {
+  margin-right: 0.5rem;
+}
+
+.option {
+  margin-bottom: 1rem;
+}
+
+.clickable {
+  cursor: pointer;
+}
+
+.clickable:hover {
+  color: #007bff;
+}
+
+.option:last-child {
+  margin-bottom: 0;
+}
+
 .form-control, .login-btn {
   min-height: 38px;
   border-radius: 2px;
 }
+
+.small {
+  font-size: 1.4rem;
+}
+
+.form-control {
+  font-size: 1.6rem;
+}
+
 .input-group-addon .fa {
   font-size: 18px;
 }
+
 .login-btn {
   font-size: 15px;
   font-weight: bold;
 }
-.social-btn .btn {
+
+.close-button, .social-btn .btn {
   border: none;
-  margin: 10px 3px 0;
-  opacity: 1;
+  width: 10rem;
+  height: fit-content;
 }
+
+.btn {
+  font-size: 1.6rem;
+}
+
+.social-btn {
+  display: flex;
+  justify-content: space-evenly;
+  text-align: center;
+  margin: 1.4rem 0 1.4rem 0;
+}
+
 .social-btn .btn:hover {
   opacity: 0.9;
 }
+
 .social-btn .btn-primary {
   background: #507cc0;
 }
+
 .social-btn .btn-info {
   background: #64ccf1;
 }
+
 .social-btn .btn-danger {
   background: #df4930;
 }
+
 .or-seperator {
   margin-top: 20px;
   text-align: center;
   border-top: 1px solid #ccc;
 }
+
 .or-seperator i {
   padding: 0 10px;
   background: #f7f7f7;
@@ -52,13 +121,25 @@
   z-index: 1;
 }
 
-.sign-up{
+.sign-up {
   color:black;
 }
 
-.close-button{
-  cursor: pointer;
-  &:hover{
-    color: blue;
-  }
+.close-button:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+  animation: all 0.5s;
+}
+
+.checkbox-inline {
+  display: flex;
+  justify-content: center;
+  text-align: center;
+}
+
+i {
+  background-color: white !important;
+}
+
+input:-webkit-autofill::first-line {
+  font-size: 1.6rem;
 }

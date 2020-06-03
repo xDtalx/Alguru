@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewEncapsulation } from '@angular/core';
+import { Component, OnInit, AfterViewInit } from '@angular/core';
 import { QuestionsService } from '../questions.service';
 import { Question } from '../question.model';
 import { ActivatedRoute, ParamMap } from '@angular/router';
@@ -6,38 +6,42 @@ import { ActivatedRoute, ParamMap } from '@angular/router';
 @Component({
   selector: 'app-question-create',
   templateUrl: './question-create.component.html',
-  styleUrls: [ './question-create.component.css' ],
-  encapsulation: ViewEncapsulation.None
+  styleUrls: ['./question-create.component.css'],
 })
-export class QuestionCreateComponent implements OnInit {
-
+export class QuestionCreateComponent implements OnInit, AfterViewInit {
   public retrievedQuestionData: Question;
   public newQuestionData: Question;
-  public isLoading: boolean = false;
-  private mode ='create';
+  public isLoading = false;
+  private mode = 'create';
   private questionId: string;
 
   constructor(private questionService: QuestionsService, private route: ActivatedRoute) {}
 
+  ngAfterViewInit(): void {
+    document.documentElement.style.setProperty('--main-width', '80vw');
+    document.documentElement.style.setProperty('--main-display', 'block');
+    document.documentElement.style.setProperty('--main-padding', '1rem 0 0 0');
+  }
+
   ngOnInit() {
     this.newQuestionData = {
-      id: null, 
-      title: null, 
-      content: null, 
-      solution: [], 
-      solutionTemplate: [], 
-      tests: [], 
-      creator: null, 
-      hints: null, 
-      level: null
-    }
-    
+      id: null,
+      title: null,
+      content: null,
+      solution: [],
+      solutionTemplate: [],
+      tests: [],
+      creator: null,
+      hints: null,
+      level: null,
+    };
+
     this.route.paramMap.subscribe((paramMap: ParamMap) => {
-        if(paramMap.has('questionId')) {
-          this.setEditMode(paramMap);
-        } else {
-          this.setCreateMode();
-        }
+      if (paramMap.has('questionId')) {
+        this.setEditMode(paramMap);
+      } else {
+        this.setCreateMode();
+      }
     });
   }
 
@@ -57,8 +61,8 @@ export class QuestionCreateComponent implements OnInit {
       tests: questionData.tests,
       hints: questionData.hints,
       level: questionData.level,
-      creator: questionData.creator
-    }
+      creator: questionData.creator,
+    };
   }
 
   setCreateMode() {
@@ -69,7 +73,7 @@ export class QuestionCreateComponent implements OnInit {
   onSaveQuestion() {
     this.isLoading = true;
 
-    if(this.mode ==='create') {
+    if (this.mode === 'create') {
       this.questionService.addQuestion(this.newQuestionData);
     } else {
       this.fillNotUpdatedFieldsWithOldValues(this.newQuestionData);
@@ -78,8 +82,8 @@ export class QuestionCreateComponent implements OnInit {
   }
 
   fillNotUpdatedFieldsWithOldValues(question) {
-    Object.keys(question).forEach(value => {
-      if(!question[value] || (Array.isArray(question[value]) && !question[value][0])) {
+    Object.keys(question).forEach((value) => {
+      if (!question[value] || (Array.isArray(question[value]) && !question[value][0])) {
         question[value] = this.retrievedQuestionData[value];
       }
     });

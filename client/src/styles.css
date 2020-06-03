@@ -4,7 +4,8 @@
   padding: 0;
   margin: 0;
   box-sizing: border-box;
-  font-family: "Roboto";
+  font-family: 'Roboto';
+  user-select: none;
 }
 
 app-root {
@@ -39,13 +40,21 @@ a:visited {
 }
 
 @-webkit-keyframes spin {
-  0% { -webkit-transform: rotate(0deg); }
-  100% { -webkit-transform: rotate(360deg); }
+  0% {
+    -webkit-transform: rotate(0deg);
+  }
+  100% {
+    -webkit-transform: rotate(360deg);
+  }
 }
 
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 ::-webkit-scrollbar {
@@ -54,24 +63,52 @@ a:visited {
 
 /* Track */
 ::-webkit-scrollbar-track {
-  background: #00000013; 
+  background: #00000013;
 }
- 
+
 /* Handle */
 ::-webkit-scrollbar-thumb {
-  background: rgba(0, 0, 0, 0.2); 
+  background: rgba(0, 0, 0, 0.2);
 }
 
 /* Handle on hover */
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(0, 0, 0, 0.4); 
+  background: rgba(0, 0, 0, 0.4);
 }
 
-html, body { height: 100%; }
+::-webkit-scrollbar-corner {
+  background: rgba(0, 0, 0, 0.05);
+}
 
-body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+html,
+body {
+  font-size: 62.5%;
+  height: 100%;
+  background-color: var(--site-background);
+}
+
+body {
+  margin: 0;
+  font-family: Roboto, 'Helvetica Neue', sans-serif;
+}
 
 app-root {
   display: flex;
   flex-direction: column;
+}
+
+h1 {
+  font-size: 5rem !important;
+}
+
+h2 {
+  font-size: 4rem !important;
+}
+
+h3 {
+  font-size: 3rem !important;
+}
+
+h4 {
+  font-size: 2rem !important;
 }

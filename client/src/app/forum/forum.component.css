@@ -6,6 +6,7 @@
   padding: 10px;
   margin: 10px 0;
   cursor: pointer;
+  max-width: 100%;
 }
 
 /* Darker chat container */
@@ -16,7 +17,7 @@
 
 /* Clear floats */
 .container::after {
-  content: "";
+  content: '';
   clear: both;
   display: table;
 }
@@ -34,7 +35,7 @@
 .container img.right {
   float: right;
   margin-left: 20px;
-  margin-right:0;
+  margin-right: 0;
 }
 
 /* Style time text */
@@ -55,5 +56,5 @@
 
 .green-border-focus .form-control:focus {
   border: 1px solid #8bc34a;
-  box-shadow: 0 0 0 0.2rem rgba(139, 195, 74, .25);
+  box-shadow: 0 0 0 0.2rem rgba(139, 195, 74, 0.25);
 }

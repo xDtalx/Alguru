@@ -9,14 +9,13 @@ import { environment } from 'src/environments/environment';
 
 const BACKEND_URL = environment.apiUrl + '/users';
 
-@Injectable({ providedIn: 'root'})
+@Injectable({ providedIn: 'root' })
 export class AuthService {
-
   private authStatusListener = new Subject<boolean>();
   private adminListener = new Subject<boolean>();
   private authErrorListener = new Subject<string[]>();
-  private isAuth: boolean = false;
-  private isAdmin: boolean = false;
+  private isAuth = false;
+  private isAdmin = false;
   private token: string;
   private tokenTimer: any;
   private userId: string;
@@ -42,8 +41,8 @@ export class AuthService {
   }
 
   addErrorMessages(errors: string[]) {
-    if(errors && errors.length > 0) {
-      errors.forEach(error => this.errors.push(error));
+    if (errors && errors.length > 0) {
+      errors.forEach((error) => this.errors.push(error));
       this.authErrorListener.next([...this.errors]);
     }
   }
@@ -63,78 +62,91 @@ export class AuthService {
   getUsers() {
     this.http
       .get<any>(BACKEND_URL)
-      .pipe(map(usersData => {
-          return usersData.map(user =>
-            {
-              return {
-                id: user._id,
-                username: user.username,
-                hashedPassword: user.hashedPassword
-              }
-            });
-        }))
-      .subscribe(transUsers => {
-          console.log(transUsers);
-        });
+      .pipe(
+        map((usersData) => {
+          return usersData.map((user) => {
+            return {
+              id: user._id,
+              username: user.username,
+              hashedPassword: user.hashedPassword,
+            };
+          });
+        }),
+      )
+      .subscribe((transUsers) => {
+        console.log(transUsers);
+      });
   }
 
-  createUserAndSave(username: string, email: string, password: string) {
+  createUserAndSave(username: string, email: string, password: string, confirmPassword: string) {
     const authData: RegisterAuthData = {
-      username: username,
-      email: email,
-      password: password
-    }
+      username,
+      email,
+      password,
+      confirmPassword,
+    };
 
     this.saveUser(authData);
   }
 
   saveUser(authData: RegisterAuthData) {
     this.errors = [];
-    this.http.post(BACKEND_URL + '/register', authData)
-      .subscribe(() => {
-        this.router.navigate(['/login']);
-      }, errors => {
+    this.http.post(BACKEND_URL + '/register', authData).subscribe(
+      () => {
+        this.router.navigate(['/']);
+      },
+      (errors) => {
         this.authErrorListener.next([...this.errors]);
         this.authStatusListener.next(false);
-      });
+      },
+    );
   }
 
   deleteUser(id: string) {
-    this.http.delete(BACKEND_URL + '/' + id)
-      .subscribe(() => {
-        console.log('User deleted');
-      });
+    this.http.delete(BACKEND_URL + '/' + id).subscribe(() => {
+      console.log('User deleted');
+    });
   }
 
   login(username: string, password: string) {
     this.errors = [];
 
     const authData: LoginAuthData = {
-      username: username,
-      password: password
-    }
+      username,
+      password,
+    };
 
-    this.http.post<{ token: string, expiresIn: number, userId: string, username: string, isAdmin: boolean }>(BACKEND_URL + '/login', authData)
-      .subscribe(response => {
-        this.token = response.token;
+    this.http
+      .post<{
+        token: string;
+        expiresIn: number;
+        userId: string;
+        username: string;
+        isAdmin: boolean;
+      }>(BACKEND_URL + '/login', authData)
+      .subscribe(
+        (response) => {
+          this.token = response.token;
 
-        if(this.token) {
-          this.userId = response.userId;
-          this.setAuthTimer(response.expiresIn);
-          this.isAuth = true;
-          this.username = response.username;
-          this.isAdmin = response.isAdmin;
-          this.authStatusListener.next(true);
-          this.adminListener.next(this.isAdmin);
-          const now = new Date();
-          const expirationDate = new Date(now.getTime() + response.expiresIn * 1000);
-          this.saveAuthData(this.token, expirationDate, this.userId, this.username, String(this.isAdmin));
-          this.router.navigate(['/']);
-        }
-      }, error => {
-        this.authStatusListener.next(false);
-        this.adminListener.next(false);
-      });
+          if (this.token) {
+            this.userId = response.userId;
+            this.setAuthTimer(response.expiresIn);
+            this.isAuth = true;
+            this.username = response.username;
+            this.isAdmin = response.isAdmin;
+            this.authStatusListener.next(true);
+            this.adminListener.next(this.isAdmin);
+            const now = new Date();
+            const expirationDate = new Date(now.getTime() + response.expiresIn * 1000);
+            this.saveAuthData(this.token, expirationDate, this.userId, this.username, String(this.isAdmin));
+            this.router.navigate(['/']);
+          }
+        },
+        () => {
+          this.authStatusListener.next(false);
+          this.adminListener.next(false);
+        },
+      );
   }
 
   getUserId() {
@@ -144,17 +156,17 @@ export class AuthService {
   autoAuthUser() {
     const authInfo = this.getAuthData();
 
-    if(!authInfo) {
+    if (!authInfo) {
       return;
     }
 
     const now = new Date();
     const expiresIn = authInfo.expirationDate.getTime() - now.getTime();
 
-    if(expiresIn > 0) {
+    if (expiresIn > 0) {
       this.token = authInfo.token;
       this.isAuth = true;
-      this.isAdmin = authInfo.isAdmin === "true";
+      this.isAdmin = authInfo.isAdmin === 'true';
       this.userId = authInfo.userId;
       this.username = authInfo.username;
       this.setAuthTimer(expiresIn / 1000);
@@ -200,17 +212,17 @@ export class AuthService {
     const isAdmin = localStorage.getItem('isAdmin');
     const username = localStorage.getItem('username');
 
-    if(!(token && expirationDate)) {
+    if (!(token && expirationDate)) {
       return;
     }
 
     return {
-      token: token,
+      token,
       expirationDate: new Date(expirationDate),
-      userId: userId,
-      isAdmin: isAdmin,
-      username: username
-    }
+      userId,
+      isAdmin,
+      username,
+    };
   }
 
   private setAuthTimer(durationInSeconds: number) {

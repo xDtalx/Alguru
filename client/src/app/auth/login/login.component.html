@@ -1,39 +1,40 @@
-<div class="login-form">
-  <app-error></app-error>
-  <form (submit)="onLogin(userLoginForm)" #userLoginForm="ngForm">
-    <div *ngIf="isLoading" class="loader">Loading...</div>
-    <div *ngIf="!isLoading">
-      <h2 class="text-center">Sign in</h2>
-      <div class="form-group">
-        <div class="error-msg" *ngIf="!userNameValidCharacterNumber && userLoginForm.submitted">Username is invalid - must be at least 6 characters </div>
-        <div class="input-group">
-          <span class="input-group-addon"><i class="fa fa-user"></i></span>
-          <input type="text" class="form-control" name="username" placeholder="Username" required="required" #usernameInput="ngModel" ngModel minlength="6" >
+<div (click)="hide()" class="background-unclickable">
+  <div class="login-form" (click)="$event.stopPropagation()">
+    <app-error></app-error>
+    <form (submit)="onLogin(userLoginForm)" #userLoginForm="ngForm">
+      <div *ngIf="isLoading" class="loader">Loading...</div>
+      <div *ngIf="!isLoading">
+        <div class="form-group">
+          <div class="input-group">
+            <span class="input-group-addon"><i class="fa fa-user"></i></span>
+            <input type="text" class="form-control" name="username" placeholder="Username" ngModel/>
+          </div>
         </div>
-      </div>
-      <div class="form-group">
-        <div class="error-msg" *ngIf="!passwordValidCharacterNumber && userLoginForm.submitted">Password is invalid - must be at least 6 characters</div>
-        <div class="input-group">
-          <span class="input-group-addon"><i class="fa fa-lock"></i></span>
-          <input type="password" class="form-control" name="password" placeholder="Password" required="required" #passwordInput="ngModel" ngModel minlength="6">
+        <div class="form-group">
+          <div class="input-group">
+            <span class="input-group-addon"><i class="fa fa-lock"></i></span>
+            <input type="password" class="form-control" name="password" placeholder="Password" ngModel/>
+          </div>
         </div>
+        <div class="form-group">
+          <button type="submit" class="btn btn-primary login-btn btn-block">Sign in</button>
+        </div>
+        <div class="login-options">
+          <div class="option"><input type="checkbox" />Remember me</div>
+          <div class="option clickable">Forgot Password?</div>
+        </div>
+        <div class="or-seperator"><i>or</i></div>
+        <div class="text-center">Login with your social media account</div>
+        <div class="text-center social-btn">
+          <a href="#" class="btn btn-primary">Facebook</a>
+          <a href="#" class="btn btn-info">Twitter</a>
+          <a href="#" class="btn btn-danger">Google</a>
+        </div>
+        <p class="text-center text-muted small">
+          Don't have an account? <a href="#" class="sign-up" (click)="openRegister()">Sign up here!</a>
+        </p>
+        <p class="text-center"><button (click)="hide()" class="btn close-button">Close</button></p>
       </div>
-      <div class="form-group">
-        <button type="submit" class="btn btn-primary login-btn btn-block">Sign in</button>
-      </div>
-      <div class="clearfix">
-        <label class="pull-left checkbox-inline"><input type="checkbox"> Remember me</label>
-        <a href="#" class="pull-right">Forgot Password?</a>
-      </div>
-      <div class="or-seperator"><i>or</i></div>
-      <p class="text-center">Login with your social media account</p>
-      <div class="text-center social-btn">
-        <a href="#" class="btn btn-primary"><i class="fa fa-facebook"></i>&nbsp; Facebook</a>
-        <a href="#" class="btn btn-info"><i class="fa fa-twitter"></i>&nbsp; Twitter</a>
-        <a href="#" class="btn btn-danger"><i class="fa fa-google"></i>&nbsp; Google</a>
-      </div>
-      <p class="text-center text-muted small">Don't have an account? <a href="#" class="sign-up" (click)="openRegister()">Sign up here!</a></p>
-      <p class="text-center"><a (click)="hide()" class="close-button">Close</a></p>
-    </div>
-  </form>
+    </form>
+  </div>
 </div>

@@ -7,21 +7,20 @@ import * as $ from 'jquery';
 
 enum ModalTypes {
   LoginModal = 'loginModal',
-  RegisterModal ='registerModal'
+  RegisterModal = 'registerModal',
 }
 
 @Component({
   selector: 'app-header',
   templateUrl: './header.component.html',
-  styleUrls: [ './header.component.less' ]
+  styleUrls: ['./header.component.less'],
 })
 export class HeaderComponent implements OnInit, OnDestroy {
-
   private authListenerSubs: Subscription;
   private adminListenerSubs: Subscription;
   showLoginModal: boolean;
   showRegister: boolean;
-  showModal : boolean;
+  showModal: boolean;
   ModalTypes = ModalTypes;
   isUserAuth: boolean;
   isRelease: boolean;
@@ -29,23 +28,24 @@ export class HeaderComponent implements OnInit, OnDestroy {
   isAdmin: boolean;
 
   constructor(private authService: AuthService, private settingsService: SettingsService) {
-    this.settingsService.getSmallHeaderObservable().subscribe(isShow => this.setSmallHeader(isShow));
+    this.settingsService.getSmallHeaderObservable().subscribe((isShow) => this.setSmallHeader(isShow));
   }
 
   ngOnInit() {
     this.isRelease = environment.isRelease;
     this.isUserAuth = this.authService.getIsAuth();
     this.isAdmin = this.authService.getIsAdmin();
-    this.authListenerSubs = this.authService.getAuthStatusListener()
-    .subscribe(isAuth => {
+    this.authListenerSubs = this.authService.getAuthStatusListener().subscribe((isAuth) => {
       this.isUserAuth = isAuth;
 
-      if(isAuth) {
+      if (isAuth) {
         this.hide();
       }
     });
-    this.adminListenerSubs = this.authService.getAdminListener()
-    .subscribe(isAdmin => { this.isAdmin = isAdmin; console.log(this.isAdmin)});
+    this.adminListenerSubs = this.authService.getAdminListener().subscribe((isAdmin) => {
+      this.isAdmin = isAdmin;
+      console.log(this.isAdmin);
+    });
   }
 
   ngOnDestroy() {
@@ -57,11 +57,11 @@ export class HeaderComponent implements OnInit, OnDestroy {
     const length = 200;
     this.showSmallHeader = isShow;
 
-    if(this.showSmallHeader) {
+    if (this.showSmallHeader) {
       const header = $('div.header');
       const background = $('div.background');
       const container = $('#container');
-      const target = {height: container.height()};
+      const target = { height: container.height() };
       const onHeaderDone = () => header.css('height', 'auto');
       const onBGDone = () => background.css('display', 'none');
 
@@ -72,12 +72,12 @@ export class HeaderComponent implements OnInit, OnDestroy {
     } else {
       const header = $('div.header');
       const background = $('div.background');
-      
+
       background.css('display', 'block');
       header.addClass('hide-header-color');
       header.removeClass('show-header-color');
-      background.animate({height: '100vh'}, length);
-      header.animate({height: '100vh'}, length);
+      background.animate({ height: '100vh' }, length);
+      header.animate({ height: '100vh' }, length);
     }
   }
 
@@ -86,10 +86,10 @@ export class HeaderComponent implements OnInit, OnDestroy {
     this.authService.logout();
   }
 
-  show(type : ModalTypes) {
+  show(type: ModalTypes) {
     this.showModal = true;
 
-    if (type == ModalTypes.LoginModal) {
+    if (type === ModalTypes.LoginModal) {
       this.showLoginModal = true;
     } else {
       this.showRegister = true;
@@ -102,7 +102,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
     this.showRegister = false;
   }
 
-  openRegister(){
+  openRegister() {
     this.showLoginModal = false;
     this.showRegister = true;
   }
