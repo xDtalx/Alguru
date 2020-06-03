@@ -5,10 +5,9 @@ import { Subscription } from 'rxjs';
 @Component({
   selector: 'app-error',
   templateUrl: './error.component.html',
-  styleUrls: [ './error.component.css' ]
+  styleUrls: ['./error.component.css'],
 })
 export class ErrorComponent implements OnInit, OnDestroy {
-
   public errors: string[];
   private authErrorsSub: Subscription;
 
@@ -19,10 +18,8 @@ export class ErrorComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.authErrorsSub = this.authService.getAuthErrorListener()
-      .subscribe((errors: string[]) => {
-        this.errors = errors;
-      });
+    this.authErrorsSub = this.authService.getAuthErrorListener().subscribe((errors: string[]) => {
+      this.errors = errors;
+    });
   }
-
 }

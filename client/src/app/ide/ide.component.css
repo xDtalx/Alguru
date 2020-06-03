@@ -1,4 +1,3 @@
-
 * {
   padding: 0;
   margin: 0;
@@ -27,7 +26,7 @@ app-editor {
   display: flex;
   height: 100%;
   width: 100%;
-  max-width: calc((100vw - 2rem)/2);
+  max-width: calc((100vw - 2rem) / 2);
   background-color: var(--editor-background);
 }
 
@@ -113,10 +112,10 @@ div.container {
   height: 100%;
   margin-left: 0.5rem;
   width: 13rem;
-
 }
 
-.top .btn, .top .loading-btn {
+.top .btn,
+.top .loading-btn {
   border-top-right-radius: 1rem;
 }
 

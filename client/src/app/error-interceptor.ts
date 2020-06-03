@@ -6,7 +6,6 @@ import { Injectable } from '@angular/core';
 
 @Injectable()
 export class ErrorInterceptor implements HttpInterceptor {
-
   constructor(private authService: AuthService) {}
 
   intercept(req: HttpRequest<any>, next: HttpHandler) {
@@ -15,11 +14,11 @@ export class ErrorInterceptor implements HttpInterceptor {
       catchError((error: HttpErrorResponse) => {
         let errorMessage: string[] = ['An unknown error occurred!'];
 
-        if(error.error.message) {
+        if (error.error.message) {
           errorMessage = error.error.message;
-        } else if(error.error.errors) {
+        } else if (error.error.errors) {
           errorMessage = [];
-          error.error.errors.forEach(error => {
+          error.error.errors.forEach((error) => {
             errorMessage.push(error.msg);
           });
         }
@@ -27,7 +26,7 @@ export class ErrorInterceptor implements HttpInterceptor {
         this.authService.addErrorMessages(errorMessage);
 
         return throwError(error);
-      })
+      }),
     );
   }
 }

@@ -7,20 +7,20 @@
         <div class="form-group">
           <div class="input-group">
             <span class="input-group-addon"><i class="fa fa-user"></i></span>
-            <input type="text" class="form-control" name="username" placeholder="Username" #usernameInput>
+            <input type="text" class="form-control" name="username" placeholder="Username" #usernameInput />
           </div>
         </div>
         <div class="form-group">
           <div class="input-group">
             <span class="input-group-addon"><i class="fa fa-lock"></i></span>
-            <input type="password" class="form-control" name="password" placeholder="Password" #passwordInput>
+            <input type="password" class="form-control" name="password" placeholder="Password" #passwordInput />
           </div>
         </div>
         <div class="form-group">
           <button type="submit" class="btn btn-primary login-btn btn-block">Sign in</button>
         </div>
         <div class="login-options">
-          <div class="option"><input type="checkbox">Remember me</div>
+          <div class="option"><input type="checkbox" />Remember me</div>
           <div class="option clickable">Forgot Password?</div>
         </div>
         <div class="or-seperator"><i>or</i></div>
@@ -30,7 +30,9 @@
           <a href="#" class="btn btn-info">Twitter</a>
           <a href="#" class="btn btn-danger">Google</a>
         </div>
-        <p class="text-center text-muted small">Don't have an account? <a href="#" class="sign-up" (click)="openRegister()">Sign up here!</a></p>
+        <p class="text-center text-muted small">
+          Don't have an account? <a href="#" class="sign-up" (click)="openRegister()">Sign up here!</a>
+        </p>
         <p class="text-center"><button (click)="hide()" class="btn close-button">Close</button></p>
       </div>
     </form>

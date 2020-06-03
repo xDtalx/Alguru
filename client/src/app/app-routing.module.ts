@@ -11,27 +11,73 @@ import { ReleaseGuard } from './release.guard';
 import { IDEComponent } from './ide/ide.component';
 import { AdminPageComponent } from './admin-page/admin-page.component';
 import { EditorComponent } from './editor/editor.component';
-import { ForumComponent } from "./forum/forum.component";
+import { ForumComponent } from './forum/forum.component';
 
 const routes: Routes = [
-  { path: '', component: ComingSoonComponent, data: { showSmallHeader: false }},
-  { path: '', canActivate: [ReleaseGuard], children: [
-    { path: 'code-editor', component: EditorComponent, data: { showSmallHeader: true }, canActivate: [AuthGuard]},
-    { path: '', component: QuestionListComponent, data: { showSmallHeader: true }},
-    { path: 'questions-list', component: QuestionListComponent, data: { showSmallHeader: true }},
-    { path: 'solve/:questionId', component: IDEComponent, data: { showSmallHeader: true }, canActivate: [AuthGuard] },
-    { path: 'admin', component: AdminPageComponent, data: { showSmallHeader: true }, canActivate: [AuthGuard] },
-    { path: 'edit/:questionId', component: QuestionCreateComponent, data: { showSmallHeader: true }, canActivate: [AuthGuard] },
-    { path: 'register', component: RegisterComponent },
-    { path: 'login', component: LoginComponent },
-    { path: 'create-question', component: QuestionCreateComponent, data: { showSmallHeader: true }, canActivate: [AuthGuard] },
-    { path: 'forum', component: ForumComponent, data: { showSmallHeader: true }, canActivate: [AuthGuard] }
-  ]},
+  {
+    path: '',
+    component: ComingSoonComponent,
+    data: { showSmallHeader: false },
+  },
+  {
+    path: '',
+    canActivate: [ReleaseGuard],
+    children: [
+      {
+        path: 'code-editor',
+        component: EditorComponent,
+        data: { showSmallHeader: true },
+        canActivate: [AuthGuard],
+      },
+      {
+        path: '',
+        component: QuestionListComponent,
+        data: { showSmallHeader: true },
+      },
+      {
+        path: 'questions-list',
+        component: QuestionListComponent,
+        data: { showSmallHeader: true },
+      },
+      {
+        path: 'solve/:questionId',
+        component: IDEComponent,
+        data: { showSmallHeader: true },
+        canActivate: [AuthGuard],
+      },
+      {
+        path: 'admin',
+        component: AdminPageComponent,
+        data: { showSmallHeader: true },
+        canActivate: [AuthGuard],
+      },
+      {
+        path: 'edit/:questionId',
+        component: QuestionCreateComponent,
+        data: { showSmallHeader: true },
+        canActivate: [AuthGuard],
+      },
+      { path: 'register', component: RegisterComponent },
+      { path: 'login', component: LoginComponent },
+      {
+        path: 'create-question',
+        component: QuestionCreateComponent,
+        data: { showSmallHeader: true },
+        canActivate: [AuthGuard],
+      },
+      {
+        path: 'forum',
+        component: ForumComponent,
+        data: { showSmallHeader: true },
+        canActivate: [AuthGuard],
+      },
+    ],
+  },
 ];
 
 @NgModule({
   imports: [RouterModule.forRoot(routes)],
   exports: [RouterModule],
-  providers: [AuthGuard, ReleaseGuard]
+  providers: [AuthGuard, ReleaseGuard],
 })
-export class AppRoutingModule { }
+export class AppRoutingModule {}

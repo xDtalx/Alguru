@@ -1,44 +1,52 @@
 <div class="header">
   <div class="background">asd</div>
   <div id="container">
-    <ul id='home' class='nav'>
-      <li class='nav-item'><img src="../../assets/logo-light.png"/></li>
-      <li class='nav-item'>
-        <a class='nav-link' (click)="setSmallHeader(false)" routerLink='/'>Home</a>
+    <ul id="home" class="nav">
+      <li class="nav-item"><img src="../../assets/logo-light.png" /></li>
+      <li class="nav-item">
+        <a class="nav-link" (click)="setSmallHeader(false)" routerLink="/">Home</a>
       </li>
     </ul>
     <span id="spacer"></span>
-    <ul class='nav'>
-      <li *ngIf="isAdmin" class='nav-item'>
-        <a class='nav-link' (click)="setSmallHeader(true)" routerLink='/code-editor'>Code Editor</a>
+    <ul class="nav">
+      <li *ngIf="isAdmin" class="nav-item">
+        <a class="nav-link" (click)="setSmallHeader(true)" routerLink="/code-editor">Code Editor</a>
       </li>
-      <li *ngIf="isAdmin" class='nav-item'>
-        <a class='nav-link' (click)="setSmallHeader(true)" routerLink='/admin'>Admin</a>
+      <li *ngIf="isAdmin" class="nav-item">
+        <a class="nav-link" (click)="setSmallHeader(true)" routerLink="/admin">Admin</a>
       </li>
-      <li *ngIf="isUserAuth" class='nav-item'>
-        <a class='nav-link' (click)="setSmallHeader(true)" routerLink='/questions-list'>Questions</a>
+      <li *ngIf="isUserAuth" class="nav-item">
+        <a class="nav-link" (click)="setSmallHeader(true)" routerLink="/questions-list">Questions</a>
       </li>
-      <li *ngIf="isUserAuth" class='nav-item'>
-        <a class='nav-link' routerLink='/forum'>Forum</a>
+      <li *ngIf="isUserAuth" class="nav-item">
+        <a class="nav-link" routerLink="/forum">Forum</a>
       </li>
-      <li *ngIf="!isUserAuth && isRelease" class='nav-item'>
-        <a class='nav-link' (click)="show(ModalTypes.LoginModal)">Login</a>
+      <li *ngIf="!isUserAuth && isRelease" class="nav-item">
+        <a class="nav-link" (click)="show(ModalTypes.LoginModal)">Login</a>
       </li>
-      <li *ngIf="!isUserAuth && isRelease" class='nav-item'>
-        <a class='nav-link' (click)="show(ModalTypes.RegisterModal)">Register</a>
+      <li *ngIf="!isUserAuth && isRelease" class="nav-item">
+        <a class="nav-link" (click)="show(ModalTypes.RegisterModal)">Register</a>
       </li>
-      <li *ngIf="isUserAuth" class='nav-item'>
-        <a (click)="onLogout()" class='nav-link'>Logout</a>
+      <li *ngIf="isUserAuth" class="nav-item">
+        <a (click)="onLogout()" class="nav-link">Logout</a>
       </li>
     </ul>
   </div>
   <div id="description" *ngIf="!showSmallHeader">
-    <h1 class="title-text"> Alguru.</h1>
+    <h1 class="title-text">Alguru.</h1>
     <h4 class="content-text">The #1 place to practice your coding skills,</h4>
     <h4 class="content-text">share interviews question and their solutions.</h4>
   </div>
 </div>
-<div [style.display]="showModal ? 'block' : 'none'" class="modal" id="imagemodal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-        <app-login *ngIf="showLoginModal" (onCloseModal)="hide()" (onRegisterOpen)="openRegister()"></app-login>
-        <app-register *ngIf="showRegister" (onCloseModal)="hide()"></app-register>
+<div
+  [style.display]="showModal ? 'block' : 'none'"
+  class="modal"
+  id="imagemodal"
+  tabindex="-1"
+  role="dialog"
+  aria-labelledby="myModalLabel"
+  aria-hidden="true"
+>
+  <app-login *ngIf="showLoginModal" (onCloseModal)="hide()" (onRegisterOpen)="openRegister()"></app-login>
+  <app-register *ngIf="showRegister" (onCloseModal)="hide()"></app-register>
 </div>

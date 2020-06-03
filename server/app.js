@@ -6,18 +6,19 @@ const questionsRoutes = require('./routes/questions');
 const usersRoutes = require('./routes/users');
 const codeRoutes = require('./routes/code');
 const forumRoutes = require('./routes/forum');
-const rateLimit = require("express-rate-limit");
+const rateLimit = require('express-rate-limit');
 const limiter = rateLimit({
   windowMs: 10000,
   max: 200,
-  message: "Too many requests from this IP, please try again"
+  message: 'Too many requests from this IP, please try again',
 });
 
-mongoose.connect(process.env.MONGO_AUTH)
+mongoose
+  .connect(process.env.MONGO_AUTH)
   .then(() => {
     console.log('Connected to database.');
   })
-  .catch(err => {
+  .catch((err) => {
     console.log('Connection failed.');
     console.log(err);
   });

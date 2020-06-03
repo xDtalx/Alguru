@@ -42,7 +42,7 @@ import { ForumComponent } from './forum/forum.component';
     IDEComponent,
     AdminPageComponent,
     EditorComponent,
-    ForumComponent
+    ForumComponent,
   ],
   imports: [
     BrowserModule,
@@ -57,13 +57,12 @@ import { ForumComponent } from './forum/forum.component';
     MatSortModule,
     MatPaginatorModule,
     MatInputModule,
-    MatSidenavModule
+    MatSidenavModule,
   ],
   providers: [
     { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },
-    { provide: HTTP_INTERCEPTORS, useClass: ErrorInterceptor, multi: true }
+    { provide: HTTP_INTERCEPTORS, useClass: ErrorInterceptor, multi: true },
   ],
-  bootstrap: [AppComponent]
+  bootstrap: [AppComponent],
 })
-export class AppModule {
-}
+export class AppModule {}

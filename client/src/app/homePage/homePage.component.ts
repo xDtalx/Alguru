@@ -1,31 +1,26 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 
-
- enum ModalTypes{
-  LoginModal ='loginModal',
-  RegisterModal='registerModal'
+enum ModalTypes {
+  LoginModal = 'loginModal',
+  RegisterModal = 'registerModal',
 }
 
 @Component({
   selector: 'home-page',
   templateUrl: './homePage.component.html',
-  styleUrls: ['./homePage.component.less']
+  styleUrls: ['./homePage.component.less'],
 })
 export class HomePageComponent {
   showLoginModal: boolean;
   shownRegister: boolean;
-  showModal : boolean;
+  showModal: boolean;
   ModalTypes = ModalTypes;
 
-  constructor() {
-  }
-
-  show(type : ModalTypes) {
+  show(type: ModalTypes) {
     this.showModal = true;
-    if(type==ModalTypes.LoginModal) {
+    if (type === ModalTypes.LoginModal) {
       this.showLoginModal = true;
-    }
-    else{
+    } else {
       this.shownRegister = true;
     }
   }
@@ -36,4 +31,3 @@ export class HomePageComponent {
     this.shownRegister = false;
   }
 }
-

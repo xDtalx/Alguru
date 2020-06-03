@@ -6,10 +6,9 @@ import { Subscription } from 'rxjs';
 @Component({
   selector: 'app-login',
   templateUrl: './login.component.html',
-  styleUrls: [ './login.component.less' ]
+  styleUrls: ['./login.component.less'],
 })
 export class LoginComponent implements OnInit, OnDestroy {
-
   public isLoading = false;
   authStatusSub: Subscription;
   @Output() onCloseModal: EventEmitter<any> = new EventEmitter();
@@ -18,10 +17,9 @@ export class LoginComponent implements OnInit, OnDestroy {
   constructor(private authService: AuthService) {}
 
   ngOnInit() {
-    this.authStatusSub = this.authService.getAuthStatusListener()
-      .subscribe(authStatus => {
-        this.isLoading = authStatus;
-      });
+    this.authStatusSub = this.authService.getAuthStatusListener().subscribe((authStatus) => {
+      this.isLoading = authStatus;
+    });
   }
 
   ngOnDestroy() {

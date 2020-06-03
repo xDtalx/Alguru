@@ -8,11 +8,10 @@ import { ActivatedRoute, ParamMap } from '@angular/router';
 import * as $ from 'jquery';
 import { EditorService } from '../editor/editor.service';
 
-
 @Component({
   selector: 'app-ide',
   templateUrl: './ide.component.html',
-  styleUrls: [ './ide.component.css' ]
+  styleUrls: ['./ide.component.css'],
 })
 export class IDEComponent implements OnInit, OnDestroy {
   private executeListenerSubs: Subscription;
@@ -35,7 +34,7 @@ export class IDEComponent implements OnInit, OnDestroy {
     private questionsService: QuestionsService,
     private codeService: CodeService,
     private renderer: Renderer2,
-    private editorService: EditorService
+    private editorService: EditorService,
   ) {
     $(document).ready(this.onPageLoaded.bind(this));
   }
@@ -45,7 +44,7 @@ export class IDEComponent implements OnInit, OnDestroy {
       if (paramMap.has('questionId')) {
         this.questionId = paramMap.get('questionId');
 
-        this.questionsService.getQuestion(this.questionId).subscribe(questionData => {
+        this.questionsService.getQuestion(this.questionId).subscribe((questionData) => {
           this.questionToSolve = {
             id: questionData._id,
             title: questionData.title,
@@ -55,25 +54,24 @@ export class IDEComponent implements OnInit, OnDestroy {
             tests: questionData.tests,
             hints: questionData.hints,
             level: questionData.level,
-            creator: questionData.creator
+            creator: questionData.creator,
           };
           this.solValue = this.questionToSolve.solutionTemplate[0];
           this.testsValue = this.questionToSolve.tests[0];
         });
       }
-     });
+    });
 
     this.executeResponse = { message: '', output: '', errors: '' };
     this.currentOutput = '';
-    this.executeListenerSubs =
-      this.codeService.getExecuteResponseListener().subscribe(response => {
-        this.executeResponse = response;
-        this.loading = false;
+    this.executeListenerSubs = this.codeService.getExecuteResponseListener().subscribe((response) => {
+      this.executeResponse = response;
+      this.loading = false;
 
-        if (this.executeResponse !== null) {
-          this.currentOutput = 'Custom> ' + this.executeResponse.message;
-        }
-      });
+      if (this.executeResponse !== null) {
+        this.currentOutput = 'Custom> ' + this.executeResponse.message;
+      }
+    });
   }
 
   ngOnDestroy(): void {
@@ -142,7 +140,8 @@ export class IDEComponent implements OnInit, OnDestroy {
   }
 
   onRawOutputClick(): void {
-    this.currentOutput = 'Output> ' + (this.executeResponse.errors === '' ? this.executeResponse.output : this.executeResponse.errors);
+    this.currentOutput =
+      'Output> ' + (this.executeResponse.errors === '' ? this.executeResponse.output : this.executeResponse.errors);
   }
 
   onSolutionCodeChanged(value: string): void {

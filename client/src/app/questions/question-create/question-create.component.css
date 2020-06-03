@@ -63,6 +63,10 @@ app-question-create .editor:focus {
 }
 
 @keyframes fadein {
-  from { border-bottom: 2px solid rgb(159, 196, 243) }
-  to { border-bottom: 2px solid rgb(29, 116, 231) }
+  from {
+    border-bottom: 2px solid rgb(159, 196, 243);
+  }
+  to {
+    border-bottom: 2px solid rgb(29, 116, 231);
+  }
 }

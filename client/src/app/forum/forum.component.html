@@ -1,46 +1,69 @@
 <div *ngIf="!showPost">
-  <h1> Alguru-Forum</h1>
+  <h1>Alguru-Forum</h1>
   <button (click)="onAddNewPostClick()">Add new Post</button>
   <div class="container" *ngIf="addNewPost">
-    <h2> New-Post</h2>
+    <h2>New-Post</h2>
     <div class="form-group green-border-focus">
       <label for="titleTextarea">Title:</label>
-      <textarea class="form-control" id="titleTextarea1" rows="1" #titleTextarea [(ngModel)]="titleDefaultValue"></textarea>
+      <textarea
+        class="form-control"
+        id="titleTextarea1"
+        rows="1"
+        #titleTextarea
+        [(ngModel)]="titleDefaultValue"
+      ></textarea>
       <label for="contentTextarea">Message:</label>
-      <textarea class="form-control" id="contentTextarea1" rows="3" #contentTextarea [(ngModel)]="messageDefaultValue"></textarea>
+      <textarea
+        class="form-control"
+        id="contentTextarea1"
+        rows="3"
+        #contentTextarea
+        [(ngModel)]="messageDefaultValue"
+      ></textarea>
     </div>
     <button (click)="onSubmitMessage(titleTextarea.value, contentTextarea.value, 'Post')">Submit</button>
   </div>
-  <div class="container"  *ngFor="let post of tags" (click)="onPostClick(post)">
-    <span>{{post.author}} </span>
-    <p>{{post.title}}</p>
-    <div class="time-right">{{post.date.time + ' ' + post.date.date}}</div>
+  <div class="container" *ngFor="let post of tags" (click)="onPostClick(post)">
+    <span>{{ post.author }} </span>
+    <p>{{ post.title }}</p>
+    <div class="time-right">{{ post.date.time + ' ' + post.date.date }}</div>
   </div>
 </div>
 <div *ngIf="showPost">
-  <h1> Post-Content</h1>
-  <div class="container" >
-    <span>{{selectedPost.author}} </span>
-    <h2>{{selectedPost.title}}</h2>
-    <h3>{{selectedPost.content}}</h3>
-    <div class="time-right">{{selectedPost.date.time + ' ' + selectedPost.date.date}}</div>
+  <h1>Post-Content</h1>
+  <div class="container">
+    <span>{{ selectedPost.author }} </span>
+    <h2>{{ selectedPost.title }}</h2>
+    <h3>{{ selectedPost.content }}</h3>
+    <div class="time-right">{{ selectedPost.date.time + ' ' + selectedPost.date.date }}</div>
   </div>
   <div class="container darker" *ngFor="let comment of selectedPost.comments">
-    <span>{{comment.author}} </span>
-    <h2>{{comment.title}}</h2>
-    <h3>{{comment.content}}</h3>
-    <div class="time-right">{{comment.date.time + ' ' + comment.date.date}}</div>
+    <span>{{ comment.author }} </span>
+    <h2>{{ comment.title }}</h2>
+    <h3>{{ comment.content }}</h3>
+    <div class="time-right">{{ comment.date.time + ' ' + comment.date.date }}</div>
   </div>
   <div class="container">
-    <h2> New-Comment</h2>
+    <h2>New-Comment</h2>
     <div class="form-group green-border-focus">
       <label for="titleTextarea">Title:</label>
-      <textarea class="form-control" id="titleTextarea" rows="1" #titleTextarea [(ngModel)]="titleDefaultValue"></textarea>
+      <textarea
+        class="form-control"
+        id="titleTextarea"
+        rows="1"
+        #titleTextarea
+        [(ngModel)]="titleDefaultValue"
+      ></textarea>
       <label for="contentTextarea">Message:</label>
-      <textarea class="form-control" id="contentTextarea" rows="3" #contentTextarea [(ngModel)]="messageDefaultValue"></textarea>
+      <textarea
+        class="form-control"
+        id="contentTextarea"
+        rows="3"
+        #contentTextarea
+        [(ngModel)]="messageDefaultValue"
+      ></textarea>
     </div>
-    <button (click)="onSubmitMessage(titleTextarea.value, contentTextarea.value, 'Comment' )">Submit</button>
+    <button (click)="onSubmitMessage(titleTextarea.value, contentTextarea.value, 'Comment')">Submit</button>
   </div>
-  <button class="col-1" (click)="onPostClick(null)"> Back </button>
+  <button class="col-1" (click)="onPostClick(null)">Back</button>
 </div>
-

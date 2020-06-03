@@ -2,13 +2,13 @@ import { Question } from './question.model';
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Subject } from 'rxjs';
-import { map } from 'rxjs/operators'
+import { map } from 'rxjs/operators';
 import { Router } from '@angular/router';
-import { environment } from 'src/environments/environment'
+import { environment } from 'src/environments/environment';
 
 const BACKEND_URL = environment.apiUrl + '/questions';
 
-@Injectable({ providedIn: 'root'})
+@Injectable({ providedIn: 'root' })
 export class QuestionsService {
   private questions: Question[] = [];
   private questionsUpdated = new Subject<Question[]>();
@@ -18,24 +18,25 @@ export class QuestionsService {
   getQuestions() {
     this.http
       .get<any>(BACKEND_URL)
-      .pipe(map(questionsData => {
-          return questionsData.map(question =>
-            {
-              return {
-                id: question._id,
-                title: question.title,
-                content: question.content,
-                solution: question.solution,
-                hints: question.hints,
-                level: question.level,
-                creator: question.creator
-              }
-            });
-        }))
-      .subscribe(transQuestions => {
-          this.questions = transQuestions;
-          this.questionsUpdated.next([...this.questions]);
-        });
+      .pipe(
+        map((questionsData) => {
+          return questionsData.map((question) => {
+            return {
+              id: question._id,
+              title: question.title,
+              content: question.content,
+              solution: question.solution,
+              hints: question.hints,
+              level: question.level,
+              creator: question.creator,
+            };
+          });
+        }),
+      )
+      .subscribe((transQuestions) => {
+        this.questions = transQuestions;
+        this.questionsUpdated.next([...this.questions]);
+      });
   }
 
   getQuestionUpdatedListener() {
@@ -44,18 +45,27 @@ export class QuestionsService {
 
   getQuestion(id: string) {
     return this.http.get<{
-      _id: string,
-      title: string,
-      content: string,
-      solutionTemplate: string[],
-      solution: string[],
-      tests: string[],
-      hints: string,
-      level: number,
-      creator: string }>(BACKEND_URL + '/' + id);
+      _id: string;
+      title: string;
+      content: string;
+      solutionTemplate: string[];
+      solution: string[];
+      tests: string[];
+      hints: string;
+      level: number;
+      creator: string;
+    }>(BACKEND_URL + '/' + id);
   }
 
-  createQuestion(title: string, content: string, solutionTemplate: string[], solution: string[], tests: string[], hints: string, level: number) {
+  createQuestion(
+    title: string,
+    content: string,
+    solutionTemplate: string[],
+    solution: string[],
+    tests: string[],
+    hints: string,
+    level: number,
+  ) {
     const question: Question = {
       id: null,
       title: title,
@@ -65,26 +75,24 @@ export class QuestionsService {
       tests: tests,
       hints: hints,
       level: level,
-      creator: null
-    }
+      creator: null,
+    };
 
     this.addQuestion(question);
   }
 
   addQuestion(question: Question) {
-    this.http.post<{ message: string, questionId: string }>(BACKEND_URL, question)
-      .subscribe(responseData => {
-        question.id = responseData.questionId;
-        this.questions.push(question);
-        this.questionsUpdated.next([...this.questions]);
-        this.router.navigate(['/']);
-      });
+    this.http.post<{ message: string; questionId: string }>(BACKEND_URL, question).subscribe((responseData) => {
+      question.id = responseData.questionId;
+      this.questions.push(question);
+      this.questionsUpdated.next([...this.questions]);
+      this.router.navigate(['/']);
+    });
   }
 
   deleteQuestion(id: string) {
-    this.http.delete(BACKEND_URL + '/' + id)
-    .subscribe(() => {
-      const updatedQuestions = this.questions.filter(question => question.id !== id);
+    this.http.delete(BACKEND_URL + '/' + id).subscribe(() => {
+      const updatedQuestions = this.questions.filter((question) => question.id !== id);
       this.questions = updatedQuestions;
       this.questionsUpdated.next([...this.questions]);
     });
@@ -100,15 +108,14 @@ export class QuestionsService {
       tests: question.tests,
       hints: question.hints,
       level: question.level,
-      creator: null
-    }
+      creator: null,
+    };
 
-    this.http.put(BACKEND_URL + '/' + id, questionToUpdate)
-      .subscribe(() => {
-        const oldQuestionIndex = this.questions.findIndex(q => q.id === id);
-        this.questions[oldQuestionIndex] = question;
-        this.questionsUpdated.next([...this.questions]);
-        this.router.navigate(['/']);
-      });
+    this.http.put(BACKEND_URL + '/' + id, questionToUpdate).subscribe(() => {
+      const oldQuestionIndex = this.questions.findIndex((q) => q.id === id);
+      this.questions[oldQuestionIndex] = question;
+      this.questionsUpdated.next([...this.questions]);
+      this.router.navigate(['/']);
+    });
   }
 }

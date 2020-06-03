@@ -6,10 +6,9 @@ import { ActivatedRoute, ParamMap } from '@angular/router';
 @Component({
   selector: 'app-question-create',
   templateUrl: './question-create.component.html',
-  styleUrls: [ './question-create.component.css' ]
+  styleUrls: ['./question-create.component.css'],
 })
 export class QuestionCreateComponent implements OnInit, AfterViewInit {
-
   public retrievedQuestionData: Question;
   public newQuestionData: Question;
   public isLoading = false;
@@ -34,15 +33,15 @@ export class QuestionCreateComponent implements OnInit, AfterViewInit {
       tests: [],
       creator: null,
       hints: null,
-      level: null
+      level: null,
     };
 
     this.route.paramMap.subscribe((paramMap: ParamMap) => {
-        if (paramMap.has('questionId')) {
-          this.setEditMode(paramMap);
-        } else {
-          this.setCreateMode();
-        }
+      if (paramMap.has('questionId')) {
+        this.setEditMode(paramMap);
+      } else {
+        this.setCreateMode();
+      }
     });
   }
 
@@ -62,7 +61,7 @@ export class QuestionCreateComponent implements OnInit, AfterViewInit {
       tests: questionData.tests,
       hints: questionData.hints,
       level: questionData.level,
-      creator: questionData.creator
+      creator: questionData.creator,
     };
   }
 
@@ -83,7 +82,7 @@ export class QuestionCreateComponent implements OnInit, AfterViewInit {
   }
 
   fillNotUpdatedFieldsWithOldValues(question) {
-    Object.keys(question).forEach(value => {
+    Object.keys(question).forEach((value) => {
       if (!question[value] || (Array.isArray(question[value]) && !question[value][0])) {
         question[value] = this.retrievedQuestionData[value];
       }

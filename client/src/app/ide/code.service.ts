@@ -6,9 +6,8 @@ import { Router } from '@angular/router';
 import { environment } from 'src/environments/environment';
 import { StringFormat } from 'src/utils/string-utils';
 
-@Injectable({ providedIn: 'root'})
+@Injectable({ providedIn: 'root' })
 export class CodeService {
-
   private executeResponseListener = new Subject<ExecuteResponse>();
 
   constructor(private http: HttpClient, private router: Router) {}
@@ -18,16 +17,13 @@ export class CodeService {
   }
 
   runCode(lang: string, code: string, tests: string) {
-    let runRequest = {
+    const runRequest = {
       lang: lang,
       code: code,
-      tests: tests
-    }
+      tests: tests,
+    };
 
-    this
-    .http
-    .post<ExecuteResponse>(environment.runCodeApi + "/execute", runRequest)
-    .subscribe(output => {
+    this.http.post<ExecuteResponse>(environment.runCodeApi + '/execute', runRequest).subscribe((output) => {
       this.executeResponseListener.next(output);
     });
   }

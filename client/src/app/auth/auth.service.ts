@@ -9,9 +9,8 @@ import { environment } from 'src/environments/environment';
 
 const BACKEND_URL = environment.apiUrl + '/users';
 
-@Injectable({ providedIn: 'root'})
+@Injectable({ providedIn: 'root' })
 export class AuthService {
-
   private authStatusListener = new Subject<boolean>();
   private adminListener = new Subject<boolean>();
   private authErrorListener = new Subject<string[]>();
@@ -43,7 +42,7 @@ export class AuthService {
 
   addErrorMessages(errors: string[]) {
     if (errors && errors.length > 0) {
-      errors.forEach(error => this.errors.push(error));
+      errors.forEach((error) => this.errors.push(error));
       this.authErrorListener.next([...this.errors]);
     }
   }
@@ -63,18 +62,20 @@ export class AuthService {
   getUsers() {
     this.http
       .get<any>(BACKEND_URL)
-      .pipe(map(usersData => {
-          return usersData.map(user => {
-              return {
-                id: user._id,
-                username: user.username,
-                hashedPassword: user.hashedPassword
-              };
-            });
-        }))
-      .subscribe(transUsers => {
-          console.log(transUsers);
-        });
+      .pipe(
+        map((usersData) => {
+          return usersData.map((user) => {
+            return {
+              id: user._id,
+              username: user.username,
+              hashedPassword: user.hashedPassword,
+            };
+          });
+        }),
+      )
+      .subscribe((transUsers) => {
+        console.log(transUsers);
+      });
   }
 
   createUserAndSave(username: string, email: string, password: string, confirmPassword: string) {
@@ -82,7 +83,7 @@ export class AuthService {
       username,
       email,
       password,
-      confirmPassword
+      confirmPassword,
     };
 
     this.saveUser(authData);
@@ -90,20 +91,21 @@ export class AuthService {
 
   saveUser(authData: RegisterAuthData) {
     this.errors = [];
-    this.http.post(BACKEND_URL + '/register', authData)
-      .subscribe(() => {
+    this.http.post(BACKEND_URL + '/register', authData).subscribe(
+      () => {
         this.router.navigate(['/']);
-      }, errors => {
+      },
+      (errors) => {
         this.authErrorListener.next([...this.errors]);
         this.authStatusListener.next(false);
-      });
+      },
+    );
   }
 
   deleteUser(id: string) {
-    this.http.delete(BACKEND_URL + '/' + id)
-      .subscribe(() => {
-        console.log('User deleted');
-      });
+    this.http.delete(BACKEND_URL + '/' + id).subscribe(() => {
+      console.log('User deleted');
+    });
   }
 
   login(username: string, password: string) {
@@ -111,30 +113,40 @@ export class AuthService {
 
     const authData: LoginAuthData = {
       username,
-      password
+      password,
     };
 
-    this.http.post<{ token: string, expiresIn: number, userId: string, username: string, isAdmin: boolean }>(BACKEND_URL + '/login', authData)
-      .subscribe(response => {
-        this.token = response.token;
+    this.http
+      .post<{
+        token: string;
+        expiresIn: number;
+        userId: string;
+        username: string;
+        isAdmin: boolean;
+      }>(BACKEND_URL + '/login', authData)
+      .subscribe(
+        (response) => {
+          this.token = response.token;
 
-        if (this.token) {
-          this.userId = response.userId;
-          this.setAuthTimer(response.expiresIn);
-          this.isAuth = true;
-          this.username = response.username;
-          this.isAdmin = response.isAdmin;
-          this.authStatusListener.next(true);
-          this.adminListener.next(this.isAdmin);
-          const now = new Date();
-          const expirationDate = new Date(now.getTime() + response.expiresIn * 1000);
-          this.saveAuthData(this.token, expirationDate, this.userId, this.username, String(this.isAdmin));
-          this.router.navigate(['/']);
-        }
-      }, error => {
-        this.authStatusListener.next(false);
-        this.adminListener.next(false);
-      });
+          if (this.token) {
+            this.userId = response.userId;
+            this.setAuthTimer(response.expiresIn);
+            this.isAuth = true;
+            this.username = response.username;
+            this.isAdmin = response.isAdmin;
+            this.authStatusListener.next(true);
+            this.adminListener.next(this.isAdmin);
+            const now = new Date();
+            const expirationDate = new Date(now.getTime() + response.expiresIn * 1000);
+            this.saveAuthData(this.token, expirationDate, this.userId, this.username, String(this.isAdmin));
+            this.router.navigate(['/']);
+          }
+        },
+        () => {
+          this.authStatusListener.next(false);
+          this.adminListener.next(false);
+        },
+      );
   }
 
   getUserId() {
@@ -209,7 +221,7 @@ export class AuthService {
       expirationDate: new Date(expirationDate),
       userId,
       isAdmin,
-      username
+      username,
     };
   }
 

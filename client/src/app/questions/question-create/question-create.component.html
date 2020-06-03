@@ -1,32 +1,26 @@
 <form *ngIf="!isLoading" (submit)="onSaveQuestion()" #questionsForm>
   <label for="title">
     <span class="title">Title</span>
-    <app-editor 
-    [value]="retrievedQuestionData?.title" 
-    (valueChanged)="onTitleValueChanged($event)"></app-editor>
+    <app-editor [value]="retrievedQuestionData?.title" (valueChanged)="onTitleValueChanged($event)"></app-editor>
   </label>
   <label for="title">
     <span class="title">Content</span>
-    <app-editor 
-    [value]="retrievedQuestionData?.content" 
-    (valueChanged)="onContentValueChanged($event)"></app-editor>
+    <app-editor [value]="retrievedQuestionData?.content" (valueChanged)="onContentValueChanged($event)"></app-editor>
   </label>
   <label for="title">
     <span class="title">Solution Template</span>
-    <app-editor 
-    [value]="retrievedQuestionData?.solutionTemplate[0]" 
-    (valueChanged)="onSolTemplateValueChanged($event)"></app-editor>
+    <app-editor
+      [value]="(retrievedQuestionData?.solutionTemplate)[0]"
+      (valueChanged)="onSolTemplateValueChanged($event)"
+    ></app-editor>
   </label>
   <label for="title">
     <span class="title">Solution</span>
-    <app-editor 
-    [value]="retrievedQuestionData?.solution[0]" 
-    (valueChanged)="onSolValueChanged($event)"></app-editor>
+    <app-editor [value]="(retrievedQuestionData?.solution)[0]" (valueChanged)="onSolValueChanged($event)"></app-editor>
   </label>
   <label for="title">
     <span class="title">Tests</span>
-    <app-editor [value]="retrievedQuestionData?.tests[0]" 
-    (valueChanged)="onTestsValueChanged($event)"></app-editor>
+    <app-editor [value]="(retrievedQuestionData?.tests)[0]" (valueChanged)="onTestsValueChanged($event)"></app-editor>
   </label>
   <label for="title">
     <span class="title">Hints</span>

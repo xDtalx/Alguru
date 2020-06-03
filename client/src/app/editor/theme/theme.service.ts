@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { Theme, light, dark } from './theme';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class ThemeService {
   private active: Theme = light;
@@ -35,7 +35,7 @@ export class ThemeService {
     if (!this.previousProperties) {
       this.previousProperties = new Map<string, string>();
 
-      Object.keys(this.active.properties).forEach(property => {
+      Object.keys(this.active.properties).forEach((property) => {
         const prevPropertyValue = document.documentElement.style.getPropertyValue(property);
 
         if (prevPropertyValue) {
@@ -44,16 +44,13 @@ export class ThemeService {
       });
     }
 
-    Object.keys(this.active.properties).forEach(property => {
-      document.documentElement.style.setProperty(
-        property,
-        this.active.properties[property]
-      );
+    Object.keys(this.active.properties).forEach((property) => {
+      document.documentElement.style.setProperty(property, this.active.properties[property]);
     });
   }
 
   reset() {
-    Object.keys(this.active.properties).forEach(property => {
+    Object.keys(this.active.properties).forEach((property) => {
       if (document.documentElement.style.getPropertyValue(property)) {
         document.documentElement.style.removeProperty(property);
       }
