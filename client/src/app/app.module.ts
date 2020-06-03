@@ -27,7 +27,7 @@ import { IDEComponent } from './ide/ide.component';
 import { AdminPageComponent } from './admin-page/admin-page.component';
 import { EditorComponent } from './editor/editor.component';
 import { ForumComponent } from './forum/forum.component';
-import {AngularEditorModule} from "@kolkov/angular-editor";
+import { AngularEditorModule } from '@kolkov/angular-editor';
 
 @NgModule({
   declarations: [
@@ -59,7 +59,7 @@ import {AngularEditorModule} from "@kolkov/angular-editor";
     MatPaginatorModule,
     MatInputModule,
     MatSidenavModule,
-    AngularEditorModule
+    AngularEditorModule,
   ],
   providers: [
     { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },

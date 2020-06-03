@@ -2,7 +2,7 @@ import { Component, OnInit, OnDestroy, ElementRef, AfterViewInit } from '@angula
 import { Tag } from './tag.component';
 import { DatePipe } from '@angular/common';
 import { AuthService } from '../auth/auth.service';
-import {AngularEditorConfig} from "@kolkov/angular-editor";
+import { AngularEditorConfig } from '@kolkov/angular-editor';
 
 export interface Date {
   date: string;
@@ -37,29 +37,28 @@ export class ForumComponent {
     translate: 'yes',
     enableToolbar: true,
     showToolbar: true,
-    toolbarHiddenButtons: [
-    ],
+    toolbarHiddenButtons: [],
     fonts: [
-      {class: 'arial', name: 'Arial'},
-      {class: 'times-new-roman', name: 'Times New Roman'},
-      {class: 'calibri', name: 'Calibri'},
-      {class: 'comic-sans-ms', name: 'Comic Sans MS'}
+      { class: 'arial', name: 'Arial' },
+      { class: 'times-new-roman', name: 'Times New Roman' },
+      { class: 'calibri', name: 'Calibri' },
+      { class: 'comic-sans-ms', name: 'Comic Sans MS' },
     ],
     customClasses: [
       {
-        name: "quote",
-        class: "quote",
+        name: 'quote',
+        class: 'quote',
       },
       {
         name: 'redText',
-        class: 'redText'
+        class: 'redText',
       },
       {
-        name: "titleText",
-        class: "titleText",
-        tag: "h1",
+        name: 'titleText',
+        class: 'titleText',
+        tag: 'h1',
       },
-    ]
+    ],
   };
 
   tags: Array<Tag> = [
@@ -68,7 +67,7 @@ export class ForumComponent {
       title: 'Eli-post',
       author: 'eli',
       date: { date: '10/1/2020', time: '10:30' },
-      onEditTagMode:false,
+      onEditTagMode: false,
       comments: [
         {
           content: 'eli piho',
@@ -76,7 +75,7 @@ export class ForumComponent {
           author: 'Ofek',
           comments: [],
           date: { date: '10/11/2020', time: '10:00' },
-          onEditTagMode:false
+          onEditTagMode: false,
         },
         {
           content: 'eli gever',
@@ -84,7 +83,7 @@ export class ForumComponent {
           author: 'Lidor',
           comments: [],
           date: { date: '10/12/2020', time: '2:30' },
-          onEditTagMode:false
+          onEditTagMode: false,
         },
       ],
     },
@@ -109,7 +108,7 @@ export class ForumComponent {
       author,
       date,
       comments: [],
-      onEditTagMode:false,
+      onEditTagMode: false,
     };
     if (type === 'Comment') {
       this.selectedPost.comments.push(tagToAdd);
@@ -119,33 +118,32 @@ export class ForumComponent {
     }
     this.titleDefaultValue = '';
     this.messageDefaultValue = '';
-
   }
 
   onAddNewPostClick() {
     this.addNewPost = !this.addNewPost;
   }
 
-  onDeletePostClick(post){
+  onDeletePostClick(post) {
     const index: number = this.tags.indexOf(post);
     if (index !== -1) {
       this.tags.splice(index, 1);
     }
   }
 
-  onDeleteCommentClick(comment){
+  onDeleteCommentClick(comment) {
     const index: number = this.selectedPost.comments.indexOf(comment);
     if (index !== -1) {
       this.selectedPost.comments.splice(index, 1);
     }
   }
 
-  onEditPostClick(post){
+  onEditPostClick(post) {
     const index: number = this.tags.indexOf(post);
     this.tags[index].onEditTagMode = true;
   }
 
-  onEditCommentClick(comment){
+  onEditCommentClick(comment) {
     const index: number = this.selectedPost.comments.indexOf(comment);
     this.selectedPost.comments[index].onEditTagMode = true;
   }

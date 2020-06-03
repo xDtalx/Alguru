@@ -8,7 +8,7 @@
   max-width: 100%;
 }
 
-.title{
+.title {
   cursor: pointer;
 }
 /* Darker chat container */
@@ -48,7 +48,7 @@
   flex-flow: column wrap;
 }
 
-.button-right{
+.button-right {
   color: #2f2f2f;
   background-color: #d5d5d5;
   border-radius: 5px;
@@ -71,11 +71,10 @@
   box-shadow: 0 0 0 0.2rem rgba(139, 195, 74, 0.25);
 }
 
-.message{
+.message {
   margin: 8px 0;
 }
 
-.text-area{
+.text-area {
   font-size: inherit !important;
 }
-

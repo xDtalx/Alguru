@@ -17,7 +17,7 @@ export class QuestionListComponent implements OnInit, OnDestroy {
   private questionsSub: Subscription;
   questions: Question[] = [];
   isUserAuth: boolean;
-  isAdmin : boolean;
+  isAdmin: boolean;
   userId: string;
   displayedColumns: string[] = ['title', 'level', 'actions'];
   dataSource: MatTableDataSource<Question>;

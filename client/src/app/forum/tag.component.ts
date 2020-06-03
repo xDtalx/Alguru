@@ -4,7 +4,7 @@ export interface Tag {
   author: string;
   comments: Tag[];
   date: Date;
-  onEditTagMode :boolean;
+  onEditTagMode: boolean;
 }
 
 export interface Date {

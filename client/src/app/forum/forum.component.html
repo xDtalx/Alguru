@@ -2,7 +2,7 @@
 <div *ngIf="!showPost">
   <h3>Alguru-Forum</h3>
   <button (click)="onAddNewPostClick()">Add new Post</button>
-<!--  Add new Post mode-->
+  <!--  Add new Post mode-->
   <div class="container" *ngIf="addNewPost">
     <h4>New-Post</h4>
     <div class="form-group green-border-focus">
@@ -12,24 +12,25 @@
         id="titleTextarea1"
         rows="1"
         #titleTextarea
-        [(ngModel)]="titleDefaultValue"></textarea>
-      <div class="message" >Message:</div>
+        [(ngModel)]="titleDefaultValue"
+      ></textarea>
+      <div class="message">Message:</div>
       <angular-editor id="editor1" [config]="editorConfig" [(ngModel)]="messageDefaultValue"></angular-editor>
     </div>
     <button (click)="onSubmitMessage(titleTextarea.value, messageDefaultValue, 'Post')">Submit</button>
   </div>
-<!--  Regular Mode-->
+  <!--  Regular Mode-->
   <div class="container" *ngFor="let post of tags">
     <div *ngIf="!post.onEditTagMode">
       <h4 class="title" (click)="onPostClick(post)">{{ post.title }}</h4>
       <div class="data-right">
         <span> By: {{ post.author }} </span>
         <span> At: {{ post.date.time + ' ' + post.date.date }}</span>
-        <button class="button-right" *ngIf="isAdmin" (click)="onDeletePostClick(post)"> Delete Post</button>
-        <button class="button-right" *ngIf="isAdmin" (click)="onEditPostClick(post)"> Edit Post</button>
+        <button class="button-right" *ngIf="isAdmin" (click)="onDeletePostClick(post)">Delete Post</button>
+        <button class="button-right" *ngIf="isAdmin" (click)="onEditPostClick(post)">Edit Post</button>
       </div>
     </div>
-<!--    On Edit post mode-->
+    <!--    On Edit post mode-->
     <div *ngIf="post.onEditTagMode">
       <label for="titleTextarea">Title:</label>
       <textarea
@@ -37,8 +38,9 @@
         id="titleTextarea3"
         rows="1"
         #titleTextarea
-        [(ngModel)]="post.title"></textarea>
-      <div class="message" >Message:</div>
+        [(ngModel)]="post.title"
+      ></textarea>
+      <div class="message">Message:</div>
       <angular-editor id="editor3" [config]="editorConfig" [(ngModel)]="post.content"></angular-editor>
       <button (click)="onSubmitEditMessage(post, titleTextarea.value, post.content)">Submit</button>
     </div>
@@ -49,40 +51,35 @@
 <div *ngIf="showPost">
   <h3>Post-Content</h3>
   <div class="container">
-      <h4>{{ selectedPost.title }}</h4>
-      <div id="postContent" [innerHTML]="selectedPost.content"></div>
-      <div class="data-right">
-        <span> By: {{ selectedPost.author }} </span>
-        <span>At: {{ selectedPost.date.time + ' ' + selectedPost.date.date }}</span>
-      </div>
+    <h4>{{ selectedPost.title }}</h4>
+    <div id="postContent" [innerHTML]="selectedPost.content"></div>
+    <div class="data-right">
+      <span> By: {{ selectedPost.author }} </span>
+      <span>At: {{ selectedPost.date.time + ' ' + selectedPost.date.date }}</span>
+    </div>
   </div>
   <div class="container darker" *ngFor="let comment of selectedPost.comments">
-<!--    On Regular Mode-->
+    <!--    On Regular Mode-->
     <div *ngIf="!comment.onEditTagMode">
       <h4>{{ comment.title }}</h4>
       <div>{{ comment.content }}</div>
       <div class="data-right">
         <span> By: {{ comment.author }} </span>
         <span>At: {{ comment.date.time + ' ' + comment.date.date }}</span>
-        <button class="button-right" *ngIf="isAdmin" (click)="onDeleteCommentClick(comment)"> Delete Comment</button>
-        <button class="button-right" *ngIf="isAdmin" (click)="onEditCommentClick(comment)"> Edit Comment</button>
+        <button class="button-right" *ngIf="isAdmin" (click)="onDeleteCommentClick(comment)">Delete Comment</button>
+        <button class="button-right" *ngIf="isAdmin" (click)="onEditCommentClick(comment)">Edit Comment</button>
       </div>
     </div>
-<!--    On Edit comment mode-->
+    <!--    On Edit comment mode-->
     <div *ngIf="comment.onEditTagMode">
       <label for="titleTextarea">Title:</label>
-      <textarea
-        class="form-control text-area"
-        id="titleTextarea4"
-        rows="1"
-        [(ngModel)]="comment.title"
-      ></textarea>
+      <textarea class="form-control text-area" id="titleTextarea4" rows="1" [(ngModel)]="comment.title"></textarea>
       <div>Message:</div>
       <angular-editor id="editor4" [config]="editorConfig" [(ngModel)]="comment.content"></angular-editor>
-    <button (click)="onSubmitEditComment(comment, comment.content, comment.title)">Submit</button>
+      <button (click)="onSubmitEditComment(comment, comment.content, comment.title)">Submit</button>
     </div>
   </div>
-<!--  New Comment-->
+  <!--  New Comment-->
   <div class="container">
     <h4>New-Comment</h4>
     <div class="form-group green-border-focus">
