@@ -1,5 +1,6 @@
+<button [routerLink]="['/create-question']" >Create Question</button>
 <mat-form-field>
-  <mat-label>Filter</mat-label>
+  <mat-label>Filter by title</mat-label>
   <input matInput (keyup)="applyFilter($event)" placeholder="Enter search term" />
 </mat-form-field>
 
@@ -25,13 +26,13 @@
       <td mat-cell *matCellDef="let question">
         <button *ngIf="isUserAuth" [routerLink]="['/solve', question.id]" class="action-button">Solve</button>
         <button
-          *ngIf="isUserAuth && userId === question.creator"
+          *ngIf="(isUserAuth && userId === question.creator) || isAdmin"
           [routerLink]="['/edit', question.id]"
           class="action-button"
         >
           Edit
         </button>
-        <button *ngIf="isUserAuth && userId === question.creator" (click)="onDelete(question.id)" class="action-button">
+        <button *ngIf="(isUserAuth && userId === question.creator) || isAdmin" (click)="onDelete(question.id)" class="action-button">
           Delete
         </button>
       </td>

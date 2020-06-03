@@ -17,6 +17,7 @@ export class QuestionListComponent implements OnInit, OnDestroy {
   private questionsSub: Subscription;
   questions: Question[] = [];
   isUserAuth: boolean;
+  isAdmin : boolean;
   userId: string;
   displayedColumns: string[] = ['title', 'level', 'actions'];
   dataSource: MatTableDataSource<Question>;
@@ -43,6 +44,7 @@ export class QuestionListComponent implements OnInit, OnDestroy {
     this.dataSource = new MatTableDataSource(this.questions);
     this.dataSource.paginator = this.paginator;
     this.dataSource.sort = this.sort;
+    this.isAdmin = this.authService.getIsAdmin();
   }
 
   ngOnDestroy() {
