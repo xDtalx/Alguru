@@ -79,7 +79,7 @@
       ></textarea>
       <div>Message:</div>
       <angular-editor id="editor4" [config]="editorConfig" [(ngModel)]="comment.content"></angular-editor>
-    <button (click)="onSubmitEditComment(comment, titleTextarea.value, messageDefaultValue)">Submit</button>
+    <button (click)="onSubmitEditComment(comment, comment.content, comment.title)">Submit</button>
     </div>
   </div>
 <!--  New Comment-->
