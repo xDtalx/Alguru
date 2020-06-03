@@ -12,7 +12,7 @@ export interface Date {
 @Component({
   selector: 'app-forum',
   templateUrl: './forum.component.html',
-  styleUrls: ['./forum.component.css'],
+  styleUrls: ['./forum.component.scss'],
   providers: [DatePipe],
 })
 export class ForumComponent {
@@ -161,4 +161,5 @@ export class ForumComponent {
     this.selectedPost.comments[index].content = message;
     this.selectedPost.comments[index].onEditTagMode = false;
   }
+
 }
