@@ -112,3 +112,7 @@ h3 {
 h4 {
   font-size: 2rem !important;
 }
+
+.angular-editor-toolbar{
+  font-size: inherit !important;
+}
