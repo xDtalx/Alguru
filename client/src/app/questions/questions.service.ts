@@ -28,7 +28,7 @@ export class QuestionsService {
               solution: question.solution,
               hints: question.hints,
               level: question.level,
-              creator: question.creator,
+              creator: question.creator
             };
           });
         })
@@ -68,14 +68,14 @@ export class QuestionsService {
   ) {
     const question: Question = {
       id: null,
-      title: title,
-      content: content,
-      solutionTemplate: solutionTemplate,
-      solution: solution,
-      tests: tests,
-      hints: hints,
-      level: level,
-      creator: null,
+      title,
+      content,
+      solutionTemplate,
+      solution,
+      tests,
+      hints,
+      level,
+      creator: null
     };
 
     this.addQuestion(question);
@@ -100,7 +100,7 @@ export class QuestionsService {
 
   updateQuestion(id: string, question: Question) {
     const questionToUpdate: Question = {
-      id: id,
+      id,
       title: question.title,
       content: question.content,
       solutionTemplate: question.solutionTemplate,
@@ -108,7 +108,7 @@ export class QuestionsService {
       tests: question.tests,
       hints: question.hints,
       level: question.level,
-      creator: null,
+      creator: null
     };
 
     this.http.put(BACKEND_URL + '/' + id, questionToUpdate).subscribe(() => {

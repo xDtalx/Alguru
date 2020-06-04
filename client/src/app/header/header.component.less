@@ -100,18 +100,28 @@ img {
 
 .nav-link {
   padding: 0.7rem;
-  border-radius: 1rem;
+  border-radius: 4rem;
+  padding: 1rem 2rem 1rem 2rem;
   border: none;
-  background-color: transparent;
   font-size: 1rem;
   color: white;
   cursor: pointer;
+  background-color: rgba(255, 97, 97, 0);
 }
 
 .nav-link:hover {
   color: white;
-  background-color: rgb(207, 92, 84);
-  box-shadow: 0 1px 5px rgb(168, 74, 74);
+  animation: shadow 0.15s linear forwards, nav-link-bg-color 0.15s linear forwards;
+}
+
+@keyframes shadow {
+  from{box-shadow: 0 0 5px rgba(0, 0, 0, 0);}
+  to{box-shadow: 0 0 5px rgba(0, 0, 0, 0.25);}
+}
+
+@keyframes nav-link-bg-color {
+  from{background-color: rgba(0, 0, 0, 0);}
+  to{background-color: rgb(224, 73, 73);}
 }
 
 .nav-link:active {

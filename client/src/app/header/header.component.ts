@@ -7,13 +7,13 @@ import * as $ from 'jquery';
 
 enum ModalTypes {
   LoginModal = 'loginModal',
-  RegisterModal = 'registerModal',
+  RegisterModal = 'registerModal'
 }
 
 @Component({
   selector: 'app-header',
   templateUrl: './header.component.html',
-  styleUrls: ['./header.component.less'],
+  styleUrls: ['./header.component.less']
 })
 export class HeaderComponent implements OnInit, OnDestroy {
   private authListenerSubs: Subscription;
@@ -44,7 +44,6 @@ export class HeaderComponent implements OnInit, OnDestroy {
     });
     this.adminListenerSubs = this.authService.getAdminListener().subscribe((isAdmin) => {
       this.isAdmin = isAdmin;
-      console.log(this.isAdmin);
     });
   }
 

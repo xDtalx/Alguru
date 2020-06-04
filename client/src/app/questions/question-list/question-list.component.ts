@@ -10,7 +10,7 @@ import { MatSort } from '@angular/material/sort';
 @Component({
   selector: 'app-question-list',
   templateUrl: './question-list.component.html',
-  styleUrls: ['./question-list.component.css'],
+  styleUrls: ['./question-list.component.css']
 })
 export class QuestionListComponent implements OnInit, OnDestroy {
   // used in order to unsubscribe from the service when the page, which the list in, not shown

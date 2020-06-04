@@ -41,7 +41,7 @@ import { AngularEditorModule } from '@kolkov/angular-editor';
     ComingSoonComponent,
     IDEComponent,
     EditorComponent,
-    ForumComponent,
+    ForumComponent
   ],
   imports: [
     BrowserModule,
@@ -57,12 +57,12 @@ import { AngularEditorModule } from '@kolkov/angular-editor';
     MatPaginatorModule,
     MatInputModule,
     MatSidenavModule,
-    AngularEditorModule,
+    AngularEditorModule
   ],
   providers: [
     { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },
-    { provide: HTTP_INTERCEPTORS, useClass: ErrorInterceptor, multi: true },
+    { provide: HTTP_INTERCEPTORS, useClass: ErrorInterceptor, multi: true }
   ],
-  bootstrap: [AppComponent],
+  bootstrap: [AppComponent]
 })
 export class AppModule {}

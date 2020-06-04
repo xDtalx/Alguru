@@ -11,7 +11,7 @@ import {
   ViewChild,
   ElementRef,
   ViewEncapsulation,
-  OnDestroy,
+  OnDestroy
 } from '@angular/core';
 import { DomSanitizer } from '@angular/platform-browser';
 import { EditorService, EventType } from './editor.service';
@@ -25,7 +25,7 @@ import { Highlighter } from './highlighters/highlighter';
   selector: 'app-editor',
   templateUrl: './editor.component.html',
   styleUrls: ['./editor.component.css'],
-  encapsulation: ViewEncapsulation.None,
+  encapsulation: ViewEncapsulation.None
 })
 export class EditorComponent implements OnInit, OnDestroy, OnChanges, AfterViewInit {
   constructor(
@@ -152,7 +152,7 @@ export class EditorComponent implements OnInit, OnDestroy, OnChanges, AfterViewI
     if (undo) {
       if (event.type === 'keydown' && this.history.length > 0) {
         const prevState = this.history.pop();
-        text = prevState.value;
+        text = prevState.previousText;
         this.tabsInsideCurrentLine = prevState.tabsInsideCurrentLine;
         this.anchorIndex = prevState.anchorIndex;
         this.focusIndex = prevState.focusIndex;
@@ -183,15 +183,18 @@ export class EditorComponent implements OnInit, OnDestroy, OnChanges, AfterViewI
     ) {
       let range: Range;
 
-      if (!sel.anchorNode) {
+      if (!sel.anchorNode || this.editor.nativeElement.querySelectorAll('.view-line').length === 0) {
         range = new Range();
         const lines: NodeList = this.editor.nativeElement.querySelectorAll('.view-line');
 
         if (lines.length > 0) {
           range.setStart(lines[0], 0);
-          range.collapse(true);
+        } else {
+          const newLine = this.editorService.addNewLine(this.editor.nativeElement);
+          range.setStart(newLine, 0);
         }
 
+        range.collapse(true);
         sel.removeAllRanges();
         sel.addRange(range);
       } else {
@@ -211,7 +214,7 @@ export class EditorComponent implements OnInit, OnDestroy, OnChanges, AfterViewI
   }
 
   renderText(value: string, deleteOnChange: boolean): void {
-    if (this.editor && value && value !== '') {
+    if (this.editor && value) {
       const editor: HTMLElement = this.editor.nativeElement;
       const lines: string[] = value.split('\n');
       const viewLines: HTMLDivElement[] = [];
@@ -273,11 +276,11 @@ export class EditorComponent implements OnInit, OnDestroy, OnChanges, AfterViewI
     if (saveState) {
       this.history.push({
         currentLine: this.currentLine,
-        value: this.previousText,
+        value: this.value,
         tabsInsideCurrentLine: this.tabsInsideCurrentLine,
         anchorIndex: this.anchorIndex,
         focusIndex: this.focusIndex,
-        previousText: this.previousText,
+        previousText: this.previousText
       });
     }
   }
@@ -415,7 +418,7 @@ export class EditorComponent implements OnInit, OnDestroy, OnChanges, AfterViewI
             tabsInsideCurrentLine: this.tabsInsideCurrentLine,
             anchorIndex: this.anchorIndex,
             focusIndex: this.focusIndex,
-            previousText: this.previousText,
+            previousText: this.previousText
           });
 
           const selRange = sel.getRangeAt(0);
@@ -452,7 +455,7 @@ export class EditorComponent implements OnInit, OnDestroy, OnChanges, AfterViewI
         tabsInsideCurrentLine: this.tabsInsideCurrentLine,
         anchorIndex: this.anchorIndex,
         focusIndex: this.focusIndex,
-        previousText: this.previousText,
+        previousText: this.previousText
       });
     } else {
       sibling = anchorNode.previousSibling;
@@ -463,7 +466,7 @@ export class EditorComponent implements OnInit, OnDestroy, OnChanges, AfterViewI
         tabsInsideCurrentLine: this.tabsInsideCurrentLine,
         anchorIndex: 0,
         focusIndex: 0,
-        previousText: this.previousText,
+        previousText: this.previousText
       });
     }
 
@@ -761,7 +764,7 @@ export class EditorComponent implements OnInit, OnDestroy, OnChanges, AfterViewI
           tabsInsideCurrentLine: this.tabsInsideCurrentLine,
           anchorIndex: this.anchorIndex,
           focusIndex: this.focusIndex,
-          previousText: this.previousText,
+          previousText: this.previousText
         });
       }
 

@@ -15,8 +15,8 @@ export const dark: Theme = {
     '--caret-color': 'white',
     '--line-focus-bg-color': 'rgba(0, 0, 0, 0.020)',
     '--line-focus-border': '1px solid rgba(0, 0, 0, 0.15)',
-    '--main-padding': 'none',
-  },
+    '--main-padding': 'none'
+  }
 };
 
 export const light: Theme = {
@@ -32,6 +32,6 @@ export const light: Theme = {
     '--line-focus-bg-color': 'rgba(0, 0, 0, 0.01)',
     '--line-focus-border': '1px solid rgba(0, 0, 0, 0.1)',
     '--access-modifier-color': '',
-    '--main-padding': 'none',
-  },
+    '--main-padding': 'none'
+  }
 };

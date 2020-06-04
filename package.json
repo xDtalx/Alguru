@@ -10,10 +10,10 @@
     "e2e": "ng e2e",
     "start:server": "npm install && cd client && nodemon ../server/server.js",
     "start:client": "npm install && cd client && npm start",
-    "lint:eslint": "eslint */**/*.{js,ts} --quiet",
-    "lint:prettier": "prettier --single-quote \"*/**/*.{json,yml,html,css}\" --check",
-    "eslint:format": "eslint */**/*.{js,ts} --quiet --fix",
-    "prettier:format": "prettier --single-quote \"*/**/*.{json,yml,html,css}\" --write"
+    "lint:eslint": "eslint **/*.{js,ts} --quiet",
+    "lint:prettier": "prettier --single-quote \"**/*.{json,yml,html,css}\" --check",
+    "eslint:format": "eslint **/*.{js,ts} --quiet --fix",
+    "prettier:format": "prettier --single-quote \"**/*.{json,yml,html,css}\" --write"
   },
   "private": true,
   "dependencies": {

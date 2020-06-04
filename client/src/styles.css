@@ -84,7 +84,7 @@ html,
 body {
   font-size: 62.5%;
   height: 100%;
-  background-color: var(--site-background);
+  background-color: var(--site-background) !important;
 }
 
 body {
@@ -115,4 +115,43 @@ h4 {
 
 .angular-editor-toolbar {
   font-size: inherit !important;
+}
+
+.alguru-primary-btn {
+  outline: none;
+  border: none;
+  border-radius: 100px;
+  padding: 1rem 2rem 1rem 2rem;
+  background-color: rgb(235, 235, 235);
+}
+
+.alguru-primary-btn:hover {
+  animation: shadow 0.1s linear forwards, bg-color 0.1s linear forwards, color 0.1s linear forwards;
+}
+
+@keyframes shadow {
+  from {
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0);
+  }
+  to {
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.25);
+  }
+}
+
+@keyframes bg-color {
+  from {
+    background-color: rgb(235, 235, 235);
+  }
+  to {
+    background-color: rgb(255, 97, 97);
+  }
+}
+
+@keyframes color {
+  from {
+    color: rgb(0, 0, 0);
+  }
+  to {
+    color: rgb(255, 255, 255);
+  }
 }

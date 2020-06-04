@@ -4,8 +4,8 @@ const ForumController = require('../controllers/forum');
 const checkAuth = require('../filters/check-auth');
 const { check } = require('express-validator');
 const validations = [
-  check('title', 'Title should be at least 6 characters').exists().trim().isLength({ min: 6 }),
-  check('content', 'Content should be at least 6 characters').exists().trim().isLength({ min: 6 }),
+  check('currentTitle', 'Title should be at least 6 characters').exists().trim().isLength({ min: 6 }),
+  check('currentContent', 'Content should be at least 6 characters').exists().trim().isLength({ min: 6 })
 ];
 
 // post something
@@ -31,5 +31,16 @@ router.put('/:postId', checkAuth, validations, ForumController.updatePost);
 
 // allow user to edit a post
 router.put('/:postId/:commentId', checkAuth, validations, ForumController.updateComment);
+
+// vote on comment
+router.patch(
+  '/:postId/:commentId',
+  checkAuth,
+  [
+    check('username', 'Username in vote is invalid').exists().trim().isLength({ min: 6 }),
+    check('isUp', 'Vote type not specified').exists()
+  ],
+  ForumController.voteOnComment
+);
 
 module.exports = router;

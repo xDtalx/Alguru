@@ -5,7 +5,7 @@ const checkAuth = require('../filters/check-auth');
 const { check } = require('express-validator');
 const validations = [
   check('username', 'Username should be at least 6 characters').exists().trim().isLength({ min: 6 }),
-  check('password', 'Password should be at least 6 characters').exists().trim().isLength({ min: 6 }),
+  check('password', 'Password should be at least 6 characters').exists().trim().isLength({ min: 6 })
 ];
 const registerCheck = [
   check('confirmPassword', 'Password should be at least 6 characters')
@@ -21,7 +21,7 @@ const registerCheck = [
         return value;
       }
     }),
-  check('email', 'Invalid email').exists().isEmail().normalizeEmail({ gmail_remove_dots: false }),
+  check('email', 'Invalid email').exists().isEmail().normalizeEmail({ gmail_remove_dots: false })
 ];
 
 router.post('/register', validations, registerCheck, UserController.createUser);

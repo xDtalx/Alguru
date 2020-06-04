@@ -1,4 +1,4 @@
-<button [routerLink]="['/create-question']">Create Question</button>
+<button class="create-question-btn alguru-primary-btn" [routerLink]="['/create-question']">Create Question</button>
 <mat-form-field>
   <mat-label>Filter by title</mat-label>
   <input matInput (keyup)="applyFilter($event)" placeholder="Enter search term" />
@@ -24,18 +24,20 @@
     <ng-container matColumnDef="actions">
       <th mat-header-cell *matHeaderCellDef mat-sort-header>Actions</th>
       <td mat-cell *matCellDef="let question">
-        <button *ngIf="isUserAuth" [routerLink]="['/solve', question.id]" class="action-button">Solve</button>
+        <button *ngIf="isUserAuth" [routerLink]="['/solve', question.id]" class="alguru-primary-btn action-button">
+          Solve
+        </button>
         <button
           *ngIf="(isUserAuth && userId === question.creator) || isAdmin"
           [routerLink]="['/edit', question.id]"
-          class="action-button"
+          class="alguru-primary-btn action-button"
         >
           Edit
         </button>
         <button
           *ngIf="(isUserAuth && userId === question.creator) || isAdmin"
           (click)="onDelete(question.id)"
-          class="action-button"
+          class="alguru-primary-btn action-button"
         >
           Delete
         </button>

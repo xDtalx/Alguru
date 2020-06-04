@@ -6,7 +6,7 @@ const userSchema = mongoose.Schema({
   username_lower: { type: String, unique: true },
   email: { type: String, require: true, unique: true },
   hashedPassword: { type: String, require: true },
-  isAdmin: { type: Boolean, require: true },
+  isAdmin: { type: Boolean, require: true }
 });
 
 // adding a plugin so we'd get an error when username and email already exists

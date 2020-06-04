@@ -5,5 +5,5 @@ export enum KeywordType {
   PrimitiveWrapper = 'primitive-wrapper',
   Literal = 'literal',
   Structural = 'structural',
-  Reserved = 'reserved',
+  Reserved = 'reserved'
 }

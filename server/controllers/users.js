@@ -16,7 +16,7 @@ exports.createUser = (req, res, next) => {
       username_lower: req.body.username.toLowerCase(),
       email: req.body.email,
       hashedPassword: hash,
-      isAdmin: false,
+      isAdmin: false
     });
 
     user
@@ -54,12 +54,12 @@ exports.updateUser = (req, res, next) => {
       username_lower: req.body.username.toLowerCase(),
       email: req.body.email,
       hashedPassword: hash,
-      isAdmin: false,
+      isAdmin: false
     });
 
     User.updateOne(
       {
-        _id: req.userData.userId,
+        _id: req.userData.userId
       },
       user
     )
@@ -102,11 +102,11 @@ function handleAuthenticationAndResponse(fetchedUser, res) {
       username: fetchedUser.username,
       email: fetchedUser.email,
       userId: fetchedUser._id,
-      isAdmin: fetchedUser.isAdmin,
+      isAdmin: fetchedUser.isAdmin
     },
     process.env.JWT_KEY,
     {
-      expiresIn: '1h',
+      expiresIn: '1h'
     }
   );
 
@@ -115,7 +115,7 @@ function handleAuthenticationAndResponse(fetchedUser, res) {
     expiresIn: 3600,
     username: fetchedUser.username,
     userId: fetchedUser._id,
-    isAdmin: fetchedUser.isAdmin,
+    isAdmin: fetchedUser.isAdmin
   });
 }
 
@@ -134,8 +134,8 @@ function handleSuccessfulSave(result, res) {
     message: 'User created',
     user: {
       id: result._id,
-      username: result.username,
-    },
+      username: result.username
+    }
   });
 }
 

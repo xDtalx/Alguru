@@ -20,13 +20,13 @@ exports.createQuestion = (req, res, next) => {
     tests: req.body.tests,
     hints: req.body.hints,
     level: req.body.level,
-    creator: req.userData.userId,
+    creator: req.userData.userId
   });
 
   question.save().then((createdQuestion) => {
     res.status(201).json({
       message: 'Question created successfully',
-      questionId: createdQuestion._id,
+      questionId: createdQuestion._id
     });
   });
 };
@@ -71,13 +71,13 @@ exports.updateQuestion = (req, res, next) => {
     tests: req.body.tests,
     hints: req.body.hints,
     level: req.body.level,
-    creator: req.userData.userId,
+    creator: req.userData.userId
   });
 
   Question.updateOne(
     {
       _id: req.body.id,
-      creator: req.userData.userId,
+      creator: req.userData.userId
     },
     question
   ).then((result) => {

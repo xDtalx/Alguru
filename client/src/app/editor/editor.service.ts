@@ -5,7 +5,7 @@ import { CodeType } from './highlighters/code.type';
 
 export enum ChildPosition {
   First,
-  Last,
+  Last
 }
 
 export enum EventType {
@@ -15,7 +15,7 @@ export enum EventType {
   MouseDown = 'mousedown',
   MouseUp = 'mouseup',
   Click = 'click',
-  Input = 'input',
+  Input = 'input'
 }
 
 @Injectable({ providedIn: 'root' })

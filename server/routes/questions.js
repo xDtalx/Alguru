@@ -11,7 +11,7 @@ const validations = [
   check('tests', 'Tests should be exists even if its empty').exists(),
   check('level', 'Level should be an integer number').exists().trim().isInt(),
   check('solution', 'Solution should be exists and not empty').exists().trim().notEmpty(),
-  check('solutionTemplate', 'Solution template should be exists and not empty').exists().trim().notEmpty(),
+  check('solutionTemplate', 'Solution template should be exists and not empty').exists().trim().notEmpty()
 ];
 
 // admin path

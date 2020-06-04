@@ -4,11 +4,11 @@ exports.executeCode = (req, res, next) => {
   const data = {
     lang: req.body.lang,
     code: req.body.code,
-    tests: req.body.tests,
+    tests: req.body.tests
   };
 
   const config = {
-    headers: req.headers,
+    headers: req.headers
   };
 
   axios

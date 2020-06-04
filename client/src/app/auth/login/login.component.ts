@@ -6,7 +6,7 @@ import { Subscription } from 'rxjs';
 @Component({
   selector: 'app-login',
   templateUrl: './login.component.html',
-  styleUrls: ['./login.component.less'],
+  styleUrls: ['./login.component.less']
 })
 export class LoginComponent implements OnInit, OnDestroy {
   public isLoading = false;
@@ -20,10 +20,13 @@ export class LoginComponent implements OnInit, OnDestroy {
     this.authStatusSub = this.authService.getAuthStatusListener().subscribe((authStatus) => {
       this.isLoading = authStatus;
     });
+
+    window.addEventListener('keyup', this.onKeyUp.bind(this));
   }
 
   ngOnDestroy() {
     this.authStatusSub.unsubscribe();
+    window.removeEventListener('keyup', this.onKeyUp.bind(this));
   }
 
   onLogin(loginForm: NgForm) {
@@ -41,5 +44,11 @@ export class LoginComponent implements OnInit, OnDestroy {
 
   openRegister() {
     this.onRegisterOpen.emit();
+  }
+
+  onKeyUp(event: KeyboardEvent) {
+    if (event.key === 'Escape') {
+      this.hide();
+    }
   }
 }

@@ -6,10 +6,11 @@ import { Subscription } from 'rxjs';
 @Component({
   selector: 'app-register',
   templateUrl: './register.component.html',
-  styleUrls: ['./register.component.less'],
+  styleUrls: ['./register.component.less']
 })
 export class RegisterComponent implements OnInit, OnDestroy {
   private authStatusSub: Subscription;
+  private userSavedSub: Subscription;
   public isLoading = false;
   @Output() onCloseModal: EventEmitter<any> = new EventEmitter();
 
@@ -19,10 +20,19 @@ export class RegisterComponent implements OnInit, OnDestroy {
     this.authStatusSub = this.authService.getAuthStatusListener().subscribe((authStatus) => {
       this.isLoading = authStatus;
     });
+
+    this.userSavedSub = this.authService.getUserSavedListener().subscribe((isSaved) => {
+      if (isSaved) {
+        this.hide();
+      }
+    });
+
+    window.addEventListener('keyup', this.onKeyUp.bind(this));
   }
 
   ngOnDestroy() {
     this.authStatusSub.unsubscribe();
+    window.removeEventListener('keyup', this.onKeyUp.bind(this));
   }
 
   onRegister(registerForm: NgForm) {
@@ -45,5 +55,11 @@ export class RegisterComponent implements OnInit, OnDestroy {
 
   hide() {
     this.onCloseModal.emit();
+  }
+
+  onKeyUp(event: KeyboardEvent) {
+    if (event.key === 'Escape') {
+      this.hide();
+    }
   }
 }

@@ -2,13 +2,13 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 
 enum ModalTypes {
   LoginModal = 'loginModal',
-  RegisterModal = 'registerModal',
+  RegisterModal = 'registerModal'
 }
 
 @Component({
   selector: 'home-page',
   templateUrl: './homePage.component.html',
-  styleUrls: ['./homePage.component.less'],
+  styleUrls: ['./homePage.component.less']
 })
 export class HomePageComponent {
   showLoginModal: boolean;

@@ -9,27 +9,198 @@ $red: rgba(0, 0, 0, 0.96);
 $purple: #6477b9;
 $blue: #0eb7da;
 
+.app-error-container {
+  overflow: hidden;
+  border-radius: 5px;
+  margin-bottom: 10px;
+}
+
+.changed {
+  animation: highlight-fade 0.3s linear;
+}
+
+@keyframes highlight-fade {
+  from {background-color: rgb(67, 164, 255);}
+  to { background-color: rgb(253, 253, 253);}
+}
+
+.comment-container {
+  display: flex;
+  flex-direction: row;
+}
+
+.post-content {
+  overflow-wrap: break-word;
+}
+
+.welcome {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  text-align: center;
+  height: 74vh;
+}
+
+.voting {
+  margin: auto;
+  height: 15rem;
+  padding-top: 2rem;
+  padding-bottom: 2rem;
+  padding-right: 1rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  font-size: 2rem;
+  font-weight: bold;
+  color: rgb(77, 77, 77);
+}
+
+.vote {
+  margin: auto;
+  width: 2.3rem;
+  height: 2.3rem;
+  display: block;
+  border: solid rgb(51, 51, 51);
+  border-width: 0 0.6rem 0.6rem 0;
+  cursor: pointer;
+}
+
+.vote-up {
+  transform: rotate(225deg);
+}
+
+.vote-up:hover {
+  animation: up-border-color 0.1s forwards;
+}
+
+@keyframes up-border-color {
+  from {border-color: black}
+  to {border-color: rgb(50, 214, 50)}
+}
+
+.vote-down {
+  transform: rotate(45deg);
+}
+
+.vote-down:hover {
+  animation: down-border-color 0.2s forwards;
+}
+
+@keyframes down-border-color {
+  from {border-color: black}
+  to {border-color: rgb(230, 83, 78)}
+}
+
+.votes {
+  text-align: center;
+  width: 4rem;
+  padding: 1rem 0rem 1rem 0rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
 .error-message{
   color: red;
 }
 
 /* Chat containers */
 .container {
-  border: 2px solid #dedede;
-  background-color: #f1f1f1;
+  position: relative;
+  background-color: rgb(253, 253, 253);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
   border-radius: 5px;
   padding: 10px;
   margin: 10px 0;
   max-width: 100%;
 }
 
-.title {
-  cursor: pointer;
+.current-date {
+  background-color: rgb(67, 164, 255) !important;
+  color: white;
 }
-/* Darker chat container */
-.darker {
-  border-color: #ccc;
-  background-color: #ddd;
+
+.current-date:hover {
+  background-color: rgb(74, 155, 230) !important;
+  color: white;
+}
+
+.respect-padding {
+  position: relative;
+}
+
+.edits {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  right:0;
+}
+
+.edits-btn-container {
+  position: relative;
+  height: 3rem;
+}
+
+.edits-btn {
+  color: rgb(175, 175, 175);
+  outline: none;
+  position: absolute;
+  top: -0.5rem;
+  right: 0;
+  background-color: rgba(0, 0, 0, 0);
+  border: none;
+}
+
+.edits-btn:hover {
+  color: rgb(67, 164, 255);
+}
+
+.pop-up {
+  z-index: 999;
+  top: 1.5rem;
+  transform: translateX(-116%);
+  position: absolute;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.5);
+  border-radius: 1rem;
+  border-top-right-radius: 0;
+}
+
+.pop-up button {
+  outline: none;
+  border: none;
+  width: fit-content;
+  background-color: white;
+  padding: 0.5rem;
+  border-bottom: 1px solid rgb(221, 221, 221);
+}
+
+.edit-date {
+  white-space: nowrap;
+}
+
+.pop-up div:first-child,
+.pop-up div:first-child > * {
+  border-top-left-radius: 1rem;
+}
+
+.pop-up div:last-child,
+.pop-up div:last-child > * {
+  border-bottom: 0;
+  border-bottom-left-radius: 1rem;
+  border-bottom-right-radius: 1rem;
+}
+
+.pop-up button:hover {
+  background-color: rgb(245, 245, 245);
+}
+
+.starter {
+  border-bottom: 2px solid rgb(67, 164, 255);
+}
+
+.clickable {
+  position: relative;
+  cursor: pointer;
 }
 
 /* Clear floats */
@@ -55,12 +226,33 @@ $blue: #0eb7da;
   margin-right: 0;
 }
 
+.content {
+  height: calc(100% - 2rem - 16px);
+  flex-grow: 1;
+  display: flex;
+  flex-direction: row;
+}
+
+@media only screen and (max-width: 800px) {
+.content {
+  flex-direction: column;
+}
+}
+
+.post-comment, .spacer {
+  flex-grow: 1;
+}
+
+.post-content {
+  flex-grow: 100;
+}
+
 /* Style time text */
 .data-right {
-  float: right;
+  flex-grow: 1;
   color: #aaa;
   display: flex;
-  flex-flow: column wrap;
+  flex-direction: column;
 }
 
 .button-right {
@@ -90,235 +282,9 @@ $blue: #0eb7da;
   font-size: inherit !important;
 }
 
-.special-button {
-  background: none;
-  border-radius: 5px;
+.forum-btn {
+  margin: 0 1rem 0 0 !important;
   box-sizing: border-box;
-  margin: 1em;
-  padding: 1em 1em;
+  outline: none;
   cursor: pointer;
-  border: 0.5px solid;
-
-  // Using inset box-shadow instead of border for sizing simplicity
-  box-shadow: $red;
-  color: $red;
-  font-size: inherit;
-  font-weight: 700;
-
-  // Required, since we're setting absolute on pseudo-elements
-  position: relative;
-  vertical-align: middle;
-
-  &::before,
-  &::after {
-    box-sizing: inherit;
-    content: '';
-    position: absolute;
-    width: 100%;
-    height: 100%;
-  }
-}
-
-.draw {
-  transition: color 0.25s;
-
-&::before,
-&::after {
- // Set border to invisible, so we don't see a 4px border on a 0x0 element before the transition starts
- border: 2px solid transparent;
-   width: 0;
-   height: 0;
- }
-
-// This covers the top & right borders (expands right, then down)
-&::before {
-   top: 0;
-   left: 0;
- }
-
-// And this the bottom & left borders (expands left, then up)
-&::after {
-   bottom: 0;
-   right: 0;
- }
-
-&:hover {
-   color: $cyan;
- }
-
-// Hover styles
-  &:hover::before,
-&:hover::after {
-   width: 100%;
-   height: 100%;
- }
-
-&:hover::before {
-   border-top-color: $cyan; // Make borders visible
- border-right-color: $cyan;
-   transition:
-   width 0.25s ease-out, // Width expands first
-   height 0.25s ease-out 0.25s; // And then height
- }
-
-&:hover::after {
-   border-bottom-color: $cyan; // Make borders visible
- border-left-color: $cyan;
-   transition:
-   border-color 0s ease-out 0.5s, // Wait for ::before to finish before showing border
-  width 0.25s ease-out 0.5s, // And then exanding width
-  height 0.25s ease-out 0.75s; // And finally height
- }
-}
-
-// Inherits from .draw
-   .meet {
-
-     &:hover {
-       color: $yellow;
-     }
-
-     // Start ::after in same position as ::before
-     &::after {
-       top: 0;
-       left: 0;
-     }
-
-     // Change colors
-     &:hover::before {
-       border-top-color: $yellow;
-       border-right-color: $yellow;
-     }
-
-     &:hover::after {
-       border-bottom-color: $yellow;
-       border-left-color: $yellow;
-       transition: // Animate height first, then width
-         height 0.25s ease-out,
-         width 0.25s ease-out 0.25s;
-     }
-   }
-
-   //submit button
-.submit-button {
-  left: 50%;
-  top: 50%;
-  -webkit-transform: translate(-50%, -50%);
-  transform: translate(0%, 0%);
-  color: #2316ce;
-  text-decoration: none;
-  display: inline-block;
-  padding: 0.5em 2em;
-  border: 1px solid #2316ce;
-  -webkit-transition: 0.02s 0.2s cubic-bezier(0.1, 0, 0.1, 1);
-  transition: 0.02s 0.2s cubic-bezier(0.1, 0, 0.1, 1);
-  border-radius: 5px;
-}
-.submit-button::before {
-  content: "";
-  display: inline-block;
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 100%;
-  bottom: 0;
-  background: #3070ce;
-  -webkit-transition: 0.3s 0.2s cubic-bezier(0.1, 0, 0.1, 1), left 0.3s cubic-bezier(0.1, 0, 0.1, 1);
-  transition: 0.3s 0.2s cubic-bezier(0.1, 0, 0.1, 1), left 0.3s cubic-bezier(0.1, 0, 0.1, 1);
-  z-index: -1;
-}
-.submit-button::after {
-  content: "";
-  display: inline-block;
-  background-image: url("https://image.flaticon.com/icons/png/128/109/109617.png");
-  position: absolute;
-  top: 0;
-  left: calc(100% - 3em);
-  right: 3em;
-  bottom: 0;
-  background-size: 1.5em;
-  background-repeat: no-repeat;
-  background-position: center;
-  -webkit-transition: right 0.3s cubic-bezier(0.1, 0, 0.1, 1);
-  transition: right 0.3s cubic-bezier(0.1, 0, 0.1, 1);
-}
-.submit-button:hover {
-  padding: 0.5em 3.5em 0.5em 0.5em;
-}
-.submit-button:hover::before {
-  left: calc(100% - 3em);
-  right: 0;
-  -webkit-transition: 0.3s cubic-bezier(0.1, 0, 0.1, 1), left 0.3s 0.2s cubic-bezier(0.1, 0, 0.1, 1);
-  transition: 0.3s cubic-bezier(0.1, 0, 0.1, 1), left 0.3s 0.2s cubic-bezier(0.1, 0, 0.1, 1);
-}
-.submit-button:hover::after {
-  right: 0;
-  -webkit-transition: right 0.3s 0.2s cubic-bezier(0.1, 0, 0.1, 1);
-  transition: right 0.3s 0.2s cubic-bezier(0.1, 0, 0.1, 1);
-}
-
-//back
-@import url(https://fonts.googleapis.com/css?family=Open+Sans:400,600,700);
-/* General Buttons */
-.new {
-  width: 130px;
-  height: 40px;
-  background: linear-gradient(to bottom, #4eb5e5 0%,#389ed5 100%); /* W3C */
-  border: none;
-  border-radius: 5px;
-  position: relative;
-  border-bottom: 4px solid #2b8bc6;
-  color: #fbfbfb;
-  font-weight: 600;
-  font-family: 'Open Sans', sans-serif;
-  text-shadow: 1px 1px 1px rgba(0,0,0,.4);
-  font-size: 15px;
-  text-align: left;
-  text-indent: 5px;
-  box-shadow: 0px 3px 0px 0px rgba(0,0,0,.2);
-  cursor: pointer;
-
-  /* Just for presentation */
-  margin: 0 auto;
-  margin-bottom: 20px;
-}
-.new:active {
-  box-shadow: 0px 2px 0px 0px rgba(0,0,0,.2);
-  top: 1px;
-}
-
-.new:after {
-  content: "";
-  width: 0;
-  height: 0;
-  border-top: 20px solid #187dbc;
-  border-bottom: 20px solid #187dbc;
-  border-left: 16px solid transparent;
-  border-right: 20px solid #187dbc;
-  position: absolute;
-  opacity: 0.6;
-  right: 0;
-  top: 0;
-  border-radius: 0 5px 5px 0;
-}
-
-/* Button pointing left */
-button.back {
-  text-align: right;
-  padding-right: 12px;
-  box-sizing: border-box;
-}
-button.back:after {
-  content: "";
-  width: 0;
-  height: 0;
-  border-top: 20px solid #187dbc;
-  border-bottom: 20px solid #187dbc;
-  border-right: 16px solid transparent;
-  border-left: 20px solid #187dbc;
-  position: absolute;
-  opacity: 0.6;
-  left: 0;
-  top: 0;
-  border-radius: 5px 0 0 5px;
 }

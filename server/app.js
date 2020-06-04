@@ -10,11 +10,11 @@ const rateLimit = require('express-rate-limit');
 const limiter = rateLimit({
   windowMs: 10000,
   max: 200,
-  message: 'Too many requests from this IP, please try again',
+  message: 'Too many requests from this IP, please try again'
 });
 
 mongoose
-  .connect(process.env.MONGO_AUTH)
+  .connect(process.env.MONGO_AUTH, { useFindAndModify: false, useUnifiedTopology: true, useNewUrlParser: true })
   .then(() => {
     console.log('Connected to database.');
   })

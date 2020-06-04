@@ -11,7 +11,7 @@ import { EditorService } from '../editor/editor.service';
 @Component({
   selector: 'app-ide',
   templateUrl: './ide.component.html',
-  styleUrls: ['./ide.component.css'],
+  styleUrls: ['./ide.component.css']
 })
 export class IDEComponent implements OnInit, OnDestroy {
   private executeListenerSubs: Subscription;
@@ -54,7 +54,7 @@ export class IDEComponent implements OnInit, OnDestroy {
             tests: questionData.tests,
             hints: questionData.hints,
             level: questionData.level,
-            creator: questionData.creator,
+            creator: questionData.creator
           };
           this.solValue = this.questionToSolve.solutionTemplate[0];
           this.testsValue = this.questionToSolve.tests[0];

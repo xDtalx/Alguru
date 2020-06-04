@@ -20,7 +20,7 @@ export class CodeService {
     const runRequest = {
       lang: lang,
       code: code,
-      tests: tests,
+      tests: tests
     };
 
     this.http.post<ExecuteResponse>(environment.runCodeApi + '/execute', runRequest).subscribe((output) => {

@@ -4,25 +4,25 @@
     <ul id="home" class="nav">
       <li class="nav-item"><img src="../../assets/logo-light.png" /></li>
       <li class="nav-item">
-        <a class="nav-link" (click)="setSmallHeader(false)" routerLink="/">Home</a>
+        <button class="nav-link" (click)="setSmallHeader(false)" routerLink="/">Home</button>
       </li>
     </ul>
     <span id="spacer"></span>
     <ul class="nav">
       <li *ngIf="isUserAuth" class="nav-item">
-        <a class="nav-link" (click)="setSmallHeader(true)" routerLink="/questions-list">Questions</a>
+        <button class="nav-link" (click)="setSmallHeader(true)" routerLink="/questions-list">Questions</button>
       </li>
       <li *ngIf="isUserAuth" class="nav-item">
         <a class="nav-link" routerLink="/forum">Forum</a>
       </li>
       <li *ngIf="!isUserAuth && isRelease" class="nav-item">
-        <a class="nav-link" (click)="show(ModalTypes.LoginModal)">Login</a>
+        <button class="nav-link" (click)="show(ModalTypes.LoginModal)">Login</button>
       </li>
       <li *ngIf="!isUserAuth && isRelease" class="nav-item">
-        <a class="nav-link" (click)="show(ModalTypes.RegisterModal)">Register</a>
+        <button class="nav-link" (click)="show(ModalTypes.RegisterModal)">Register</button>
       </li>
       <li *ngIf="isUserAuth" class="nav-item">
-        <a (click)="onLogout()" class="nav-link">Logout</a>
+        <button (click)="onLogout()" class="nav-link">Logout</button>
       </li>
     </ul>
   </div>

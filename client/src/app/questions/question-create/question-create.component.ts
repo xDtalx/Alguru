@@ -6,7 +6,7 @@ import { ActivatedRoute, ParamMap } from '@angular/router';
 @Component({
   selector: 'app-question-create',
   templateUrl: './question-create.component.html',
-  styleUrls: ['./question-create.component.css'],
+  styleUrls: ['./question-create.component.css']
 })
 export class QuestionCreateComponent implements OnInit, AfterViewInit {
   public retrievedQuestionData: Question;
@@ -33,7 +33,7 @@ export class QuestionCreateComponent implements OnInit, AfterViewInit {
       tests: [],
       creator: null,
       hints: null,
-      level: null,
+      level: null
     };
 
     this.route.paramMap.subscribe((paramMap: ParamMap) => {
@@ -61,7 +61,7 @@ export class QuestionCreateComponent implements OnInit, AfterViewInit {
       tests: questionData.tests,
       hints: questionData.hints,
       level: questionData.level,
-      creator: questionData.creator,
+      creator: questionData.creator
     };
   }
 

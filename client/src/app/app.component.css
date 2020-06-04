@@ -7,3 +7,9 @@ main {
   height: 100%;
   padding: var(--main-padding);
 }
+
+@media only screen and (max-width: 800px) {
+  main {
+    width: 95vw;
+  }
+}

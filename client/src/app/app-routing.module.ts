@@ -15,7 +15,7 @@ const routes: Routes = [
   {
     path: '',
     component: ComingSoonComponent,
-    data: { showSmallHeader: false },
+    data: { showSmallHeader: false }
   },
   {
     path: '',
@@ -25,29 +25,29 @@ const routes: Routes = [
         path: 'code-editor',
         component: EditorComponent,
         data: { showSmallHeader: true },
-        canActivate: [AuthGuard],
+        canActivate: [AuthGuard]
       },
       {
         path: '',
         component: QuestionListComponent,
-        data: { showSmallHeader: true },
+        data: { showSmallHeader: true }
       },
       {
         path: 'questions-list',
         component: QuestionListComponent,
-        data: { showSmallHeader: true },
+        data: { showSmallHeader: true }
       },
       {
         path: 'solve/:questionId',
         component: IDEComponent,
         data: { showSmallHeader: true },
-        canActivate: [AuthGuard],
+        canActivate: [AuthGuard]
       },
       {
         path: 'edit/:questionId',
         component: QuestionCreateComponent,
         data: { showSmallHeader: true },
-        canActivate: [AuthGuard],
+        canActivate: [AuthGuard]
       },
       { path: 'register', component: RegisterComponent },
       { path: 'login', component: LoginComponent },
@@ -55,21 +55,21 @@ const routes: Routes = [
         path: 'create-question',
         component: QuestionCreateComponent,
         data: { showSmallHeader: true },
-        canActivate: [AuthGuard],
+        canActivate: [AuthGuard]
       },
       {
         path: 'forum',
         component: ForumComponent,
         data: { showSmallHeader: true },
-        canActivate: [AuthGuard],
-      },
-    ],
-  },
+        canActivate: [AuthGuard]
+      }
+    ]
+  }
 ];
 
 @NgModule({
   imports: [RouterModule.forRoot(routes)],
   exports: [RouterModule],
-  providers: [AuthGuard, ReleaseGuard],
+  providers: [AuthGuard, ReleaseGuard]
 })
 export class AppRoutingModule {}

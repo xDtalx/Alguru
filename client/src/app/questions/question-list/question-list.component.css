@@ -14,4 +14,10 @@ th {
 
 .action-button {
   margin-right: 10px;
+  outline: none;
+}
+
+.create-question-btn {
+  outline: none;
+  margin-bottom: 1rem;
 }

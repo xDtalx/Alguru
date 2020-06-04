@@ -14,6 +14,7 @@ export class AuthService {
   private authStatusListener = new Subject<boolean>();
   private adminListener = new Subject<boolean>();
   private authErrorListener = new Subject<string[]>();
+  private userSavedListener = new Subject<boolean>();
   private isAuth = false;
   private isAdmin = false;
   private token: string;
@@ -26,6 +27,10 @@ export class AuthService {
 
   getToken() {
     return this.token;
+  }
+
+  getUserSavedListener() {
+    return this.userSavedListener.asObservable();
   }
 
   getUsername() {
@@ -41,10 +46,16 @@ export class AuthService {
   }
 
   addErrorMessages(errors: string[]) {
-    if (errors && errors.length > 0) {
+    if (errors && errors.length > 0 && errors.forEach) {
+      this.errors = [];
       errors.forEach((error) => this.errors.push(error));
       this.authErrorListener.next([...this.errors]);
     }
+  }
+
+  resetErrorMessages() {
+    this.errors = [];
+    this.authErrorListener.next([...this.errors]);
   }
 
   getIsAuth() {
@@ -68,7 +79,7 @@ export class AuthService {
             return {
               id: user._id,
               username: user.username,
-              hashedPassword: user.hashedPassword,
+              hashedPassword: user.hashedPassword
             };
           });
         })
@@ -83,7 +94,7 @@ export class AuthService {
       username,
       email,
       password,
-      confirmPassword,
+      confirmPassword
     };
 
     this.saveUser(authData);
@@ -93,6 +104,7 @@ export class AuthService {
     this.errors = [];
     this.http.post(BACKEND_URL + '/register', authData).subscribe(
       () => {
+        this.userSavedListener.next(true);
         this.router.navigate(['/']);
       },
       (errors) => {
@@ -113,7 +125,7 @@ export class AuthService {
 
     const authData: LoginAuthData = {
       username,
-      password,
+      password
     };
 
     this.http
@@ -221,7 +233,7 @@ export class AuthService {
       expirationDate: new Date(expirationDate),
       userId,
       isAdmin,
-      username,
+      username
     };
   }
 

@@ -7,13 +7,13 @@ module.exports = function (config) {
     basePath: '',
     browsers: ['Chrome'],
     client: {
-      clearContext: false, // leave Jasmine Spec Runner output visible in browser
+      clearContext: false // leave Jasmine Spec Runner output visible in browser
     },
     colors: true,
     coverageIstanbulReporter: {
       dir: require('path').join(__dirname, './coverage/Alguru'),
       fixWebpackSourcePaths: true,
-      reports: ['html', 'lcovonly', 'text-summary'],
+      reports: ['html', 'lcovonly', 'text-summary']
     },
     frameworks: ['jasmine', '@angular-devkit/build-angular'],
     logLevel: config.LOG_INFO,
@@ -22,11 +22,11 @@ module.exports = function (config) {
       require('karma-chrome-launcher'),
       require('karma-jasmine-html-reporter'),
       require('karma-coverage-istanbul-reporter'),
-      require('@angular-devkit/build-angular/plugins/karma'),
+      require('@angular-devkit/build-angular/plugins/karma')
     ],
     port: 9876,
     reporters: ['progress', 'kjhtml'],
     restartOnFileChange: true,
-    singleRun: false,
+    singleRun: false
   });
 };
