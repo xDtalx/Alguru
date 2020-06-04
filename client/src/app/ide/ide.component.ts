@@ -34,7 +34,7 @@ export class IDEComponent implements OnInit, OnDestroy {
     private questionsService: QuestionsService,
     private codeService: CodeService,
     private renderer: Renderer2,
-    private editorService: EditorService,
+    private editorService: EditorService
   ) {
     $(document).ready(this.onPageLoaded.bind(this));
   }

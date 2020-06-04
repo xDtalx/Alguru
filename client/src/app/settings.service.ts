@@ -19,7 +19,7 @@ export class SettingsService {
         return route;
       }),
       mergeMap((route) => route.data),
-      map((data) => (data.hasOwnProperty('showSmallHeader') ? data.showSmallHeader : false)),
+      map((data) => (data.hasOwnProperty('showSmallHeader') ? data.showSmallHeader : false))
     );
   }
 

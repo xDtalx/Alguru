@@ -26,7 +26,7 @@ export class ErrorInterceptor implements HttpInterceptor {
         this.authService.addErrorMessages(errorMessage);
 
         return throwError(error);
-      }),
+      })
     );
   }
 }

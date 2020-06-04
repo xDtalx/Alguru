@@ -32,7 +32,7 @@ export class EditorComponent implements OnInit, OnDestroy, OnChanges, AfterViewI
     public sanitizer: DomSanitizer,
     private renderer: Renderer2,
     public editorService: EditorService,
-    private themeService: ThemeService,
+    private themeService: ThemeService
   ) {}
 
   @Input() public highlightsFor;
@@ -79,11 +79,10 @@ export class EditorComponent implements OnInit, OnDestroy, OnChanges, AfterViewI
     this.editorService.addEventHandler(
       this.editor,
       EventType.KeyDown,
-      () => (this.previousText = this.getEditorText()),
+      () => (this.previousText = this.getEditorText())
     );
     this.editorService.addEventHandler(this.editor, EventType.KeyDown, this.handleDeletion.bind(this));
     this.editorService.addEventHandler(this.editor, EventType.KeyDown, this.putCharOnKeyDown.bind(this));
-    this.editorService.addEventHandler(this.editor, EventType.KeyDown, this.initFirstViewLine.bind(this));
     this.editorService.addEventHandler(this.editor, EventType.KeyDown, this.cutSelectedLines.bind(this));
     this.editorService.addEventHandler(this.editor, EventType.KeyDown, this.handleTabs.bind(this));
     this.editorService.addEventHandler(this.editor, EventType.KeyDown, this.refreshTabsCount.bind(this));
@@ -98,7 +97,7 @@ export class EditorComponent implements OnInit, OnDestroy, OnChanges, AfterViewI
     this.editorService.addEventHandler(this.editor, EventType.KeyUp, this.onTextChanged.bind(this));
     this.editorService.addEventHandler(this.editor, EventType.KeyUp, this.refreshLineNumbers.bind(this));
     this.editorService.addEventHandler(this.editor, EventType.KeyUp, () =>
-      this.valueChanged.emit(this.getEditorText()),
+      this.valueChanged.emit(this.getEditorText())
     );
     this.editorService.addEventHandler(this.editor, EventType.MouseUp, this.refreshLocation.bind(this));
 
@@ -267,70 +266,6 @@ export class EditorComponent implements OnInit, OnDestroy, OnChanges, AfterViewI
     }
   }
 
-  // renderText(value: string, deleteOnChange: boolean): void {
-  //     if (this.editor && value && value !== '') {
-  //         const editor: HTMLElement = this.editor.nativeElement;
-  //         let viewLineOpened = false;
-  //         let viewLine: HTMLDivElement;
-
-  //         if (deleteOnChange) {
-  //             editor.innerHTML = '';
-  //         }
-
-  //         if (value.charAt(value.length - 1) !== '\n') {
-  //             value += '\n';
-  //         }
-
-  //         Array.from(value).forEach(char => {
-  //             if (!viewLineOpened) {
-  //                 viewLineOpened = true;
-  //                 viewLine = this.editorService.addNewLine(editor);
-  //                 this.renderer.listen(viewLine, 'mousedown', this.hightlightLineOnMouseDown.bind(this));
-  //             }
-
-  //             const isWhitesapce = /^\s+$/.test(char);
-  //             const shouldHightlight = this.shouldHighlight();
-  //             // const isStructuralChar = shouldHightlight && this.editorService.isStructuralChar(char, this.highlightsFor.toLowerCase());
-  //             const appendText = isWhitesapce; // || isStructuralChar;
-  //             let appendedText: string;
-
-  //             if (appendText) {
-  //                 appendedText = this.appendText(viewLine, shouldHightlight);
-  //             }
-
-  //             if (isWhitesapce) {
-  //                 if (char === '\n') {
-  //                     viewLineOpened = false;
-  //                 } else if (char === '\t') {
-  //                     this.editorService.appendTab(viewLine, false);
-  //                 } else if (char === ' ') {
-  //                     this.editorService.addSpace(viewLine, false);
-  //                 }
-  //             } else {
-  //                 this.editorService.buildString(char);
-
-  //                 // if (isStructuralChar) {
-  //                 //     appendedText = this.editorService.appendText(viewLine, null, this.highlightsFor.toLowerCase());
-  //                 // }
-  //             }
-  //         });
-
-  //         this.refreshLineNumbers();
-  //     }
-  // }
-
-  // appendText(line: HTMLDivElement, hightLight: boolean): string {
-  //     let appendedText: string;
-
-  //     if (hightLight) {
-  //         appendedText = this.editorService.appendText(line, null, this.highlightsFor.toLowerCase());
-  //     } else {
-  //         appendedText = this.editorService.appendText(line);
-  //     }
-
-  //     return appendedText;
-  // }
-
   saveState(event: KeyboardEvent): void {
     let saveState = true;
     this.eventsToSkipSaveState.forEach((check) => (saveState = saveState && !check(event)));
@@ -350,7 +285,7 @@ export class EditorComponent implements OnInit, OnDestroy, OnChanges, AfterViewI
   scrollToEnd(): void {
     const line: HTMLElement = this.editorService.getSelectedElementParentLine(
       this.editor.nativeElement,
-      document.getSelection(),
+      document.getSelection()
     );
     const lines: NodeList = this.editor.nativeElement.querySelectorAll('.view-line');
 
@@ -812,27 +747,6 @@ export class EditorComponent implements OnInit, OnDestroy, OnChanges, AfterViewI
     }
 
     return textSegments;
-  }
-
-  initFirstViewLine(event: KeyboardEvent): void {
-    if (this.editor.nativeElement.querySelectorAll('.view-line').length === 0) {
-      const isTab = event.keyCode === 9;
-      let input: string;
-
-      if (event.keyCode === 219 && event.shiftKey) {
-        input = '{';
-      } else {
-        input = String.fromCharCode(event.keyCode);
-      }
-
-      if (input && !event.getModifierState('CapsLock')) {
-        input = input.toLowerCase();
-      }
-
-      if (/[a-zA-Z0-9-_@#$%^&*=()!~`:;"',./?<>}{} ]/.test(input) || isTab) {
-        this.editorService.addNewLine(this.editor.nativeElement, null, true);
-      }
-    }
   }
 
   handleDeletion(event: KeyboardEvent): void {

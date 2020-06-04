@@ -130,7 +130,7 @@ exports.updatePost = (req, res, next) => {
 
   Post.updateOne(
     { _id: req.params.postId, creator: req.userData.userId },
-    { title: req.body.title, content: req.body.content },
+    { title: req.body.title, content: req.body.content }
   )
     .then((post) => res.status(200).json({ message: 'Post updated', post: post }))
     .catch(() => res.status(401).json({ message: 'Not authorized!' }));
@@ -146,7 +146,7 @@ exports.updateComment = (req, res, next) => {
   // first we need to use the old comment instance and remove it from the post comments array
   Comment.findOneAndUpdate(
     { _id: req.params.commentId, creator: req.userData.userId },
-    { title: req.body.title, content: req.body.content },
+    { title: req.body.title, content: req.body.content }
   )
     .then((updatedComment) => {
       Post.findById(req.params.postId)

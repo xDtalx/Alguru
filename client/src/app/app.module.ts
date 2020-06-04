@@ -24,7 +24,6 @@ import { ErrorComponent } from './error/error.component';
 import { ErrorInterceptor } from './error-interceptor';
 import { ComingSoonComponent } from './coming-soon/coming-soon.component';
 import { IDEComponent } from './ide/ide.component';
-import { AdminPageComponent } from './admin-page/admin-page.component';
 import { EditorComponent } from './editor/editor.component';
 import { ForumComponent } from './forum/forum.component';
 import { AngularEditorModule } from '@kolkov/angular-editor';
@@ -41,7 +40,6 @@ import { AngularEditorModule } from '@kolkov/angular-editor';
     ErrorComponent,
     ComingSoonComponent,
     IDEComponent,
-    AdminPageComponent,
     EditorComponent,
     ForumComponent,
   ],

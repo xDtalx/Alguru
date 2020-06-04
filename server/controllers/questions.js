@@ -79,7 +79,7 @@ exports.updateQuestion = (req, res, next) => {
       _id: req.body.id,
       creator: req.userData.userId,
     },
-    question,
+    question
   ).then((result) => {
     const isModified = result.n > 0;
 

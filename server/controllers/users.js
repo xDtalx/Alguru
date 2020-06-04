@@ -61,7 +61,7 @@ exports.updateUser = (req, res, next) => {
       {
         _id: req.userData.userId,
       },
-      user,
+      user
     )
       .then((result) => {
         const isModified = result.n > 0;
@@ -107,7 +107,7 @@ function handleAuthenticationAndResponse(fetchedUser, res) {
     process.env.JWT_KEY,
     {
       expiresIn: '1h',
-    },
+    }
   );
 
   res.status(200).json({

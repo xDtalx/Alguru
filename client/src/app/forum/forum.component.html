@@ -1,7 +1,9 @@
 <!--All Posts-->
 <div *ngIf="!showPost">
   <h3>Alguru-Forum</h3>
-  <button class="special-button draw meet" (click)="onAddNewPostClick()">Add new Post</button>
+  <button class="special-button draw meet" (click)="onAddNewPostClick()">
+    {{ addNewPost ? 'Cancel' : 'Add new Post' }}
+  </button>
   <!--  Add new Post mode-->
   <div class="container" *ngIf="addNewPost">
     <h4>New-Post</h4>
@@ -14,8 +16,10 @@
         #titleTextarea
         [(ngModel)]="titleDefaultValue"
       ></textarea>
+      <div class="error-message" *ngIf="isEmptyTitle">Title can not be empty</div>
       <div class="message">Message:</div>
       <angular-editor id="editor1" [config]="editorConfig" [(ngModel)]="messageDefaultValue"></angular-editor>
+      <div class="error-message" *ngIf="isEmptyMessage">Message can not be empty</div>
     </div>
     <button class="submit-button" (click)="onSubmitMessage(titleTextarea.value, messageDefaultValue, 'Post')">
       Submit
@@ -66,7 +70,7 @@
     <!--    On Regular Mode-->
     <div *ngIf="!comment.onEditTagMode">
       <h4>{{ comment.title }}</h4>
-      <div>{{ comment.content }}</div>
+      <div [innerHTML]="comment.content"></div>
       <div class="data-right">
         <span> By: {{ comment.author }} </span>
         <span>At: {{ comment.date.time + ' ' + comment.date.date }}</span>

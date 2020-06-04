@@ -10,7 +10,7 @@ export class ReleaseGuard implements CanActivate {
 
   canActivate(
     route: ActivatedRouteSnapshot,
-    state: RouterStateSnapshot,
+    state: RouterStateSnapshot
   ): boolean | UrlTree | Observable<boolean | UrlTree> | Promise<boolean | UrlTree> {
     const isRelease = this.authService.getIsAuth() || environment.isRelease;
 

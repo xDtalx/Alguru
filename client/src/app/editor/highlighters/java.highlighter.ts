@@ -217,7 +217,7 @@ export class JavaHighlighter implements Highlighter {
 
   private handleMultiLineComment(currentIndex: number, builder: any[]): void {
     let endOfMultiLineComment = this.getEndOfMultiLineComment(
-      this.isMultiCommentOpened ? currentIndex : currentIndex + 2,
+      this.isMultiCommentOpened ? currentIndex : currentIndex + 2
     );
     endOfMultiLineComment = endOfMultiLineComment === -1 ? this.codeLength : endOfMultiLineComment;
     this.appendSubstring(currentIndex, endOfMultiLineComment, 'comment');
@@ -304,7 +304,7 @@ export class JavaHighlighter implements Highlighter {
   private appendSubstring(start: number, end: number, styleClass?: string): void {
     const text = this.createTextElement(
       this.code.substring(start, end),
-      styleClass !== null || styleClass !== 'undefined',
+      styleClass !== null || styleClass !== 'undefined'
     );
 
     if (styleClass) {

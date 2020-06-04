@@ -35,7 +35,7 @@ export class RegisterComponent implements OnInit, OnDestroy {
       registerForm.value.username,
       registerForm.value.email,
       registerForm.value.password,
-      registerForm.value.confirmPassword,
+      registerForm.value.confirmPassword
     );
   }
 

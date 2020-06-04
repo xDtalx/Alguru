@@ -1,6 +1,5 @@
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
-
 import { RegisterComponent } from './auth/register/register.component';
 import { QuestionCreateComponent } from './questions/question-create/question-create.component';
 import { LoginComponent } from './auth/login/login.component';
@@ -9,7 +8,6 @@ import { AuthGuard } from './auth/auth.guard';
 import { ComingSoonComponent } from './coming-soon/coming-soon.component';
 import { ReleaseGuard } from './release.guard';
 import { IDEComponent } from './ide/ide.component';
-import { AdminPageComponent } from './admin-page/admin-page.component';
 import { EditorComponent } from './editor/editor.component';
 import { ForumComponent } from './forum/forum.component';
 
@@ -42,12 +40,6 @@ const routes: Routes = [
       {
         path: 'solve/:questionId',
         component: IDEComponent,
-        data: { showSmallHeader: true },
-        canActivate: [AuthGuard],
-      },
-      {
-        path: 'admin',
-        component: AdminPageComponent,
         data: { showSmallHeader: true },
         canActivate: [AuthGuard],
       },

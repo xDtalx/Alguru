@@ -21,6 +21,8 @@ export class ForumComponent {
   selectedPost: Tag;
   titleDefaultValue: string;
   messageDefaultValue: string;
+  isEmptyTitle = false;
+  isEmptyMessage = false;
   isAdmin: boolean;
   constructor(private elementRef: ElementRef, private datePipe: DatePipe, private authService: AuthService) {
     this.isAdmin = this.authService.getIsAdmin();
@@ -34,16 +36,12 @@ export class ForumComponent {
     maxHeight: '50rem',
     width: 'auto',
     minWidth: '0',
-    translate: 'yes',
+    translate: 'no',
     enableToolbar: true,
     showToolbar: true,
+    defaultParagraphSeparator: 'p',
+    defaultFontName: 'Arial',
     toolbarHiddenButtons: [],
-    fonts: [
-      { class: 'arial', name: 'Arial' },
-      { class: 'times-new-roman', name: 'Times New Roman' },
-      { class: 'calibri', name: 'Calibri' },
-      { class: 'comic-sans-ms', name: 'Comic Sans MS' },
-    ],
     customClasses: [
       {
         name: 'quote',
@@ -95,29 +93,34 @@ export class ForumComponent {
   }
 
   onSubmitMessage(title: string, message: string, type: string) {
-    // get author from user name
-    const author = this.authService.getUsername();
-    const myDate = new Date();
-    const date = {
-      date: this.datePipe.transform(myDate, 'dd/MM/yy'),
-      time: myDate.getHours() + ':' + myDate.getMinutes(),
-    };
-    const tagToAdd: Tag = {
-      title,
-      content: message,
-      author,
-      date,
-      comments: [],
-      onEditTagMode: false,
-    };
-    if (type === 'Comment') {
-      this.selectedPost.comments.push(tagToAdd);
-    } else {
-      this.tags.push(tagToAdd);
-      this.addNewPost = !this.addNewPost;
+    this.isEmptyMessage = message ? message === '' : true;
+    this.isEmptyTitle = title === '';
+
+    if (!this.isEmptyTitle && !this.isEmptyMessage) {
+      // get author from user name
+      const author = this.authService.getUsername();
+      const myDate = new Date();
+      const date = {
+        date: this.datePipe.transform(myDate, 'dd/MM/yy'),
+        time: myDate.getHours() + ':' + myDate.getMinutes(),
+      };
+      const tagToAdd: Tag = {
+        title,
+        content: message,
+        author,
+        date,
+        comments: [],
+        onEditTagMode: false,
+      };
+      if (type === 'Comment') {
+        this.selectedPost.comments.push(tagToAdd);
+      } else {
+        this.tags.push(tagToAdd);
+        this.addNewPost = !this.addNewPost;
+      }
+      this.titleDefaultValue = '';
+      this.messageDefaultValue = '';
     }
-    this.titleDefaultValue = '';
-    this.messageDefaultValue = '';
   }
 
   onAddNewPostClick() {

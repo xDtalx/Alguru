@@ -31,7 +31,7 @@ export class QuestionsService {
               creator: question.creator,
             };
           });
-        }),
+        })
       )
       .subscribe((transQuestions) => {
         this.questions = transQuestions;
@@ -64,7 +64,7 @@ export class QuestionsService {
     solution: string[],
     tests: string[],
     hints: string,
-    level: number,
+    level: number
   ) {
     const question: Question = {
       id: null,

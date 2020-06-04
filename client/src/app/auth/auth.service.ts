@@ -71,7 +71,7 @@ export class AuthService {
               hashedPassword: user.hashedPassword,
             };
           });
-        }),
+        })
       )
       .subscribe((transUsers) => {
         console.log(transUsers);
@@ -98,7 +98,7 @@ export class AuthService {
       (errors) => {
         this.authErrorListener.next([...this.errors]);
         this.authStatusListener.next(false);
-      },
+      }
     );
   }
 
@@ -145,7 +145,7 @@ export class AuthService {
         () => {
           this.authStatusListener.next(false);
           this.adminListener.next(false);
-        },
+        }
       );
   }
 
