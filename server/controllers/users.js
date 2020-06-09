@@ -106,13 +106,13 @@ function handleAuthenticationAndResponse(fetchedUser, res) {
     },
     process.env.JWT_KEY,
     {
-      expiresIn: '1h'
+      expiresIn: '5h'
     }
   );
 
   res.status(200).json({
     token: token,
-    expiresIn: 3600,
+    expiresIn: 60*60*5,
     username: fetchedUser.username,
     userId: fetchedUser._id,
     isAdmin: fetchedUser.isAdmin
