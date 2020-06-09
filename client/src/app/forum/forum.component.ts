@@ -19,7 +19,20 @@ const editorConfig: AngularEditorConfig = {
   showToolbar: true,
   defaultParagraphSeparator: 'div',
   defaultFontName: 'Arial',
-  toolbarHiddenButtons: [],
+  toolbarHiddenButtons: [
+    [
+      'justifyLeft',
+      'justifyCenter',
+      'justifyRight',
+      'justifyFull',
+      'indent',
+      'outdent',
+      'insertUnorderedList',
+      'insertOrderedList',
+      'fontName'
+    ],
+    ['backgroundColor', 'customClasses', 'insertVideo', 'insertHorizontalRule', 'removeFormat']
+  ],
   customClasses: [
     {
       name: 'quote',
@@ -56,7 +69,7 @@ export class ForumComponent implements OnInit, OnDestroy {
   public loggedInUsername: string;
   private editPostIndex = -1;
   private editCommentIndex = -1;
-  private maxDescriptionLength = 30;
+  private maxDescriptionLength = 60;
 
   constructor(private forumService: ForumService, private authService: AuthService, private renderer: Renderer2) {
     this.isAdmin = this.authService.getIsAdmin();

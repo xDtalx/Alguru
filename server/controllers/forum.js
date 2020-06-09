@@ -81,8 +81,16 @@ exports.createComment = (req, res, next) => {
 };
 
 exports.deletePost = (req, res, next) => {
+  let searchOptions;
+
+  if (req.userData.isAdmin) {
+    searchOptions = { _id: req.params.postId };
+  } else {
+    searchOptions = { _id: req.params.postId, author: req.userData.username };
+  }
+
   // to delete the post from the posts scheme
-  Post.deleteOne({ _id: req.params.postId, author: req.userData.username })
+  Post.deleteOne(searchOptions)
     .then(() => {
       // if the post is deleted from Post DB - delete the posts comments from Comments DB
       // no need to handle error - the post might be without comments
@@ -160,7 +168,15 @@ exports.updatePost = (req, res, next) => {
     return res.status(422).json({ errors: errors.array({ onlyFirstError: true }) });
   }
 
-  Post.findOne({ _id: req.params.postId, author: req.userData.username })
+  let searchOptions;
+
+  if (req.userData.isAdmin) {
+    searchOptions = { _id: req.params.postId };
+  } else {
+    searchOptions = { _id: req.params.postId, author: req.userData.username };
+  }
+
+  Post.findOne(searchOptions)
     .then(async (post) => {
       post.currentTitle = req.body.currentTitle;
       post.currentContent = req.body.currentContent;
@@ -169,7 +185,7 @@ exports.updatePost = (req, res, next) => {
       post.contents.push(req.body.currentContent);
       post.dates.push(post.currentDate);
 
-      await Post.updateOne({ _id: req.params.postId, author: req.userData.username }, post)
+      await Post.updateOne(searchOptions, post)
         .then(async function (result) {
           const isModified = result.n > 0;
 
@@ -199,6 +215,7 @@ exports.updateComment = (req, res, next) => {
   } else {
     searchOptions = { _id: req.params.commentId, author: req.userData.username };
   }
+
   Comment.findOne(searchOptions)
     .then(async (comment) => {
       comment.currentTitle = req.body.currentTitle;
