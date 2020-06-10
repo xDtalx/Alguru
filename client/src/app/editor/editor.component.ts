@@ -60,6 +60,7 @@ export class EditorComponent implements OnInit, OnDestroy, OnChanges, AfterViewI
   private history: EditorState[] = [];
   private future: EditorState[] = [];
   private eventsToSkipSaveState: ((event: Event) => boolean)[] = [];
+  private clipboard: string;
   public linesNumbers: number[] = [1];
 
   ngOnDestroy(): void {
@@ -81,9 +82,11 @@ export class EditorComponent implements OnInit, OnDestroy, OnChanges, AfterViewI
       EventType.KeyDown,
       () => (this.previousText = this.getEditorText())
     );
+    this.editorService.addEventHandler(this.editor, EventType.Copy, this.handleCopy.bind(this));
+    this.editorService.addEventHandler(this.editor, EventType.Paste, this.handlePaste.bind(this));
+    this.editorService.addEventHandler(this.editor, EventType.Cut, this.handleCut.bind(this));
     this.editorService.addEventHandler(this.editor, EventType.KeyDown, this.handleDeletion.bind(this));
     this.editorService.addEventHandler(this.editor, EventType.KeyDown, this.putCharOnKeyDown.bind(this));
-    this.editorService.addEventHandler(this.editor, EventType.KeyDown, this.cutSelectedLines.bind(this));
     this.editorService.addEventHandler(this.editor, EventType.KeyDown, this.handleTabs.bind(this));
     this.editorService.addEventHandler(this.editor, EventType.KeyDown, this.refreshTabsCount.bind(this));
     this.editorService.addEventHandler(this.editor, EventType.KeyDown, this.onEnterPressedCreateNewLine.bind(this));
@@ -96,9 +99,10 @@ export class EditorComponent implements OnInit, OnDestroy, OnChanges, AfterViewI
     this.editorService.addEventHandler(this.editor, EventType.KeyUp, this.refreshLocation.bind(this));
     this.editorService.addEventHandler(this.editor, EventType.KeyUp, this.onTextChanged.bind(this));
     this.editorService.addEventHandler(this.editor, EventType.KeyUp, this.refreshLineNumbers.bind(this));
-    this.editorService.addEventHandler(this.editor, EventType.KeyUp, () =>
-      this.valueChanged.emit(this.getEditorText())
-    );
+    this.editorService.addEventHandler(this.editor, EventType.KeyUp, () => {
+      this.value = this.getEditorText();
+      this.valueChanged.emit(this.value);
+    });
     this.editorService.addEventHandler(this.editor, EventType.MouseUp, this.refreshLocation.bind(this));
 
     if (this.editable === 'false') {
@@ -144,6 +148,18 @@ export class EditorComponent implements OnInit, OnDestroy, OnChanges, AfterViewI
     this.editorMouseDown.emit(event);
   }
 
+  onCopy(event) {
+    this.editorService.handleEvent(this.editor, event);
+  }
+
+  onPaste(event) {
+    this.editorService.handleEvent(this.editor, event);
+  }
+
+  onCut(event) {
+    this.editorService.handleEvent(this.editor, event);
+  }
+
   onTextChanged(event: KeyboardEvent): void {
     let text;
     const undo = event.ctrlKey && event.key === 'z';
@@ -170,6 +186,90 @@ export class EditorComponent implements OnInit, OnDestroy, OnChanges, AfterViewI
     if (text !== this.previousText || (event.type === 'keydown' && undo)) {
       this.renderText(text, this.deletePrevValueOnChange === 'true' || this.shouldHighlight());
       this.restoreSelection();
+    }
+  }
+
+  handleCopy(event) {
+    this.clipboard = window.getSelection().toString();
+    event.preventDefault();
+  }
+
+  handlePaste(event) {
+    if (this.clipboard) {
+      const lines = this.value.split('\n');
+
+      lines[this.currentLine] = `${lines[this.currentLine].substring(0, this.anchorIndex)}${this.clipboard}${lines[
+        this.currentLine
+      ].substring(this.focusIndex)}`;
+      this.renderText(lines.join('\n'), true);
+      const clipboardLines = this.clipboard.split('\n');
+      const clipboardLinesLength = clipboardLines.length - 1;
+
+      if (clipboardLinesLength > 0) {
+        this.currentLine += clipboardLinesLength;
+        this.focusIndex = clipboardLines[clipboardLinesLength].length;
+        this.anchorIndex = this.focusIndex;
+      } else {
+        const clipboardLength =
+          this.clipboard[clipboardLinesLength] === '\n' ? clipboardLinesLength : this.clipboard.length;
+        this.focusIndex = this.anchorIndex + clipboardLength;
+        this.anchorIndex = this.focusIndex;
+      }
+
+      this.history.push({
+        currentLine: this.currentLine,
+        value: this.previousText,
+        tabsInsideCurrentLine: this.tabsInsideCurrentLine,
+        anchorIndex: this.anchorIndex,
+        focusIndex: this.focusIndex,
+        previousText: this.previousText
+      });
+      this.restoreSelection();
+    }
+
+    event.preventDefault();
+  }
+
+  handleCut(event) {
+    const lines: NodeList = this.editor.nativeElement.querySelectorAll('.view-line');
+    let isSingleLineAndEmpty: boolean = lines.length === 1 && lines[0].textContent === '';
+
+    if (!isSingleLineAndEmpty) {
+      const sel: Selection = document.getSelection();
+      const anchorLine: HTMLElement = this.getParentLine(sel.anchorNode as HTMLElement);
+      const focusLine: HTMLElement = this.getParentLine(sel.focusNode as HTMLElement);
+      this.clipboard = window.getSelection().toString();
+      this.anchorIndex = this.focusIndex;
+
+      if (anchorLine && focusLine) {
+        this.history.push({
+          currentLine: this.currentLine,
+          value: this.previousText,
+          tabsInsideCurrentLine: this.tabsInsideCurrentLine,
+          anchorIndex: this.anchorIndex,
+          focusIndex: this.focusIndex,
+          previousText: this.previousText
+        });
+
+        const selRange = sel.getRangeAt(0);
+
+        if (anchorLine === focusLine && selRange.endOffset === selRange.startOffset) {
+          const range = this.selectLines(anchorLine as HTMLDivElement, focusLine as HTMLDivElement);
+          sel.removeAllRanges();
+          sel.addRange(range);
+          this.clipboard = window.getSelection().toString();
+          document.execCommand('cut');
+          isSingleLineAndEmpty = lines.length === 1 && lines[0].textContent === '';
+
+          if (focusLine === lines[lines.length - 1] && !isSingleLineAndEmpty) {
+            focusLine.parentElement.removeChild(focusLine);
+          }
+
+          event.preventDefault();
+        }
+      }
+    } else {
+      event.preventDefault();
     }
   }
 
@@ -399,48 +499,6 @@ export class EditorComponent implements OnInit, OnDestroy, OnChanges, AfterViewI
     range.setEndAfter(focusLine);
 
     return range;
-  }
-
-  cutSelectedLines(event): void {
-    if (event.ctrlKey && event.key === 'x') {
-      const lines: NodeList = this.editor.nativeElement.querySelectorAll('.view-line');
-      let isSingleLineAndEmpty: boolean = lines.length === 1 && lines[0].textContent === '';
-
-      if (!isSingleLineAndEmpty) {
-        const sel: Selection = document.getSelection();
-        const anchorLine: HTMLElement = this.getParentLine(sel.anchorNode as HTMLElement);
-        const focusLine: HTMLElement = this.getParentLine(sel.focusNode as HTMLElement);
-
-        if (anchorLine && focusLine) {
-          this.history.push({
-            currentLine: this.currentLine,
-            value: this.previousText,
-            tabsInsideCurrentLine: this.tabsInsideCurrentLine,
-            anchorIndex: this.anchorIndex,
-            focusIndex: this.focusIndex,
-            previousText: this.previousText
-          });
-
-          const selRange = sel.getRangeAt(0);
-
-          if (anchorLine === focusLine && selRange.endOffset !== selRange.startOffset) {
-            document.execCommand('cut');
-          } else {
-            const range = this.selectLines(anchorLine as HTMLDivElement, focusLine as HTMLDivElement);
-            sel.removeAllRanges();
-            sel.addRange(range);
-            document.execCommand('cut');
-            isSingleLineAndEmpty = lines.length === 1 && lines[0].textContent === '';
-
-            if (focusLine === lines[lines.length - 1] && !isSingleLineAndEmpty) {
-              focusLine.parentElement.removeChild(focusLine);
-            }
-          }
-        }
-      }
-
-      event.preventDefault();
-    }
   }
 
   getSiblingToMoveToAfterCut(anchorNode, focusNode): HTMLElement {

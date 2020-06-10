@@ -15,7 +15,10 @@ export enum EventType {
   MouseDown = 'mousedown',
   MouseUp = 'mouseup',
   Click = 'click',
-  Input = 'input'
+  Input = 'input',
+  Copy = 'copy',
+  Paste = 'paste',
+  Cut = 'cut'
 }
 
 @Injectable({ providedIn: 'root' })
