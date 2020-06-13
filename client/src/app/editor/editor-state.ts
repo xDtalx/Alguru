@@ -5,4 +5,8 @@ export interface EditorState {
   currentLine?: number;
   anchorIndex?: number;
   focusIndex?: number;
+  prevTabsInsideCurrentLine?: number;
+  prevCurrentLine?: number;
+  prevAnchorIndex?: number;
+  prevFocusIndex?: number;
 }
