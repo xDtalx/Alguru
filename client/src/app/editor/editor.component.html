@@ -8,9 +8,9 @@
     (keyup)="onKeyUp($event)"
     (mouseup)="onMouseUp($event)"
     (mousedown)="onMouseDown($event)"
-    (copy)="onCopy($event)"
-    (paste)="onPaste($event)"
-    (cut)="onCut($event)"
+    (copy)="handleEvent($event)"
+    (paste)="handleEvent($event)"
+    (cut)="handleEvent($event)"
     contenteditable="true"
     class="editor"
     #editor
