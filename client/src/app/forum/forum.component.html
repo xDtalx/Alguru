@@ -184,7 +184,7 @@
     </div>
   </div>
   <!-- comments -->
-  <div class="container" *ngFor="let comment of selectedPost.comments.slice().reverse()">
+  <div class="container" *ngFor="let comment of selectedPost.comments">
     <div class="comment-container" *ngIf="!comment.onEditPostMode">
       <div class="voting">
         <div class="vote vote-up" (click)="voteUp(comment)"></div>

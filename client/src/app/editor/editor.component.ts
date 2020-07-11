@@ -56,11 +56,16 @@ export class EditorComponent implements OnInit, OnDestroy, OnChanges, AfterViewI
   private currentLine = -1;
   private anchorIndex: number;
   private focusIndex: number;
+  private prevCurrentLine = -1;
+  private prevAnchorIndex: number;
+  private prevFocusIndex: number;
+  private prevTabsInsideCurrentLine = 0;
   private previousText: string;
   private history: EditorState[] = [];
   private currentState = 0;
   private eventsToSkipSaveState: ((event: Event) => boolean)[] = [];
   private clipboard: string;
+  private saveState: boolean;
   public linesNumbers: number[] = [1];
 
   ngOnDestroy(): void {
@@ -81,17 +86,29 @@ export class EditorComponent implements OnInit, OnDestroy, OnChanges, AfterViewI
       this.editor,
       EventType.KeyDown,
       (event: KeyboardEvent) => {
-        this.previousText = this.getEditorText();
+        if(!event.ctrlKey && !event.shiftKey) {
+          this.previousText = this.getEditorText();
+          this.prevCurrentLine = this.currentLine;
+          this.prevAnchorIndex = this.anchorIndex;
+          this.prevFocusIndex = this.focusIndex;
+          this.prevTabsInsideCurrentLine = this.tabsInsideCurrentLine;
 
-        if(!event.ctrlKey && (event.key.length === 1 && /[a-zA-Z0-9-_@#$%^&*=()!~`:;"',./?<>}{} ]/.test(event.key))) {
-          if(this.currentState !== this.history.length) {
-            this.history.splice(this.currentState);
+          if((event.key.length === 1 && /[a-zA-Z0-9-_@#$%^&*=()!~`:;"',./?<>}{} ]/.test(event.key))) {
+            if(this.currentState !== this.history.length) {
+              this.history.splice(this.currentState);
+            }
           }
         }
       }
     );
-    this.editorService.addEventHandler(this.editor, EventType.Input, () => {
+    this.editorService.addEventHandler(this.editor, EventType.Input, (event) => {
+      if(this.saveState) {
+        this.savePrevAndCurrentEditorState();
+        this.saveState = false;
+      }
+
       if(this.currentState !== this.history.length) {
+        g(event)
         this.history.splice(this.currentState);
       }
     });
@@ -110,10 +127,11 @@ export class EditorComponent implements OnInit, OnDestroy, OnChanges, AfterViewI
     this.editorService.addEventHandler(this.editor, EventType.KeyDown, this.refreshLineNumbers.bind(this));
     this.editorService.addEventHandler(this.editor, EventType.KeyDown, this.hightlightLineOnKeyDown.bind(this));
     this.editorService.addEventHandler(this.editor, EventType.KeyUp, this.refreshLocation.bind(this));
+    this.editorService.addEventHandler(this.editor, EventType.KeyUp, this.handleDeletion.bind(this));
     this.editorService.addEventHandler(this.editor, EventType.KeyUp, this.onTextChanged.bind(this));
     this.editorService.addEventHandler(this.editor, EventType.KeyUp, this.refreshLineNumbers.bind(this));
     this.editorService.addEventHandler(this.editor, EventType.KeyUp, () => {
-      this.value = this.getEditorText();
+      this.updateEditorInfo();
       this.valueChanged.emit(this.value);
     });
     this.editorService.addEventHandler(this.editor, EventType.MouseUp, this.refreshLocation.bind(this));
@@ -173,7 +191,6 @@ export class EditorComponent implements OnInit, OnDestroy, OnChanges, AfterViewI
     if (undo) {
       if (event.type === 'keydown' && this.history.length > 0) {
         const prevState: EditorState = this.popEditorState();
-
         if(prevState) {
           text = prevState.previousText;
           this.tabsInsideCurrentLine = prevState.prevTabsInsideCurrentLine;
@@ -217,7 +234,7 @@ export class EditorComponent implements OnInit, OnDestroy, OnChanges, AfterViewI
 
   handlePaste(event) {
     if (this.clipboard) {
-      const lines = this.value.split('\n');
+      const lines = this.getEditorText().split('\n');
       lines[this.currentLine] = `${lines[this.currentLine].substring(0, this.anchorIndex)}${this.clipboard}${lines[
         this.currentLine
       ].substring(this.focusIndex)}`;
@@ -243,21 +260,16 @@ export class EditorComponent implements OnInit, OnDestroy, OnChanges, AfterViewI
     event.preventDefault();
   }
 
-  savePrevAndCurrentEditorState() {
-    const prevCurrentLine = this.currentLine;
-    const prevFocusIndex = this.focusIndex;
-    const prevAnchorIndex = this.anchorIndex;
-    const prevTabsInsideCurrentLine = this.tabsInsideCurrentLine;
-    this.updateEditorInfo();
-    this.saveEditorState({
-      prevCurrentLine: prevCurrentLine,
-      prevFocusIndex: prevFocusIndex,
-      prevAnchorIndex: prevAnchorIndex,
-      prevTabsInsideCurrentLine: prevTabsInsideCurrentLine
-    });
+  savePrevAndCurrentEditorState(savePreviousText: boolean = true, state?: EditorState) {
+    this.updateEditorInfo(savePreviousText);
+    this.saveEditorState(state);
   }
 
-  updateEditorInfo() {
+  updateEditorInfo(savePreviousText: boolean = true) {
+    if(savePreviousText) {
+      this.previousText = this.value;
+    }
+    
     this.value = this.getEditorText();
     this.refreshLocation(event);
     this.refreshTabsCount();
@@ -275,12 +287,9 @@ export class EditorComponent implements OnInit, OnDestroy, OnChanges, AfterViewI
       this.clipboard = window.getSelection().toString();
 
       if (anchorLine && focusLine) {
-        const selRange = sel.getRangeAt(0);
         this.updateEditorInfo();
-        this.anchorIndex = this.focusIndex;
-        this.previousText = this.value;
 
-        if (anchorLine === focusLine && selRange.endOffset === selRange.startOffset) {
+        if (anchorLine === focusLine && this.anchorIndex === this.focusIndex) {
           const range = this.selectLines(anchorLine as HTMLDivElement, focusLine as HTMLDivElement);
           sel.removeAllRanges();
           sel.addRange(range);
@@ -295,7 +304,9 @@ export class EditorComponent implements OnInit, OnDestroy, OnChanges, AfterViewI
           event.preventDefault();
         }
 
-        this.savePrevAndCurrentEditorState();
+        this.anchorIndex = this.focusIndex;
+        this.prevAnchorIndex = this.prevFocusIndex;
+        this.saveState = true;
       }
     } else {
       event.preventDefault();
@@ -440,10 +451,6 @@ export class EditorComponent implements OnInit, OnDestroy, OnChanges, AfterViewI
   }
 
   saveEditorState(state?: EditorState): void {
-    if(this.currentState !== this.history.length) {
-      this.history = this.history.splice(this.currentState);
-    }
-
     this.history.push({
       currentLine: state && state.currentLine ? state.currentLine : this.currentLine,
       value: state && state.value ? state.value : this.value,
@@ -453,10 +460,10 @@ export class EditorComponent implements OnInit, OnDestroy, OnChanges, AfterViewI
       focusIndex: state && state.focusIndex ? state.focusIndex : this.focusIndex,
       previousText: state && state.previousText ? state.previousText : this.previousText,
       prevTabsInsideCurrentLine:
-        state && state.prevTabsInsideCurrentLine ? state.prevTabsInsideCurrentLine : this.tabsInsideCurrentLine,
-      prevAnchorIndex: state && state.prevAnchorIndex ? state.prevAnchorIndex : this.anchorIndex,
-      prevFocusIndex: state && state.prevFocusIndex ? state.prevFocusIndex : this.focusIndex,
-      prevCurrentLine: state && state.prevCurrentLine ? state.prevCurrentLine : this.currentLine
+        state && state.prevTabsInsideCurrentLine ? state.prevTabsInsideCurrentLine : this.prevTabsInsideCurrentLine,
+      prevAnchorIndex: state && state.prevAnchorIndex ? state.prevAnchorIndex : this.prevAnchorIndex,
+      prevFocusIndex: state && state.prevFocusIndex ? state.prevFocusIndex : this.prevFocusIndex,
+      prevCurrentLine: state && state.prevCurrentLine ? state.prevCurrentLine : this.prevCurrentLine
     });
 
     this.currentState++;
@@ -661,6 +668,7 @@ export class EditorComponent implements OnInit, OnDestroy, OnChanges, AfterViewI
   refreshCurrentLine(lineElement: Node): void {
     const lines: NodeList = this.editor.nativeElement.querySelectorAll('.view-line');
     const linesCount = lines.length;
+    this.prevCurrentLine = this.currentLine;
 
     for (let i = 0; i < linesCount; i++) {
       this.currentLine = i;
@@ -684,24 +692,31 @@ export class EditorComponent implements OnInit, OnDestroy, OnChanges, AfterViewI
 
         textSegments.forEach(({ text, node }) => {
           if (node === sel.anchorNode) {
+            this.prevAnchorIndex = this.anchorIndex;
             this.anchorIndex = currentIndex + sel.anchorOffset;
           } else if (node.parentElement === sel.anchorNode) {
             const range = new Range();
             range.selectNode(node);
+            this.prevAnchorIndex = this.anchorIndex;
             this.anchorIndex = currentIndex + sel.anchorOffset - range.startOffset;
           }
 
           if (node === sel.focusNode) {
+            this.prevFocusIndex = this.focusIndex;
             this.focusIndex = currentIndex + sel.focusOffset;
           } else if (node.parentElement === sel.focusNode) {
             const range = new Range();
             range.selectNode(node);
+            this.prevFocusIndex = this.focusIndex;
             this.focusIndex = currentIndex + sel.focusOffset - range.startOffset;
           }
 
           currentIndex += text.length;
         });
       } else {
+        this.prevCurrentLine = this.currentLine;
+        this.prevAnchorIndex = this.anchorIndex;
+        this.prevFocusIndex = this.focusIndex;
         this.currentLine = 0;
         this.anchorIndex = 0;
         this.focusIndex = 0;
@@ -897,37 +912,43 @@ export class EditorComponent implements OnInit, OnDestroy, OnChanges, AfterViewI
     if (event.key === 'Backspace') {
       const lines: NodeList = this.editor.nativeElement.querySelectorAll('.view-line');
       const currentLine: Node = lines[this.currentLine];
-      const saveState = currentLine && currentLine.textContent !== '';
 
-      if (saveState) {
-        this.savePrevAndCurrentEditorState();
-      }
-
-      if (this.focusIndex === this.anchorIndex) {
-        if (this.focusIndex > 0) {
-          this.focusIndex--;
-          this.anchorIndex--;
-        } else if (currentLine && currentLine.previousSibling) {
-          this.focusIndex = currentLine.previousSibling.textContent.length;
+      if (event.type === 'keyup' && currentLine && currentLine.textContent !== '') {
+        if(this.focusIndex < this.anchorIndex) {
           this.anchorIndex = this.focusIndex;
-          this.currentLine--;
+        } else {
+          this.focusIndex = this.anchorIndex;
         }
-      }
 
-      if (lines.length === 1 && lines[0].textContent === '') {
-        event.preventDefault();
-      } else if (
-        currentLine &&
-        !currentLine.previousSibling &&
-        currentLine.textContent === '' &&
-        this.currentLine > 0
-      ) {
-        currentLine.parentElement.removeChild(currentLine);
-        this.currentLine--;
-        this.focusIndex = 0;
-        this.anchorIndex = 0;
-        this.refreshLineNumbers();
-        event.preventDefault();
+        this.prevFocusIndex = this.prevAnchorIndex;
+        this.savePrevAndCurrentEditorState();
+      } else {
+        if (this.focusIndex === this.anchorIndex) {
+          if (this.focusIndex > 0) {
+            this.focusIndex--;
+            this.anchorIndex--;
+          } else if (currentLine && currentLine.previousSibling) {
+            this.focusIndex = currentLine.previousSibling.textContent.length;
+            this.anchorIndex = this.focusIndex;
+            this.currentLine--;
+          }
+        }
+  
+        if (lines.length === 1 && lines[0].textContent === '') {
+          event.preventDefault();
+        } else if (
+          currentLine &&
+          !currentLine.previousSibling &&
+          currentLine.textContent === '' &&
+          this.currentLine > 0
+        ) {
+          currentLine.parentElement.removeChild(currentLine);
+          this.currentLine--;
+          this.focusIndex = 0;
+          this.anchorIndex = 0;
+          this.refreshLineNumbers();
+          event.preventDefault();
+        }
       }
     }
   }

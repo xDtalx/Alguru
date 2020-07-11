@@ -244,7 +244,7 @@ async function updateCommentInPost(req, res, updatedComment) {
       let oldComment;
 
       for (const currComment of post.comments) {
-        if (parseInt(currComment._id) === parseInt(updatedComment._id)) {
+        if (String(currComment._id) === String(updatedComment._id)) {
           oldComment = currComment;
           break;
         }
