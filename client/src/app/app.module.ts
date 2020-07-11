@@ -27,6 +27,10 @@ import { EditorComponent } from './editor/editor.component';
 import { ForumComponent } from './forum/forum.component';
 import { AngularEditorModule } from '@kolkov/angular-editor';
 import { HomeComponent } from './home/home.component';
+import { ProfileComponent } from './profile/profile.component';
+import { FaIconLibrary, FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { faFacebook, faGithub, faLinkedin, faTwitter } from '@fortawesome/free-brands-svg-icons';
+import { faUser } from '@fortawesome/free-solid-svg-icons';
 
 @NgModule({
   declarations: [
@@ -41,7 +45,8 @@ import { HomeComponent } from './home/home.component';
     HomeComponent,
     IDEComponent,
     EditorComponent,
-    ForumComponent
+    ForumComponent,
+    ProfileComponent
   ],
   imports: [
     BrowserModule,
@@ -57,7 +62,8 @@ import { HomeComponent } from './home/home.component';
     MatPaginatorModule,
     MatInputModule,
     MatSidenavModule,
-    AngularEditorModule
+    AngularEditorModule,
+    FontAwesomeModule
   ],
   providers: [
     { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },
@@ -65,4 +71,9 @@ import { HomeComponent } from './home/home.component';
   ],
   bootstrap: [AppComponent]
 })
-export class AppModule {}
+export class AppModule {
+  constructor(library: FaIconLibrary) {
+    // Add an icon to the library for convenient access in other components
+    library.addIcons(faFacebook, faLinkedin, faGithub, faTwitter, faUser);
+  }
+}

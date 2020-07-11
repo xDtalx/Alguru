@@ -9,6 +9,7 @@ import { IDEComponent } from './ide/ide.component';
 import { EditorComponent } from './editor/editor.component';
 import { ForumComponent } from './forum/forum.component';
 import { HomeComponent } from './home/home.component';
+import { ProfileComponent } from './profile/profile.component';
 
 const routes: Routes = [
   {
@@ -25,6 +26,12 @@ const routes: Routes = [
   {
     path: 'questions-list',
     component: QuestionListComponent,
+    data: { showSmallHeader: true },
+    canActivate: [AuthGuard]
+  },
+  {
+    path: 'profile/:username',
+    component: ProfileComponent,
     data: { showSmallHeader: true },
     canActivate: [AuthGuard]
   },

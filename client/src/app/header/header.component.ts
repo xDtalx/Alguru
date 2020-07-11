@@ -18,14 +18,15 @@ enum ModalTypes {
 export class HeaderComponent implements OnInit, OnDestroy {
   private authListenerSubs: Subscription;
   private adminListenerSubs: Subscription;
-  showLoginModal: boolean;
-  showRegister: boolean;
-  showModal: boolean;
-  ModalTypes = ModalTypes;
-  isUserAuth: boolean;
-  isRelease: boolean;
-  showSmallHeader: boolean;
-  isAdmin: boolean;
+  public showLoginModal: boolean;
+  public showRegister: boolean;
+  public showModal: boolean;
+  public ModalTypes = ModalTypes;
+  public isUserAuth: boolean;
+  public isRelease: boolean;
+  public showSmallHeader: boolean;
+  public isAdmin: boolean;
+  public profileURL = '/profile/';
 
   constructor(private authService: AuthService, private settingsService: SettingsService) {
     this.settingsService.getSmallHeaderObservable().subscribe((isShow) => this.setSmallHeader(isShow));
@@ -45,6 +46,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
     this.adminListenerSubs = this.authService.getAdminListener().subscribe((isAdmin) => {
       this.isAdmin = isAdmin;
     });
+    this.profileURL += this.authService.getUsername();
   }
 
   ngOnDestroy() {

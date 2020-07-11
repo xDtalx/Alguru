@@ -1,0 +1,49 @@
+<div class="account-container">
+  <div class="side-nav">
+    <div class="frame">
+      <div class="title">
+        Profile
+      </div>
+      <div class="info">
+        <div class="profile-img">
+          <img *ngIf="profileImageURL" [src]="profileImageURL" alt="profile image" />
+          <fa-icon *ngIf="!profileImageURL" [icon]="['fas', 'user']" size="5x"></fa-icon>
+        </div>
+        <div class="details">
+          <div class="detail">
+            <span>{{ username }}</span>
+          </div>
+          <div class="detail">
+            <fa-icon class="github-icon icon" [icon]="['fab', 'github']" size="2x"></fa-icon>
+            <fa-icon class="linkedin-icon icon" [icon]="['fab', 'linkedin']" size="2x"></fa-icon>
+            <fa-icon class="facebook-icon icon" [icon]="['fab', 'facebook']" size="2x"></fa-icon>
+            <fa-icon class="twitter-icon icon" [icon]="['fab', 'twitter']" size="2x"></fa-icon>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="frame">
+      <div class="title">
+        Progress
+      </div>
+      <div class="stat">
+        <span class="type">Solved Questions</span><span class="stat-value">{{ solvedQuestions }}</span>
+      </div>
+    </div>
+    <div class="frame">
+      <div class="title">
+        Contribution
+      </div>
+      <div class="stat">
+        <span class="type">Points</span><span class="stat-value">{{ contribPoints }}</span>
+      </div>
+      <div class="stat">
+        <span class="type">Porblems</span><span class="stat-value">{{ contribProblems }}</span>
+      </div>
+      <div class="stat">
+        <span class="type">Comments On Forum</span><span class="stat-value">{{ contribComments }}</span>
+      </div>
+    </div>
+  </div>
+  <div class="content"></div>
+</div>

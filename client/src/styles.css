@@ -81,7 +81,7 @@ a:visited {
 }
 
 html {
-  background: var(--site-background-img) !important;
+  background: var(--site-background-img);
   background-attachment: fixed;
   background-size: cover;
 }

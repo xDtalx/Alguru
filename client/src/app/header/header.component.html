@@ -10,6 +10,9 @@
     <span id="spacer"></span>
     <ul class="nav">
       <li *ngIf="isUserAuth" class="nav-item">
+        <button class="nav-link" (click)="setSmallHeader(true)" [routerLink]="profileURL">Profile</button>
+      </li>
+      <li *ngIf="isUserAuth" class="nav-item">
         <button class="nav-link" (click)="setSmallHeader(true)" routerLink="/questions-list">Questions</button>
       </li>
       <li *ngIf="isUserAuth" class="nav-item">
