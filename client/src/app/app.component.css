@@ -1,15 +1,10 @@
 main {
   display: var(--main-display);
   position: relative;
-  width: var(--main-width);
+  width: 100vw;
   margin: auto;
   max-width: 100%;
   height: 100%;
   padding: var(--main-padding);
-}
-
-@media only screen and (max-width: 800px) {
-  main {
-    width: 95vw;
-  }
+  background-color: white;
 }

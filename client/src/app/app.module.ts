@@ -22,11 +22,11 @@ import { LoginComponent } from './auth/login/login.component';
 import { AuthInterceptor } from './auth/auth-interceptor';
 import { ErrorComponent } from './error/error.component';
 import { ErrorInterceptor } from './error-interceptor';
-import { ComingSoonComponent } from './coming-soon/coming-soon.component';
 import { IDEComponent } from './ide/ide.component';
 import { EditorComponent } from './editor/editor.component';
 import { ForumComponent } from './forum/forum.component';
 import { AngularEditorModule } from '@kolkov/angular-editor';
+import { HomeComponent } from './home/home.component';
 
 @NgModule({
   declarations: [
@@ -38,7 +38,7 @@ import { AngularEditorModule } from '@kolkov/angular-editor';
     RegisterComponent,
     LoginComponent,
     ErrorComponent,
-    ComingSoonComponent,
+    HomeComponent,
     IDEComponent,
     EditorComponent,
     ForumComponent

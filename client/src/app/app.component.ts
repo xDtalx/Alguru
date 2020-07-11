@@ -12,7 +12,6 @@ export class AppComponent implements OnInit {
 
   constructor(private authService: AuthService) {
     document.documentElement.style.setProperty('--main-display', 'block');
-    document.documentElement.style.setProperty('--main-width', '80vw');
   }
 
   ngOnInit(): void {

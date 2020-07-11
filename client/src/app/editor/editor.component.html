@@ -1,5 +1,5 @@
-<div class="editor-container">
-  <div *ngIf="lineNumbering === 'true'" class="numbers-container">
+<div class="editor-container" #container>
+  <div *ngIf="lineNumbering === 'true'" class="numbers-container" #numbers>
     <div *ngFor="let number of linesNumbers" class="line-number">{{ number }}</div>
   </div>
   <span
@@ -13,6 +13,7 @@
     (cut)="handleEvent($event)"
     contenteditable="true"
     class="editor"
+    [style.width]="editorWidth"
     #editor
   >
   </span>

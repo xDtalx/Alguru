@@ -55,7 +55,22 @@ export class QuestionListComponent implements OnInit, OnDestroy {
     this.questionService.deleteQuestion(questionId);
   }
 
+  getLevelNumber(level: string) {
+    let levelNumber = -1;
+
+    if ('easy'.startsWith(level)) {
+      levelNumber = 0;
+    } else if ('medium'.startsWith(level)) {
+      levelNumber = 1;
+    } else if ('hard'.startsWith(level)) {
+      levelNumber = 2;
+    }
+
+    return levelNumber;
+  }
+
   applyFilter(event: Event) {
+    this.dataSource.filterPredicate = (data: Question, filter: string) => this.getLevelNumber(filter) === data.level;
     const filterValue = (event.target as HTMLInputElement).value;
     this.dataSource.filter = filterValue.trim().toLowerCase();
 

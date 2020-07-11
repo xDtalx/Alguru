@@ -18,7 +18,6 @@ export class QuestionCreateComponent implements OnInit, AfterViewInit {
   constructor(private questionService: QuestionsService, private route: ActivatedRoute) {}
 
   ngAfterViewInit(): void {
-    document.documentElement.style.setProperty('--main-width', '80vw');
     document.documentElement.style.setProperty('--main-display', 'block');
     document.documentElement.style.setProperty('--main-padding', '1rem 0 0 0');
   }
