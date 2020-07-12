@@ -7,7 +7,15 @@
       <div class="info">
         <div class="profile-img">
           <img *ngIf="profileImageURL" [src]="profileImageURL" alt="profile image" />
-          <fa-icon *ngIf="!profileImageURL" [icon]="['fas', 'user']" size="5x"></fa-icon>
+          <div class="default-profile" *ngIf="!profileImageURL">
+            <div class="image">
+              <fa-icon [icon]="['fas', 'user']" size="5x"></fa-icon>
+              <form method="POST" enctype="multipart/form-data" #uploadImageForm>
+                <input (change)="submit($event)" type="file" id="select-file" name="image" value="" #selectFile />
+                <button class="btn-select-file" (click)="onSelectFileClick()">Change...</button>
+              </form>
+            </div>
+          </div>
         </div>
         <div class="details">
           <div class="detail">

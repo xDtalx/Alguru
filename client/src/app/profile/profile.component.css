@@ -72,3 +72,34 @@
 fa-icon:not(:last-child) {
   margin-right: 0.5rem;
 }
+
+.default-profile {
+  position: relative;
+}
+
+.btn-select-file {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  font-size: 1rem;
+  background: none;
+  border: none;
+  outline: none;
+  color: white;
+  background-color: rgba(128, 128, 128, 0.3);
+  width: 100%;
+}
+
+.image {
+  position: relative;
+  width: fit-content;
+  background-color: rgb(89, 186, 241);
+}
+
+.image > fa-icon {
+  margin: auto;
+}
+
+#select-file {
+  display: none;
+}
