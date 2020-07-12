@@ -56,7 +56,8 @@
   flex-direction: row;
 }
 
-.profile-img {
+.profile-img-container {
+  position: relative;
   flex: 1;
 }
 
@@ -73,10 +74,6 @@ fa-icon:not(:last-child) {
   margin-right: 0.5rem;
 }
 
-.default-profile {
-  position: relative;
-}
-
 .btn-select-file {
   position: absolute;
   left: 0;
@@ -86,20 +83,53 @@ fa-icon:not(:last-child) {
   border: none;
   outline: none;
   color: white;
-  background-color: rgba(128, 128, 128, 0.3);
+  background-color: rgba(87, 87, 87, 0.801);
   width: 100%;
 }
 
-.image {
+.default-img {
+  display: flex;
+  justify-content: center;
   position: relative;
-  width: fit-content;
+  width: 10rem;
+  height: 10rem;
   background-color: rgb(89, 186, 241);
 }
 
-.image > fa-icon {
+.default-img > fa-icon {
   margin: auto;
 }
 
 #select-file {
   display: none;
+}
+
+.profile-img {
+  position: relative;
+  width: fit-content;
+}
+
+.profile-img > img {
+  width: 10rem;
+  height: 10rem;
+}
+
+#crop-popup {
+  position: absolute;
+  display: flex;
+  top: 0;
+  right: 0;
+  height: 100%;
+  width: 100%;
+  background-color: rgba(0, 0, 0, 0.3);
+}
+
+#crop-popup > * {
+  margin: auto;
+}
+
+.details {
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
 }

@@ -1,0 +1,39 @@
+.img-container {
+  display: block;
+  max-width: 50rem;
+  max-height: 50rem;
+}
+
+.img-preview {
+  width: 10rem;
+  height: 10rem;
+  margin-left: 10px;
+}
+
+#src-img {
+  z-index: -1;
+  width: 50rem;
+}
+
+#background {
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  background-color: white;
+  padding: 1rem;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  width: fit-content;
+  border-radius: 1rem;
+  box-shadow: 0 8px 10px rgba(0, 0, 0, 0.315);
+}
+
+.alguru-primary-btn {
+  margin-top: 1rem;
+}
+
+#cropper-container {
+  display: flex;
+  justify-content: center;
+  flex-direction: row;
+  max-width: 100%;
+}

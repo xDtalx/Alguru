@@ -1,0 +1,9 @@
+<div id="background">
+  <div id="cropper-container">
+    <div class="img-container">
+      <img #image id="src-img" [src]="imageSource" crossorigin />
+    </div>
+    <img [src]="imageDestination" class="img-preview" />
+  </div>
+  <button (click)="uploadImage()" class="alguru-primary-btn">Crop</button>
+</div>

@@ -31,6 +31,7 @@ import { ProfileComponent } from './profile/profile.component';
 import { FaIconLibrary, FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { faFacebook, faGithub, faLinkedin, faTwitter } from '@fortawesome/free-brands-svg-icons';
 import { faUser } from '@fortawesome/free-solid-svg-icons';
+import { CropperComponent } from './image-cropper/image-cropper.component';
 
 @NgModule({
   declarations: [
@@ -46,7 +47,8 @@ import { faUser } from '@fortawesome/free-solid-svg-icons';
     IDEComponent,
     EditorComponent,
     ForumComponent,
-    ProfileComponent
+    ProfileComponent,
+    CropperComponent
   ],
   imports: [
     BrowserModule,
