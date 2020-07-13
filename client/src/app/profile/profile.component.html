@@ -5,25 +5,23 @@
         Profile
       </div>
       <div class="info">
-        <div class="profile-img-container">
-          <div class="profile-img">
-            <img *ngIf="profileImageURL" [src]="profileImageURL" (error)="onImageURLBroken()" alt="profile image" />
-            <div class="default-img" *ngIf="!profileImageURL">
-              <fa-icon [icon]="['fas', 'user']" size="5x"></fa-icon>
-            </div>
-            <form method="POST" enctype="multipart/form-data" #uploadImageForm>
-              <input
-                (change)="submit($event)"
-                type="file"
-                id="select-file"
-                name="image"
-                value=""
-                accept="image/gif, image/jpeg, image/png"
-                #selectFile
-              />
-              <button class="btn-select-file" (click)="onSelectFileClick()">Change...</button>
-            </form>
+        <div class="profile-img">
+          <img *ngIf="profileImageURL" [src]="profileImageURL" (error)="onImageURLBroken()" alt="profile image" />
+          <div class="default-img" *ngIf="!profileImageURL">
+            <fa-icon [icon]="['fas', 'user']" size="5x"></fa-icon>
           </div>
+          <form method="POST" enctype="multipart/form-data" #uploadImageForm>
+            <input
+              (change)="submit($event)"
+              type="file"
+              id="select-file"
+              name="image"
+              value=""
+              accept="image/gif, image/jpeg, image/png"
+              #selectFile
+            />
+            <button class="btn-select-file" (click)="onSelectFileClick()">Change...</button>
+          </form>
         </div>
         <div class="details">
           <div class="detail">

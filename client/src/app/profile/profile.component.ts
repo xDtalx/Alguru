@@ -16,6 +16,7 @@ const UPLOAD_URL = BACKEND_URL + '/upload';
 export class ProfileComponent implements OnInit, OnDestroy {
   @ViewChild('selectFile', { read: ElementRef }) selectFile: ElementRef;
   @ViewChild('uploadImageForm', { read: ElementRef }) uploadImageForm: ElementRef;
+
   public username = '';
   public profileImageURL: string;
   public tmpProfileImageURL: string | ArrayBuffer;
@@ -42,12 +43,14 @@ export class ProfileComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.sub = this.profileService.getURLUpdatedListener().subscribe(this.onUploaded.bind(this));
-    this.profileImageURL = `${BACKEND_URL}/${this.authService.getUsername()}`;
+
     this.route.paramMap.subscribe((paramMap: ParamMap) => {
       if (paramMap.has('username')) {
         this.username = paramMap.get('username');
       }
     });
+
+    this.profileImageURL = `${BACKEND_URL}/${this.authService.getUsername()}`;
   }
 
   onImageURLBroken() {
@@ -61,15 +64,7 @@ export class ProfileComponent implements OnInit, OnDestroy {
   submit(event) {
     this.openCropPopup();
 
-    if (!event.target) {
-      return;
-    }
-
-    if (!event.target.files) {
-      return;
-    }
-
-    if (event.target.files.length !== 1) {
+    if (!event.target || !event.target.files || event.target.files.length !== 1) {
       return;
     }
 
@@ -85,6 +80,7 @@ export class ProfileComponent implements OnInit, OnDestroy {
     }
 
     const fr = new FileReader();
+
     fr.onloadend = () => (this.tmpProfileImageURL = fr.result);
     fr.readAsDataURL(file);
     this.isLoading = false;

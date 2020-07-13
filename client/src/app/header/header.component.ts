@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild, ElementRef, Renderer2 } from '@angular/core';
 import { AuthService } from '../auth/auth.service';
 import { Subscription } from 'rxjs';
 import { environment } from '../../environments/environment';
@@ -16,6 +16,8 @@ enum ModalTypes {
   styleUrls: ['./header.component.less']
 })
 export class HeaderComponent implements OnInit, OnDestroy {
+  @ViewChild('toggleNavCheckbox', { read: ElementRef }) toggleNavCheckbox: ElementRef;
+
   private authListenerSubs: Subscription;
   private adminListenerSubs: Subscription;
   public showLoginModal: boolean;
@@ -27,8 +29,10 @@ export class HeaderComponent implements OnInit, OnDestroy {
   public showSmallHeader: boolean;
   public isAdmin: boolean;
   public profileURL = '/profile/';
+  public isOpenMenu = false;
+  openNav: boolean;
 
-  constructor(private authService: AuthService, private settingsService: SettingsService) {
+  constructor(private authService: AuthService, private settingsService: SettingsService, private renderer: Renderer2) {
     this.settingsService.getSmallHeaderObservable().subscribe((isShow) => this.setSmallHeader(isShow));
   }
 
@@ -55,30 +59,32 @@ export class HeaderComponent implements OnInit, OnDestroy {
   }
 
   setSmallHeader(isShow: boolean) {
-    const length = 200;
+    const length = 300;
     this.showSmallHeader = isShow;
 
     if (this.showSmallHeader) {
       const header = $('div.header');
-      const background = $('div.background');
       const container = $('#container');
       const target = { height: container.height() };
       const onHeaderDone = () => header.css('height', 'auto');
-      const onBGDone = () => background.css('display', 'none');
 
       header.addClass('show-header-color');
       header.removeClass('hide-header-color');
-      background.animate(target, length, onBGDone);
       header.animate(target, length, onHeaderDone);
+
+      this.closeHamburger();
     } else {
       const header = $('div.header');
-      const background = $('div.background');
 
-      background.css('display', 'block');
       header.addClass('hide-header-color');
       header.removeClass('show-header-color');
-      background.animate({ height: '100vh' }, length);
       header.animate({ height: '100vh' }, length);
+    }
+  }
+
+  closeHamburger() {
+    if (this.toggleNavCheckbox.nativeElement.checked === true) {
+      this.toggleNavCheckbox.nativeElement.click();
     }
   }
 
@@ -106,5 +112,9 @@ export class HeaderComponent implements OnInit, OnDestroy {
   openRegister() {
     this.showLoginModal = false;
     this.showRegister = true;
+  }
+
+  toggleNav() {
+    this.openNav = !this.openNav;
   }
 }

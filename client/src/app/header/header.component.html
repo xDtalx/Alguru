@@ -1,14 +1,29 @@
 <div class="header">
-  <div class="background"></div>
-  <div id="container">
-    <ul id="home" class="nav">
-      <li class="nav-item"><img src="../../assets/logo-light.png" /></li>
-      <li class="nav-item">
-        <button class="nav-link" (click)="setSmallHeader(false)" routerLink="/">Home</button>
-      </li>
-    </ul>
-    <span id="spacer"></span>
+  <div id="left">
+    <div id="container">
+      <ul id="home" class="nav">
+        <li class="nav-item"><img src="../../assets/logo-light.png" /></li>
+        <li class="nav-item">
+          <button class="nav-link" (click)="setSmallHeader(false)" routerLink="/">Home</button>
+        </li>
+      </ul>
+      <span class="spacer"></span>
+      <div id="hamburger">
+        <input (click)="toggleNav()" type="checkbox" #toggleNavCheckbox />
+        <span id="first-bar"></span>
+        <span id="second-bar"></span>
+        <span id="third-bar"></span>
+      </div>
+    </div>
+  </div>
+  <span class="spacer"></span>
+  <div id="right" #rightNav>
+    <input id="open-nav" [checked]="openNav" type="checkbox" />
+    <div class="background"></div>
     <ul class="nav">
+      <li class="nav-item">
+        <button class="nav-link" (click)="setSmallHeader(false); closeHamburger()" routerLink="/">Home</button>
+      </li>
       <li *ngIf="isUserAuth" class="nav-item">
         <button class="nav-link" (click)="setSmallHeader(true)" [routerLink]="profileURL">Profile</button>
       </li>
