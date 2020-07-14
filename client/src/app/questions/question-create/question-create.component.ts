@@ -1,25 +1,39 @@
-import { Component, OnInit, AfterViewInit } from '@angular/core';
+import { Component, OnInit, AfterViewInit, OnDestroy, ViewChildren, QueryList, ElementRef } from '@angular/core';
 import { QuestionsService } from '../questions.service';
 import { Question } from '../question.model';
 import { ActivatedRoute, ParamMap } from '@angular/router';
+import { ThemeService } from 'src/app/editor/theme/theme.service';
 
 @Component({
   selector: 'app-question-create',
   templateUrl: './question-create.component.html',
   styleUrls: ['./question-create.component.css']
 })
-export class QuestionCreateComponent implements OnInit, AfterViewInit {
+export class QuestionCreateComponent implements OnInit, OnDestroy, AfterViewInit {
+  @ViewChildren('checkbox') checkboxes: QueryList<ElementRef>;
+
   public retrievedQuestionData: Question;
   public newQuestionData: Question;
   public isLoading = false;
+  public theme = 'dark';
   private mode = 'create';
   private questionId: string;
 
-  constructor(private questionService: QuestionsService, private route: ActivatedRoute) {}
+  constructor(
+    private questionService: QuestionsService,
+    private route: ActivatedRoute,
+    private themeService: ThemeService
+  ) {}
 
   ngAfterViewInit(): void {
-    document.documentElement.style.setProperty('--main-display', 'block');
-    document.documentElement.style.setProperty('--main-padding', '1rem 0 0 0');
+    this.themeService.overrideProperty('--main-display', 'block');
+    this.themeService.overrideProperty('--main-padding', '1rem 1rem 0 1rem');
+    this.themeService.overrideProperty('--main-background-color', 'rgb(53, 58, 66)');
+    this.themeService.setActiveThemeByName(this.theme);
+  }
+
+  ngOnDestroy(): void {
+    this.themeService.reset();
   }
 
   ngOnInit() {
@@ -42,6 +56,28 @@ export class QuestionCreateComponent implements OnInit, AfterViewInit {
         this.setCreateMode();
       }
     });
+  }
+
+  uncheckOther(event: MouseEvent) {
+    const target: HTMLInputElement = event.target as HTMLInputElement;
+
+    this.checkboxes.forEach((checkbox) => {
+      if (target.id !== checkbox.nativeElement.id) {
+        checkbox.nativeElement.checked = false;
+      }
+    });
+
+    switch (target.id) {
+      case 'easy-checkbox':
+        this.setLevel(0);
+        break;
+      case 'medium-checkbox':
+        this.setLevel(1);
+        break;
+      case 'hard-checkbox':
+        this.setLevel(2);
+        break;
+    }
   }
 
   setEditMode(paramMap) {

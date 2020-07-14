@@ -42,6 +42,7 @@ export class EditorComponent implements OnInit, OnDestroy, OnChanges, AfterViewI
   @Input() public value = '';
   @Input() public theme = 'light';
   @Input() public initialValue = '';
+  @Input() public focus = 'false';
   @Output() public valueChanged = new EventEmitter<string>();
   @Output() public editorKeyDown = new EventEmitter<KeyboardEvent>();
   @Output() public editorKeyUp = new EventEmitter<KeyboardEvent>();
@@ -99,7 +100,7 @@ export class EditorComponent implements OnInit, OnDestroy, OnChanges, AfterViewI
       this.updateEditorInfo();
       this.valueChanged.emit(this.value);
     });
-    this.editorService.addEventHandler(this.editor, EventType.MouseUp, this.refreshLocation.bind(this));
+    this.editorService.addEventHandler(this.editor, EventType.MouseUp, this.handleMouseUp.bind(this));
 
     if (this.editable === 'false') {
       this.renderer.setAttribute(this.editor.nativeElement, 'contenteditable', this.editable);
@@ -109,6 +110,8 @@ export class EditorComponent implements OnInit, OnDestroy, OnChanges, AfterViewI
     if (this.fitEditorToContainer === 'true') {
       this.renderer.setStyle(this.editor.nativeElement, 'height', '100%');
     }
+
+    this.focusEditor();
   }
 
   // When code is requested from the server it takes time for it to reach the client.
@@ -116,6 +119,17 @@ export class EditorComponent implements OnInit, OnDestroy, OnChanges, AfterViewI
   ngOnChanges(changes: SimpleChanges): void {
     if (changes.value) {
       this.renderText(changes.value.currentValue, this.deletePrevValueOnChange === 'true' || this.shouldHighlight());
+    }
+  }
+
+  handleMouseUp(event: MouseEvent) {
+    this.refreshLocation(event);
+    const targetType = (event.target as HTMLElement).nodeName.toLowerCase();
+
+    if (targetType === 'span') {
+      this.hightlightLine(this.editor.nativeElement.firstChild);
+    } else {
+      this.hightlightLine(event.target as HTMLDivElement);
     }
   }
 
@@ -164,6 +178,13 @@ export class EditorComponent implements OnInit, OnDestroy, OnChanges, AfterViewI
     if (text !== this.previousText) {
       this.renderText(text, this.deletePrevValueOnChange === 'true' || this.shouldHighlight());
       this.restoreSelection();
+    }
+  }
+
+  focusEditor() {
+    if (this.focus === 'true') {
+      this.hightlightLine(this.editor.nativeElement.firstChild);
+      this.editor.nativeElement.focus();
     }
   }
 

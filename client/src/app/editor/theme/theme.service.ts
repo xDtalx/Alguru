@@ -8,6 +8,11 @@ export class ThemeService {
   private active: Theme = light;
   private availableThemes: Theme[] = [light, dark];
   private previousProperties: Map<string, string>;
+  private propToOverride: Map<string, string> = new Map<string, string>();
+
+  overrideProperty(propName: string, propVal: string) {
+    this.propToOverride.set(propName, propVal);
+  }
 
   getAvailableThemes(): Theme[] {
     return this.availableThemes;
@@ -45,7 +50,11 @@ export class ThemeService {
     }
 
     Object.keys(this.active.properties).forEach((property) => {
-      document.documentElement.style.setProperty(property, this.active.properties[property]);
+      if (this.propToOverride.get(property)) {
+        document.documentElement.style.setProperty(property, this.propToOverride.get(property));
+      } else {
+        document.documentElement.style.setProperty(property, this.active.properties[property]);
+      }
     });
   }
 
@@ -59,6 +68,8 @@ export class ThemeService {
     this.previousProperties.forEach((value, key) => {
       document.documentElement.style.setProperty(key, value);
     });
+
+    this.propToOverride.clear();
   }
 
   setActiveThemeByName(name: string) {

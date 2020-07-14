@@ -1,11 +1,11 @@
 <div class="list-container">
   <button class="create-question-btn alguru-primary-btn" [routerLink]="['/create-question']">Create Question</button>
-  <mat-form-field>
+  <mat-form-field id="filter" color="warn">
     <mat-label>Filter by level</mat-label>
-    <input matInput (keyup)="applyFilter($event)" placeholder="Enter search term" />
+    <input matInput (keyup)="applyFilter($event)" placeholder="Enter search term" autocomplete="off" />
   </mat-form-field>
 
-  <div class="mat-elevation-z8">
+  <div id="questions" class="mat-elevation-z8">
     <table mat-table [dataSource]="dataSource" matSort>
       <!-- Title Column -->
       <ng-container matColumnDef="title">

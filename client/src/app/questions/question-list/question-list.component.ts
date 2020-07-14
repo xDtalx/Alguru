@@ -6,6 +6,7 @@ import { AuthService } from 'src/app/auth/auth.service';
 import { MatTableDataSource } from '@angular/material/table';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
+import { ThemeService } from 'src/app/editor/theme/theme.service';
 
 @Component({
   selector: 'app-question-list',
@@ -14,20 +15,28 @@ import { MatSort } from '@angular/material/sort';
 })
 export class QuestionListComponent implements OnInit, OnDestroy {
   // used in order to unsubscribe from the service when the page, which the list in, not shown
+  public questions: Question[] = [];
+  public isUserAuth: boolean;
+  public isAdmin: boolean;
+  public userId: string;
+  public displayedColumns: string[] = ['title', 'level', 'actions'];
+  public dataSource: MatTableDataSource<Question>;
   private questionsSub: Subscription;
-  questions: Question[] = [];
-  isUserAuth: boolean;
-  isAdmin: boolean;
-  userId: string;
-  displayedColumns: string[] = ['title', 'level', 'actions'];
-  dataSource: MatTableDataSource<Question>;
+  private theme = 'dark';
 
   @ViewChild(MatPaginator, { static: true }) paginator: MatPaginator;
   @ViewChild(MatSort, { static: true }) sort: MatSort;
 
-  constructor(private questionService: QuestionsService, private authService: AuthService) {}
+  constructor(
+    private questionService: QuestionsService,
+    private authService: AuthService,
+    private themeService: ThemeService
+  ) {}
 
   ngOnInit() {
+    this.themeService.overrideProperty('--main-display', 'block');
+    this.themeService.setActiveThemeByName(this.theme);
+
     this.userId = this.authService.getUserId();
     this.isUserAuth = this.authService.getIsAuth();
     this.questionService.getQuestions();
@@ -48,6 +57,7 @@ export class QuestionListComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
+    this.themeService.reset();
     this.questionsSub.unsubscribe();
   }
 

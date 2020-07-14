@@ -240,9 +240,11 @@ img {
   left: 0;
   height: 100vh;
   width: 100vw;
+  max-width: 100%;
   z-index: 0;
   pointer-events: none;
   background-color: rgba(53, 58, 66, 0);
+  transition: background-color 0.2s linear;
 }
 
 @media only screen and (max-width: 800px) {
@@ -258,7 +260,7 @@ img {
   }
 
   input#open-nav:checked ~ .background {
-    animation: show-color 0.2s ease forwards;
+    background-color: rgb(53, 58, 66);
   }
 
   #right .nav {

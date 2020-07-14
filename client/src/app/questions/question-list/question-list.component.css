@@ -28,6 +28,21 @@ th {
   height: 100%;
 }
 
+#questions,
+#questions * {
+  background-color: rgb(235, 235, 235);
+}
+
+#questions button {
+  border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+#filter,
+#filter *,
+#filter input::placeholder {
+  color: white;
+}
+
 @media only screen and (max-width: 800px) {
   .list-container {
     max-width: 95vw;

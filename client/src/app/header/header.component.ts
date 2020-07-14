@@ -32,7 +32,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
   public isOpenMenu = false;
   openNav: boolean;
 
-  constructor(private authService: AuthService, private settingsService: SettingsService, private renderer: Renderer2) {
+  constructor(private authService: AuthService, private settingsService: SettingsService) {
     this.settingsService.getSmallHeaderObservable().subscribe((isShow) => this.setSmallHeader(isShow));
   }
 

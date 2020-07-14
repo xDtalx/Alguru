@@ -1,3 +1,7 @@
+* {
+  color: white;
+}
+
 .account-container {
   max-width: 50vw;
   min-width: 70rem;
@@ -18,6 +22,7 @@
   width: 100%;
   border: 1px solid rgb(230, 230, 230);
   border-radius: 1rem;
+  box-shadow: -1px 3px 3px rgba(0, 0, 0, 0.3);
 }
 
 .frame:not(:last-child) {
@@ -72,6 +77,8 @@ fa-icon:not(:last-child) {
   color: white;
   background-color: rgba(87, 87, 87, 0.801);
   width: 100%;
+  border-bottom-left-radius: 1rem;
+  border-bottom-right-radius: 1rem;
 }
 
 .default-img {
@@ -81,6 +88,9 @@ fa-icon:not(:last-child) {
   width: 10rem;
   height: 10rem;
   background-color: rgb(89, 186, 241);
+  border-radius: 1rem;
+  border-radius: 1rem;
+  box-shadow: -1px 3px 3px rgba(0, 0, 0, 0.3);
 }
 
 .default-img > fa-icon {
@@ -93,12 +103,15 @@ fa-icon:not(:last-child) {
 
 .profile-img {
   position: relative;
+  height: fit-content;
   width: fit-content;
 }
 
 .profile-img > img {
   width: 10rem;
   height: 10rem;
+  border-radius: 1rem;
+  box-shadow: -1px 3px 3px rgba(0, 0, 0, 0.3);
 }
 
 #crop-popup {
@@ -115,9 +128,16 @@ fa-icon:not(:last-child) {
   margin: auto;
 }
 
+.details:not(:last-child) {
+  flex: 1;
+}
+
+.details:last-child {
+  border-left: 1px solid rgba(255, 255, 255, 0.1);
+}
+
 .details {
   display: flex;
-  flex: 1;
   justify-content: center;
   flex-direction: column;
 }
@@ -129,10 +149,30 @@ fa-icon:not(:last-child) {
 .detail {
   padding-left: 1rem;
   display: flex;
-  justify-content: space-between;
 }
 
 .detail:first-child {
   flex: 1;
   justify-content: left !important;
+}
+
+.main {
+  background-color: black !important;
+}
+
+@media only screen and (max-width: 800px) {
+  .account-container {
+    flex-direction: column;
+    min-width: 0;
+    max-width: 90vw;
+  }
+
+  .side-nav {
+    min-width: 0;
+  }
+
+  .content {
+    margin-top: 2rem;
+    margin-left: 0;
+  }
 }

@@ -10,7 +10,7 @@
           <div class="default-img" *ngIf="!profileImageURL">
             <fa-icon [icon]="['fas', 'user']" size="5x"></fa-icon>
           </div>
-          <form method="POST" enctype="multipart/form-data" #uploadImageForm>
+          <form *ngIf="showChangeImageBtn" method="POST" enctype="multipart/form-data" #uploadImageForm>
             <input
               (change)="submit($event)"
               type="file"
@@ -27,10 +27,18 @@
           <div class="detail">
             <span>{{ username }}</span>
           </div>
+        </div>
+        <div class="details">
           <div class="detail">
             <fa-icon class="github-icon icon" [icon]="['fab', 'github']" size="2x"></fa-icon>
+          </div>
+          <div class="detail">
             <fa-icon class="linkedin-icon icon" [icon]="['fab', 'linkedin']" size="2x"></fa-icon>
+          </div>
+          <div class="detail">
             <fa-icon class="facebook-icon icon" [icon]="['fab', 'facebook']" size="2x"></fa-icon>
+          </div>
+          <div class="detail">
             <fa-icon class="twitter-icon icon" [icon]="['fab', 'twitter']" size="2x"></fa-icon>
           </div>
         </div>
@@ -59,7 +67,7 @@
       </div>
     </div>
   </div>
-  <div class="content"></div>
+  <div class="frame content"></div>
 </div>
 
 <div *ngIf="cropPopupOpen" id="crop-popup" (click)="closeCropPopup()">

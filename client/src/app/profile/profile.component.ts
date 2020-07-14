@@ -3,6 +3,7 @@ import { ActivatedRoute, ParamMap } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import { AuthService } from '../auth/auth.service';
+import { ThemeService } from '../editor/theme/theme.service';
 import { ProfileService } from './profile.service';
 
 const BACKEND_URL = `${environment.apiUrl}/image`;
@@ -28,29 +29,40 @@ export class ProfileComponent implements OnInit, OnDestroy {
   public cropPopupOpen = false;
   public isLoading = false;
   public uploadURL = UPLOAD_URL;
+  public showChangeImageBtn = false;
   private timestamp: string;
   private sub: Subscription;
+  private theme = 'dark';
 
   constructor(
     private route: ActivatedRoute,
     private profileService: ProfileService,
+    private themeService: ThemeService,
     private authService: AuthService
   ) {}
 
   ngOnDestroy(): void {
     this.sub.unsubscribe();
+    this.themeService.reset();
   }
 
   ngOnInit(): void {
+    this.themeService.overrideProperty('--main-display', 'block');
+    this.themeService.overrideProperty(
+      '--site-background-img',
+      'url("assets/home-page/homePageBackground.png") no-repeat'
+    );
+    this.themeService.overrideProperty('--main-padding', '3rem 0 0 0');
+    this.themeService.setActiveThemeByName(this.theme);
     this.sub = this.profileService.getURLUpdatedListener().subscribe(this.onUploaded.bind(this));
 
     this.route.paramMap.subscribe((paramMap: ParamMap) => {
       if (paramMap.has('username')) {
         this.username = paramMap.get('username');
+        this.showChangeImageBtn = this.username === this.authService.getUsername();
+        this.profileImageURL = `${BACKEND_URL}/${this.username}`;
       }
     });
-
-    this.profileImageURL = `${BACKEND_URL}/${this.authService.getUsername()}`;
   }
 
   onImageURLBroken() {
