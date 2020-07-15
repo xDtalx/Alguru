@@ -151,7 +151,6 @@ button {
 
 .edits-btn {
   color: rgb(175, 175, 175);
-  outline: none;
   position: absolute;
   top: -0.5rem;
   right: 0;
@@ -282,17 +281,12 @@ button {
 .forum-btn {
   margin: 0 1rem 0 0 !important;
   box-sizing: border-box;
-  outline: none;
   cursor: pointer;
 }
 
 .forum-container {
   margin: auto;
   max-width: 80vw;
-}
-
-.alguru-secondary-btn {
-  outline: none;
 }
 
 .alguru-secondary-btn:not(:last-child) {
@@ -305,70 +299,6 @@ button {
   caret-color: white;
   outline: none;
   resize: none;
-}
-
-/deep/ .angular-editor-textarea {
-  background-color: var(--primary-btn-bg-color) !important;
-  border: var(--primary-btn-border) !important;
-  outline: none;
-}
-
-/deep/ .angular-editor-textarea:after {
-  background-color: rgba(0, 0, 0, 0) !important;
-}
-
-/deep/ .angular-editor-toolbar {
-  background-color: rgba(255, 255, 255, 0.05) !important;
-  border: var(--primary-btn-border) !important;
-}
-
-/deep/ .angular-editor-button {
-  background-color: rgba(0, 0, 0, 0.2) !important;
-  border: 1px solid rgba(0, 0, 0, 0.1) !important;
-}
-
-/deep/ .angular-editor-button:disabled {
-  background-color: rgba(0, 0, 0, 0.1) !important;
-}
-
-/deep/ .angular-editor-button:disabled > .fa:before {
-  color: rgba(255, 255, 255, 0.1) !important;
-}
-
-/deep/ .angular-editor-button:not(:last-child) {
-  margin-right: 0.2rem;
-}
-
-/deep/ .fa:before {
-  color: var(--primary-btn-color) !important;
-}
-
-.title-input,
-/deep/ .ae-picker-options,
-/deep/ .ae-picker-label,
-/deep/ .ae-picker-label:before {
-  background: none !important;
-  background-color: var(--primary-btn-bg-color) !important;
-  border: var(--primary-btn-border) !important;
-  color: var(--primary-btn-color) !important;
-}
-
-/deep/ .ae-picker-options,
-/deep/ .ae-picker-options * {
-  background-color: rgba(83, 87, 94) !important;
-  color: var(--primary-btn-color) !important;
-}
-
-/deep/ .ae-picker-item:hover {
-  background-color: rgb(110, 113, 119) !important;
-}
-
-/deep/ .ae-picker-label > svg * {
-  stroke: rgba(0, 0, 0, 0.5) !important;
-}
-
-/deep/ ae-select:hover {
-  background-color: rgba(0, 0, 0, 0.3) !important;
 }
 
 @media only screen and (max-width: 800px) {

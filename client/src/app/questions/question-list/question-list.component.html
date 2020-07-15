@@ -25,20 +25,20 @@
       <ng-container matColumnDef="actions">
         <th mat-header-cell *matHeaderCellDef mat-sort-header>Actions</th>
         <td mat-cell *matCellDef="let question">
-          <button *ngIf="isUserAuth" [routerLink]="['/solve', question.id]" class="alguru-primary-btn action-button">
+          <button *ngIf="isUserAuth" [routerLink]="['/solve', question.id]" class="alguru-secondary-btn">
             Solve
           </button>
           <button
             *ngIf="(isUserAuth && userId === question.creator) || isAdmin"
             [routerLink]="['/edit', question.id]"
-            class="alguru-primary-btn action-button"
+            class="alguru-secondary-btn"
           >
             Edit
           </button>
           <button
             *ngIf="(isUserAuth && userId === question.creator) || isAdmin"
             (click)="onDelete(question.id)"
-            class="alguru-primary-btn action-button"
+            class="alguru-secondary-btn"
           >
             Delete
           </button>

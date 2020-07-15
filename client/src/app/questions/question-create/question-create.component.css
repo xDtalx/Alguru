@@ -61,10 +61,6 @@ input[type='checkbox']:hover ~ .level-btn {
   color: white;
 }
 
-button {
-  outline: none;
-}
-
 label {
   border: 1px solid #0000004d;
   cursor: auto;

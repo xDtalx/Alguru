@@ -14,11 +14,9 @@ th {
 
 .action-button {
   margin-right: 10px;
-  outline: none;
 }
 
 .create-question-btn {
-  outline: none;
   margin-bottom: 1rem;
 }
 
@@ -46,19 +44,6 @@ mat-paginator,
 mat-paginator * {
   background-color: rgba(255, 255, 255, 0.05);
   color: var(--primary-btn-color);
-}
-
-/deep/ .mat-paginator-icon {
-  fill: var(--primary-btn-color) !important;
-}
-
-/deep/ .mat-select-value-text,
-/deep/ .mat-select-arrow {
-  color: var(--primary-btn-color);
-}
-
-/deep/ .mat-form-field-underline {
-  background-color: var(--primary-btn-color) !important;
 }
 
 #questions {

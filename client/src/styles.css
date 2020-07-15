@@ -124,7 +124,7 @@ h4 {
 }
 
 .alguru-primary-btn {
-  outline: none;
+  outline: none !important;
   border: var(--primary-btn-border);
   border-radius: 100px;
   padding: 1rem 2rem 1rem 2rem;
@@ -135,13 +135,13 @@ h4 {
 }
 
 .alguru-primary-btn:hover {
-  background-color: rgb(238, 80, 80);
+  background-color: rgb(238, 80, 80) !important;
   box-shadow: 0 0 5px rgba(0, 0, 0, 0.25);
   color: rgb(255, 255, 255);
 }
 
 .alguru-secondary-btn {
-  outline: none;
+  outline: none !important;
   border: var(--primary-btn-border);
   border-radius: 0.25rem;
   padding: 0.2rem 2rem 0.2rem 2rem;
@@ -152,7 +152,84 @@ h4 {
 }
 
 .alguru-secondary-btn:hover {
-  background-color: rgb(67, 134, 197);
+  background-color: rgb(67, 134, 197) !important;
   box-shadow: 0 0 5px rgba(0, 0, 0, 0.25);
   color: rgb(255, 255, 255);
+}
+
+.angular-editor-textarea {
+  background-color: var(--primary-btn-bg-color) !important;
+  border: var(--primary-btn-border) !important;
+  outline: none;
+}
+
+.angular-editor-textarea:after {
+  background-color: rgba(0, 0, 0, 0) !important;
+}
+
+.angular-editor-toolbar {
+  background-color: rgba(255, 255, 255, 0.05) !important;
+  border: var(--primary-btn-border) !important;
+}
+
+.angular-editor-button {
+  background-color: rgba(0, 0, 0, 0.2) !important;
+  border: 1px solid rgba(0, 0, 0, 0.1) !important;
+}
+
+.angular-editor-button:disabled {
+  background-color: rgba(0, 0, 0, 0.1) !important;
+}
+
+.angular-editor-button:disabled > .fa:before {
+  color: rgba(255, 255, 255, 0.1) !important;
+}
+
+.angular-editor-button:not(:last-child) {
+  margin-right: 0.2rem;
+}
+
+.fa:before {
+  color: var(--primary-btn-color) !important;
+}
+
+.title-input,
+.ae-picker-options,
+.ae-picker-label,
+.ae-picker-label:before {
+  background: none !important;
+  background-color: var(--primary-btn-bg-color) !important;
+  border: var(--primary-btn-border) !important;
+  color: var(--primary-btn-color) !important;
+}
+
+.ae-picker-options,
+.ae-picker-options * {
+  background-color: rgba(83, 87, 94) !important;
+  color: var(--primary-btn-color) !important;
+}
+
+.ae-picker-item:hover {
+  background-color: rgb(110, 113, 119) !important;
+}
+
+.ae-picker-label > svg * {
+  stroke: rgba(0, 0, 0, 0.5) !important;
+}
+
+ae-select:hover {
+  background-color: rgba(0, 0, 0, 0.3) !important;
+}
+
+.mat-paginator-icon {
+  fill: var(--primary-btn-color) !important;
+}
+
+.mat-select-value-text,
+.mat-select-arrow {
+  color: var(--primary-btn-color);
+}
+
+.mat-form-field-underline {
+  background-color: var(--primary-btn-color) !important;
 }
