@@ -89,7 +89,7 @@ html {
 html,
 body {
   font-size: 62.5%;
-  height: 100%;
+  min-height: 100vh;
   background-color: var(--site-background) !important;
 }
 
@@ -125,39 +125,34 @@ h4 {
 
 .alguru-primary-btn {
   outline: none;
-  border: none;
+  border: var(--primary-btn-border);
   border-radius: 100px;
   padding: 1rem 2rem 1rem 2rem;
-  background-color: rgb(235, 235, 235);
+  background-color: var(--primary-btn-bg-color);
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0);
+  color: var(--primary-btn-color);
+  transition: background-color 0.2s ease, box-shadow 0.2s ease, color 0.2s ease;
 }
 
 .alguru-primary-btn:hover {
-  animation: shadow 0.1s linear forwards, bg-color 0.1s linear forwards, color 0.1s linear forwards;
+  background-color: rgb(238, 80, 80);
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.25);
+  color: rgb(255, 255, 255);
 }
 
-@keyframes shadow {
-  from {
-    box-shadow: 0 0 5px rgba(0, 0, 0, 0);
-  }
-  to {
-    box-shadow: 0 0 5px rgba(0, 0, 0, 0.25);
-  }
+.alguru-secondary-btn {
+  outline: none;
+  border: var(--primary-btn-border);
+  border-radius: 0.25rem;
+  padding: 0.2rem 2rem 0.2rem 2rem;
+  background-color: var(--primary-btn-bg-color);
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0);
+  color: var(--primary-btn-color);
+  transition: background-color 0.2s ease, box-shadow 0.2s ease, color 0.2s ease;
 }
 
-@keyframes bg-color {
-  from {
-    background-color: rgb(235, 235, 235);
-  }
-  to {
-    background-color: rgb(255, 97, 97);
-  }
-}
-
-@keyframes color {
-  from {
-    color: rgb(0, 0, 0);
-  }
-  to {
-    color: rgb(255, 255, 255);
-  }
+.alguru-secondary-btn:hover {
+  background-color: rgb(67, 134, 197);
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.25);
+  color: rgb(255, 255, 255);
 }

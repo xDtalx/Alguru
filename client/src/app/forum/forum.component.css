@@ -1,14 +1,3 @@
-//Colors
-$background: #fefefe;
-$text: #4b507a;
-
-$cyan: #767778;
-$yellow: #1358ce;
-$orange: #ff8a30;
-$red: rgba(0, 0, 0, 0.96);
-$purple: #6477b9;
-$blue: #0eb7da;
-
 .app-error-container {
   overflow: hidden;
   border-radius: 5px;
@@ -20,8 +9,12 @@ $blue: #0eb7da;
 }
 
 @keyframes highlight-fade {
-  from {background-color: rgb(67, 164, 255);}
-  to { background-color: rgb(253, 253, 253);}
+  from {
+    background-color: rgb(67, 164, 255);
+  }
+  to {
+    background-color: rgb(253, 253, 253);
+  }
 }
 
 .comment-container {
@@ -60,7 +53,7 @@ $blue: #0eb7da;
   width: 2.3rem;
   height: 2.3rem;
   display: block;
-  border: solid rgb(51, 51, 51);
+  border: solid var(--primary-btn-color);
   border-width: 0 0.6rem 0.6rem 0;
   cursor: pointer;
 }
@@ -74,8 +67,12 @@ $blue: #0eb7da;
 }
 
 @keyframes up-border-color {
-  from {border-color: black}
-  to {border-color: rgb(50, 214, 50)}
+  from {
+    border-color: var(--primary-btn-color);
+  }
+  to {
+    border-color: rgb(50, 214, 50);
+  }
 }
 
 .vote-down {
@@ -87,8 +84,12 @@ $blue: #0eb7da;
 }
 
 @keyframes down-border-color {
-  from {border-color: black}
-  to {border-color: rgb(230, 83, 78)}
+  from {
+    border-color: var(--primary-btn-color);
+  }
+  to {
+    border-color: rgb(230, 83, 78);
+  }
 }
 
 .votes {
@@ -98,21 +99,24 @@ $blue: #0eb7da;
   display: flex;
   flex-direction: column;
   justify-content: center;
+  color: var(--primary-btn-color);
 }
 
-.error-message{
+.error-message {
   color: red;
 }
 
 /* Chat containers */
 .container {
   position: relative;
-  background-color: rgb(253, 253, 253);
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+  background-color: rgba(235, 235, 235, 0);
+  box-shadow: -1px 3px 3px rgba(0, 0, 0, 0.15);
   border-radius: 5px;
   padding: 10px;
   margin: 10px 0;
   max-width: 100%;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: white;
 }
 
 .current-date {
@@ -125,6 +129,10 @@ $blue: #0eb7da;
   color: white;
 }
 
+button {
+  color: rgba(255, 255, 255, 0.9);
+}
+
 .respect-padding {
   position: relative;
 }
@@ -133,7 +141,7 @@ $blue: #0eb7da;
   position: absolute;
   display: flex;
   flex-direction: column;
-  right:0;
+  right: 0;
 }
 
 .edits-btn-container {
@@ -195,7 +203,7 @@ $blue: #0eb7da;
 }
 
 .starter {
-  border-bottom: 2px solid rgb(67, 164, 255);
+  border-bottom: 2px solid rgb(54, 184, 244);
 }
 
 .clickable {
@@ -234,12 +242,13 @@ $blue: #0eb7da;
 }
 
 @media only screen and (max-width: 800px) {
-.content {
-  flex-direction: column;
-}
+  .content {
+    flex-direction: column;
+  }
 }
 
-.post-comment, .spacer {
+.post-comment,
+.spacer {
   flex-grow: 1;
 }
 
@@ -253,14 +262,6 @@ $blue: #0eb7da;
   color: #aaa;
   display: flex;
   flex-direction: column;
-}
-
-.button-right {
-  color: #2f2f2f;
-  background-color: #d5d5d5;
-  border-radius: 5px;
-  border: none;
-  margin: 2px;
 }
 
 /* Style time text */
@@ -278,10 +279,6 @@ $blue: #0eb7da;
   margin: 8px 0;
 }
 
-.text-area {
-  font-size: inherit !important;
-}
-
 .forum-btn {
   margin: 0 1rem 0 0 !important;
   box-sizing: border-box;
@@ -294,8 +291,88 @@ $blue: #0eb7da;
   max-width: 80vw;
 }
 
+.alguru-secondary-btn {
+  outline: none;
+}
+
+.alguru-secondary-btn:not(:last-child) {
+  margin-bottom: 0.5rem;
+}
+
+.title-input {
+  width: 100%;
+  padding: 0.5rem 0.75rem 0.5rem 0.75rem;
+  caret-color: white;
+  outline: none;
+  resize: none;
+}
+
+/deep/ .angular-editor-textarea {
+  background-color: var(--primary-btn-bg-color) !important;
+  border: var(--primary-btn-border) !important;
+  outline: none;
+}
+
+/deep/ .angular-editor-textarea:after {
+  background-color: rgba(0, 0, 0, 0) !important;
+}
+
+/deep/ .angular-editor-toolbar {
+  background-color: rgba(255, 255, 255, 0.05) !important;
+  border: var(--primary-btn-border) !important;
+}
+
+/deep/ .angular-editor-button {
+  background-color: rgba(0, 0, 0, 0.2) !important;
+  border: 1px solid rgba(0, 0, 0, 0.1) !important;
+}
+
+/deep/ .angular-editor-button:disabled {
+  background-color: rgba(0, 0, 0, 0.1) !important;
+}
+
+/deep/ .angular-editor-button:disabled > .fa:before {
+  color: rgba(255, 255, 255, 0.1) !important;
+}
+
+/deep/ .angular-editor-button:not(:last-child) {
+  margin-right: 0.2rem;
+}
+
+/deep/ .fa:before {
+  color: var(--primary-btn-color) !important;
+}
+
+.title-input,
+/deep/ .ae-picker-options,
+/deep/ .ae-picker-label,
+/deep/ .ae-picker-label:before {
+  background: none !important;
+  background-color: var(--primary-btn-bg-color) !important;
+  border: var(--primary-btn-border) !important;
+  color: var(--primary-btn-color) !important;
+}
+
+/deep/ .ae-picker-options,
+/deep/ .ae-picker-options * {
+  background-color: rgba(83, 87, 94) !important;
+  color: var(--primary-btn-color) !important;
+}
+
+/deep/ .ae-picker-item:hover {
+  background-color: rgb(110, 113, 119) !important;
+}
+
+/deep/ .ae-picker-label > svg * {
+  stroke: rgba(0, 0, 0, 0.5) !important;
+}
+
+/deep/ ae-select:hover {
+  background-color: rgba(0, 0, 0, 0.3) !important;
+}
+
 @media only screen and (max-width: 800px) {
   .forum-container {
-    max-width: 95vw;;
+    max-width: 95vw;
   }
 }

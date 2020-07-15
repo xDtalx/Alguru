@@ -14,7 +14,7 @@ const UPLOAD_URL = BACKEND_URL + '/upload';
   templateUrl: './profile.component.html',
   styleUrls: ['./profile.component.css']
 })
-export class ProfileComponent implements OnInit, OnDestroy {
+export class ProfileComponent implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild('selectFile', { read: ElementRef }) selectFile: ElementRef;
   @ViewChild('uploadImageForm', { read: ElementRef }) uploadImageForm: ElementRef;
 
@@ -41,6 +41,10 @@ export class ProfileComponent implements OnInit, OnDestroy {
     private authService: AuthService
   ) {}
 
+  ngAfterViewInit(): void {
+    document.documentElement.style.setProperty('--site-background-img', 'none');
+  }
+
   ngOnDestroy(): void {
     this.sub.unsubscribe();
     this.themeService.reset();
@@ -54,6 +58,7 @@ export class ProfileComponent implements OnInit, OnDestroy {
     );
     this.themeService.overrideProperty('--main-padding', '3rem 0 0 0');
     this.themeService.setActiveThemeByName(this.theme);
+
     this.sub = this.profileService.getURLUpdatedListener().subscribe(this.onUploaded.bind(this));
 
     this.route.paramMap.subscribe((paramMap: ParamMap) => {

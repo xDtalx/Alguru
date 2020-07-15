@@ -14,9 +14,9 @@
     <!--Add new Post mode-->
     <div class="container" *ngIf="addNewPost">
       <div class="form-group green-border-focus">
-        <label for="titleTextarea">Title:</label>
+        <label for="titleTextarea1">Title:</label>
         <textarea
-          class="form-control text-area"
+          class="title-input"
           id="titleTextarea1"
           rows="1"
           #newPostTitle
@@ -68,14 +68,14 @@
             <span> By: {{ post.author }} </span>
             <span> At: {{ getDate(post.currentDate) }}</span>
             <button
-              class="button-right"
+              class="alguru-secondary-btn"
               *ngIf="isAdmin || post.author === loggedInUsername"
               (click)="onDeletePostClick(post); $event.stopPropagation()"
             >
               Delete Post
             </button>
             <button
-              class="button-right"
+              class="alguru-secondary-btn"
               *ngIf="isAdmin || post.author === loggedInUsername"
               (click)="onEditPostClick(post); $event.stopPropagation()"
             >
@@ -87,13 +87,8 @@
       <!--On Edit post mode-->
       <div *ngIf="post.onEditPostMode">
         <div class="form-group green-border-focus">
-          <label for="titleTextarea">Title:</label>
-          <textarea
-            class="form-control text-area"
-            id="titleTextarea3"
-            rows="1"
-            [(ngModel)]="post.currentTitle"
-          ></textarea>
+          <label for="titleTextarea3">Title:</label>
+          <textarea class="title-input" id="titleTextarea3" rows="1" [(ngModel)]="post.currentTitle"></textarea>
           <div class="message">Message:</div>
           <angular-editor id="editor3" [config]="getEditorConfig()" [(ngModel)]="post.currentContent"></angular-editor>
         </div>
@@ -143,14 +138,14 @@
             <span> By: {{ selectedPost.author }} </span>
             <span> At: {{ getDate(selectedPost.currentDate) }}</span>
             <button
-              class="button-right"
+              class="alguru-secondary-btn"
               *ngIf="isAdmin || selectedPost.author === loggedInUsername"
               (click)="onDeletePostClick(selectedPost); $event.stopPropagation()"
             >
               Delete Post
             </button>
             <button
-              class="button-right"
+              class="alguru-secondary-btn"
               *ngIf="isAdmin || selectedPost.author === loggedInUsername"
               (click)="onEditPostClick(selectedPost); $event.stopPropagation()"
             >
@@ -162,13 +157,8 @@
       <!-- edit selected post -->
       <div *ngIf="selectedPost.onEditPostMode">
         <div class="form-group green-border-focus">
-          <label for="titleTextarea">Title:</label>
-          <textarea
-            class="form-control text-area"
-            id="titleTextarea3"
-            rows="1"
-            [(ngModel)]="selectedPost.currentTitle"
-          ></textarea>
+          <label for="titleTextarea3">Title:</label>
+          <textarea class="title-input" id="titleTextarea3" rows="1" [(ngModel)]="selectedPost.currentTitle"></textarea>
           <div class="message">Message:</div>
           <angular-editor
             id="editor3"
@@ -224,14 +214,14 @@
               <span> By: {{ comment.author }} </span>
               <span>At: {{ getDate(comment.currentDate) }}</span>
               <button
-                class="button-right"
+                class="alguru-secondary-btn"
                 *ngIf="isAdmin || comment.author === loggedInUsername"
                 (click)="onDeleteCommentClick(comment)"
               >
                 Delete Comment
               </button>
               <button
-                class="button-right"
+                class="alguru-secondary-btn"
                 *ngIf="isAdmin || comment.author === loggedInUsername"
                 (click)="onEditCommentClick(comment)"
               >
@@ -244,13 +234,8 @@
       <!--On Edit comment mode-->
       <div *ngIf="comment.onEditPostMode">
         <div class="form-group green-border-focus">
-          <label for="titleTextarea">Title:</label>
-          <textarea
-            class="form-control text-area"
-            id="titleTextarea4"
-            rows="1"
-            [(ngModel)]="comment.currentTitle"
-          ></textarea>
+          <label for="titleTextarea4">Title:</label>
+          <textarea class="title-input" id="titleTextarea4" rows="1" [(ngModel)]="comment.currentTitle"></textarea>
           <div>Message:</div>
           <angular-editor
             id="editor4"
@@ -275,7 +260,7 @@
       <div class="form-group green-border-focus">
         <label for="titleTextarea">Title:</label>
         <textarea
-          class="form-control text-area"
+          class="title-input"
           id="titleTextarea"
           rows="1"
           #newCommentTitle

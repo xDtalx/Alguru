@@ -15,6 +15,7 @@ export class AuthService {
   private adminListener = new Subject<boolean>();
   private authErrorListener = new Subject<string[]>();
   private userSavedListener = new Subject<boolean>();
+
   private isAuth = false;
   private isAdmin = false;
   private token: string;
@@ -34,6 +35,10 @@ export class AuthService {
   }
 
   getUsername() {
+    if (!this.username) {
+      this.username = localStorage.getItem('username');
+    }
+
     return this.username;
   }
 

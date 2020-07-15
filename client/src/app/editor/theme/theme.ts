@@ -16,7 +16,10 @@ export const dark: Theme = {
     '--line-focus-bg-color': 'rgba(0, 0, 0, 0.020)',
     '--line-focus-border': '1px solid rgba(0, 0, 0, 0.15)',
     '--main-padding': 'none',
-    '--main-background-color': 'rgb(53, 58, 66)'
+    '--main-background-color': 'rgb(53, 58, 66)',
+    '--primary-btn-border': '1px solid rgba(255, 255, 255, 0.1)',
+    '--primary-btn-bg-color': 'rgba(255, 255, 255, 0.1)',
+    '--primary-btn-color': 'rgba(255, 255, 255, 0.9'
   }
 };
 

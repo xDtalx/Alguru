@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, ViewChild, ElementRef, Renderer2 } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild, ElementRef, Renderer2, AfterViewInit } from '@angular/core';
 import { AuthService } from '../auth/auth.service';
 import { Subscription } from 'rxjs';
 import { environment } from '../../environments/environment';
@@ -40,6 +40,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
     this.isRelease = environment.isRelease;
     this.isUserAuth = this.authService.getIsAuth();
     this.isAdmin = this.authService.getIsAdmin();
+
     this.authListenerSubs = this.authService.getAuthStatusListener().subscribe((isAuth) => {
       this.isUserAuth = isAuth;
 
@@ -47,10 +48,15 @@ export class HeaderComponent implements OnInit, OnDestroy {
         this.hide();
       }
     });
+
     this.adminListenerSubs = this.authService.getAdminListener().subscribe((isAdmin) => {
       this.isAdmin = isAdmin;
+      this.profileURL += this.authService.getUsername();
     });
-    this.profileURL += this.authService.getUsername();
+
+    if (this.authService.getUsername()) {
+      this.profileURL += this.authService.getUsername();
+    }
   }
 
   ngOnDestroy() {

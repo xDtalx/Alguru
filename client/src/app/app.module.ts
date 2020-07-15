@@ -30,7 +30,7 @@ import { HomeComponent } from './home/home.component';
 import { ProfileComponent } from './profile/profile.component';
 import { FaIconLibrary, FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { faFacebook, faGithub, faLinkedin, faTwitter } from '@fortawesome/free-brands-svg-icons';
-import { faUser } from '@fortawesome/free-solid-svg-icons';
+import { faArrowDown, faUser } from '@fortawesome/free-solid-svg-icons';
 import { CropperComponent } from './image-cropper/image-cropper.component';
 
 @NgModule({
@@ -76,6 +76,6 @@ import { CropperComponent } from './image-cropper/image-cropper.component';
 export class AppModule {
   constructor(library: FaIconLibrary) {
     // Add an icon to the library for convenient access in other components
-    library.addIcons(faFacebook, faLinkedin, faGithub, faTwitter, faUser);
+    library.addIcons(faFacebook, faLinkedin, faGithub, faTwitter, faUser, faArrowDown);
   }
 }

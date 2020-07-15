@@ -40,11 +40,56 @@
 }
 
 .intro {
+  position: relative;
   min-height: 100vh;
-  background-color: white;
   display: flex;
   flex-direction: column;
   justify-content: center;
+}
+
+.arrow-container {
+  position: absolute;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  width: 100%;
+}
+
+.arrow-container:first-child > .arrow {
+  color: white;
+}
+
+.down {
+  top: -9.5rem;
+}
+
+.arrow {
+  cursor: pointer;
+  color: black;
+}
+
+.arrow:hover {
+  transition: color 0.2s ease;
+}
+
+.bounce {
+  animation: bounce 2s infinite;
+}
+
+@keyframes bounce {
+  0%,
+  20%,
+  50%,
+  80%,
+  100% {
+    transform: translateY(0);
+  }
+  40% {
+    transform: translateY(-20px);
+  }
+  60% {
+    transform: translateY(-10px);
+  }
 }
 
 @media only screen and (max-width: 800px) {

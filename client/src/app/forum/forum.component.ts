@@ -5,6 +5,7 @@ import { AngularEditorConfig } from '@kolkov/angular-editor';
 import { ForumService } from './forum.service';
 import { ClientComment } from './comment.model';
 import { Subscription } from 'rxjs';
+import { ThemeService } from '../editor/theme/theme.service';
 
 const editorConfig: AngularEditorConfig = {
   editable: true,
@@ -53,9 +54,9 @@ const editorConfig: AngularEditorConfig = {
 @Component({
   selector: 'app-forum',
   templateUrl: './forum.component.html',
-  styleUrls: ['./forum.component.scss']
+  styleUrls: ['./forum.component.css']
 })
-export class ForumComponent implements OnInit, OnDestroy {
+export class ForumComponent implements OnInit, OnDestroy, AfterViewInit {
   public showPost = false;
   public addNewPost = false;
   public selectedPost: ClientPost;
@@ -70,13 +71,31 @@ export class ForumComponent implements OnInit, OnDestroy {
   private editPostIndex = -1;
   private editCommentIndex = -1;
   private maxDescriptionLength = 60;
+  private theme = 'dark';
 
-  constructor(private forumService: ForumService, private authService: AuthService, private renderer: Renderer2) {
+  constructor(
+    private forumService: ForumService,
+    private authService: AuthService,
+    private renderer: Renderer2,
+    private themeService: ThemeService
+  ) {
     this.isAdmin = this.authService.getIsAdmin();
     this.loggedInUsername = this.authService.getUsername();
   }
 
+  ngAfterViewInit(): void {
+    document.documentElement.style.setProperty('--site-background-img', 'none');
+  }
+
   ngOnInit() {
+    this.themeService.overrideProperty('--main-display', 'block');
+    this.themeService.overrideProperty(
+      '--site-background-img',
+      'url("assets/home-page/homePageBackground.png") no-repeat'
+    );
+    this.themeService.overrideProperty('--main-padding', '3rem 0 0 0');
+    this.themeService.setActiveThemeByName(this.theme);
+
     this.forumService.getPosts();
     this.postsSub = this.forumService.getPostsUpdatedListener().subscribe((posts: Post[]) => {
       this.posts = posts as ClientPost[];
@@ -87,6 +106,7 @@ export class ForumComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     this.postsSub.unsubscribe();
+    this.themeService.reset();
     document.removeEventListener('click', this.onMouseUp.bind(this));
     document.removeEventListener('keyup', this.onKeyUp.bind(this));
   }

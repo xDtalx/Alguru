@@ -29,12 +29,41 @@ th {
 }
 
 #questions,
-#questions * {
-  background-color: rgb(235, 235, 235);
+#questions *:not(mat-paginator) {
+  background-color: rgba(0, 0, 0, 0);
+  color: white;
+  border: none;
 }
 
 #questions button {
-  border: 1px solid rgba(0, 0, 0, 0.1);
+  margin-top: 0.5rem;
+  margin-bottom: 0.5rem;
+  background-color: var(--primary-btn-bg-color);
+  border: var(--primary-btn-border);
+}
+
+mat-paginator,
+mat-paginator * {
+  background-color: rgba(255, 255, 255, 0.05);
+  color: var(--primary-btn-color);
+}
+
+/deep/ .mat-paginator-icon {
+  fill: var(--primary-btn-color) !important;
+}
+
+/deep/ .mat-select-value-text,
+/deep/ .mat-select-arrow {
+  color: var(--primary-btn-color);
+}
+
+/deep/ .mat-form-field-underline {
+  background-color: var(--primary-btn-color) !important;
+}
+
+#questions {
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: -1px 2px 8px rgba(0, 0, 0, 0.3);
 }
 
 #filter,
