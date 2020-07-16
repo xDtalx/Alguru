@@ -66,6 +66,7 @@
 .arrow {
   cursor: pointer;
   color: black;
+  filter: drop-shadow(0px 0px 10px black);
 }
 
 .arrow:hover {
