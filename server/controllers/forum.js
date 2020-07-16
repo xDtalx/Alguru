@@ -21,7 +21,8 @@ exports.createPost = (req, res, next) => {
     contents: [req.body.currentContent],
     comments: [],
     author: req.userData.username,
-    dates: [date]
+    dates: [date],
+    votes: {}
   });
 
   post.save().then((createdPost) => {
@@ -124,33 +125,6 @@ exports.deleteComment = (req, res, next) => {
     .catch(() => res.status(401).json({ message: 'Not authorized!' }));
 };
 
-async function deleteCommentFromPost(req, res) {
-  await Post.findById(req.params.postId)
-    .then(async (post) => {
-      let commentToDeleteIndex;
-
-      for (let i = 0; i < post.comments.length; i++) {
-        if (String(post.comments[i]._id) === req.params.commentId) {
-          commentToDeleteIndex = i;
-          break;
-        }
-      }
-
-      post.comments.splice(commentToDeleteIndex, 1);
-
-      await Post.updateOne({ _id: req.params.postId }, post).then(async (result) => {
-        const isModified = result.n > 0;
-
-        if (isModified) {
-          res.status(200).json({ message: 'Comment deleted' });
-        } else {
-          res.status(500).json({ message: 'Comment deleted but post was not updated' });
-        }
-      });
-    })
-    .catch(() => res.status(401).json({ message: 'Not authorized!' }));
-}
-
 exports.getPosts = (req, res, next) => {
   Post.find().then((documents) => res.status(200).json(documents));
 };
@@ -238,6 +212,59 @@ exports.updateComment = (req, res, next) => {
     .catch((err) => console.log(err) && res.status(401).json({ message: 'Unauthorized!' }));
 };
 
+exports.voteOnComment = (req, res, next) => {
+  const errors = validationResult(req);
+
+  if (!errors.isEmpty()) {
+    return res.status(422).json({ errors: errors.array({ onlyFirstError: true }) });
+  }
+
+  Comment.findById(req.params.commentId)
+    .then((comment) => putNewVote(req, res, comment))
+    .catch(() => res.status(401).json({ message: 'Unauthorized!' }));
+};
+
+exports.voteOnPost = (req, res, next) => {
+  const errors = validationResult(req);
+
+  if (!errors.isEmpty()) {
+    return res.status(422).json({ errors: errors.array({ onlyFirstError: true }) });
+  }
+
+  Post.findById(req.params.postId)
+    .then((post) => putNewVote(req, res, post, false))
+    .catch(() => res.status(401).json({ message: 'Unauthorized!' }));
+};
+
+/* Utilities Functions */
+
+async function deleteCommentFromPost(req, res) {
+  await Post.findById(req.params.postId)
+    .then(async (post) => {
+      let commentToDeleteIndex;
+
+      for (let i = 0; i < post.comments.length; i++) {
+        if (String(post.comments[i]._id) === req.params.commentId) {
+          commentToDeleteIndex = i;
+          break;
+        }
+      }
+
+      post.comments.splice(commentToDeleteIndex, 1);
+
+      await Post.updateOne({ _id: req.params.postId }, post).then(async (result) => {
+        const isModified = result.n > 0;
+
+        if (isModified) {
+          res.status(200).json({ message: 'Comment deleted' });
+        } else {
+          res.status(500).json({ message: 'Comment deleted but post was not updated' });
+        }
+      });
+    })
+    .catch(() => res.status(401).json({ message: 'Not authorized!' }));
+}
+
 async function updateCommentInPost(req, res, updatedComment) {
   await Post.findById(req.params.postId)
     .then(async function (post) {
@@ -273,22 +300,10 @@ async function updateCommentInPost(req, res, updatedComment) {
     .catch(() => res.status(400).json({ message: 'Comment found but the linked post is missing' }));
 }
 
-exports.voteOnComment = (req, res, next) => {
-  const errors = validationResult(req);
-
-  if (!errors.isEmpty()) {
-    return res.status(422).json({ errors: errors.array({ onlyFirstError: true }) });
-  }
-
-  Comment.findById(req.params.commentId)
-    .then((comment) => putNewVote(req, res, comment))
-    .catch(() => res.status(401).json({ message: 'Unauthorized!' }));
-};
-
-async function putNewVote(req, res, comment) {
-  if (comment.author === req.userData.username) {
-    return res.status(403).json({ message: 'User cannot vote on his own comment' });
-  } else if (comment.votes.has(req.userData.username)) {
+async function putNewVote(req, res, toPutIn, isComment) {
+  if (toPutIn.author === req.userData.username) {
+    return res.status(403).json({ message: 'User cannot vote on his own post or comment' });
+  } else if (toPutIn.votes.has(req.userData.username)) {
     return res.status(403).json({ message: 'User voted already' });
   }
 
@@ -297,6 +312,29 @@ async function putNewVote(req, res, comment) {
     isUp: req.body.isUp
   });
 
+  if (isComment) {
+    await updateCommentVotes(toPutIn, newVote, req, res);
+  } else {
+    await updatePostVotes(toPutIn, newVote, req, res);
+  }
+}
+
+async function updatePostVotes(post, newVote, req, res) {
+  post.votes.set(newVote.username, newVote);
+  Post.updateOne({ _id: req.params.postId }, post)
+    .then(async (result) => {
+      const isModified = result.n > 0;
+
+      if (isModified) {
+        res.status(200).json({ message: 'Post updated.' });
+      } else {
+        res.status(500).json({ message: 'Something went wrong. Post was not updated.' });
+      }
+    })
+    .catch(() => res.status(500).json({ message: 'Something went wrong. Post was not updated.' }));
+}
+
+async function updateCommentVotes(comment, newVote, req, res) {
   comment.votes.set(newVote.username, newVote);
   Comment.updateOne({ _id: req.params.commentId }, comment)
     .then(async (result) => updateCommentVoteInPost(req, res, result, comment, newVote))

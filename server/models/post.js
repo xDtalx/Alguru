@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const Comment = require('./comment');
+const Vote = require('./vote');
 
 const postSchema = mongoose.Schema({
   currentTitle: { type: String, require: true },
@@ -9,7 +10,8 @@ const postSchema = mongoose.Schema({
   contents: [{ type: String, require: true }],
   comments: [Comment.schema],
   dates: [{ type: Number, require: true }],
-  author: { type: String, require: true }
+  author: { type: String, require: true },
+  votes: { type: Map, of: Vote.schema }
 });
 
 module.exports = mongoose.model('Post', postSchema);

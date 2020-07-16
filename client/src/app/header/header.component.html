@@ -22,7 +22,7 @@
     <div class="background"></div>
     <ul class="nav">
       <li class="nav-item">
-        <button class="nav-link" (click)="setSmallHeader(false); closeHamburger()" routerLink="/">Home</button>
+        <button class="nav-link" (click)="setSmallHeader(false); closeHamburger(false)" routerLink="/">Home</button>
       </li>
       <li *ngIf="isUserAuth" class="nav-item">
         <button class="nav-link" (click)="setSmallHeader(true)" [routerLink]="profileURL">Profile</button>

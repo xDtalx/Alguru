@@ -60,6 +60,12 @@ const routes: Routes = [
     component: ForumComponent,
     data: { showSmallHeader: true },
     canActivate: [AuthGuard]
+  },
+  {
+    path: 'forum/:postId',
+    component: ForumComponent,
+    data: { showSmallHeader: true },
+    canActivate: [AuthGuard]
   }
 ];
 

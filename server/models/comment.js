@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 const Vote = require('./vote');
 
 const commentSchema = mongoose.Schema({
-  currentTitle: { type: String, require: true },
+  currentTitle: { type: String },
   currentContent: { type: String, require: true },
   currentDate: { type: Number, require: true },
   titles: [{ type: String, require: true }],

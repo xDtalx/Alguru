@@ -4,6 +4,7 @@ import { Subscription } from 'rxjs';
 import { environment } from '../../environments/environment';
 import { SettingsService } from '../settings.service';
 import * as $ from 'jquery';
+import { Router } from '@angular/router';
 
 enum ModalTypes {
   LoginModal = 'loginModal',
@@ -20,6 +21,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
 
   private authListenerSubs: Subscription;
   private adminListenerSubs: Subscription;
+  private showSmallHeaderAfterHamburgerClicked = true;
   public showLoginModal: boolean;
   public showRegister: boolean;
   public showModal: boolean;
@@ -30,9 +32,9 @@ export class HeaderComponent implements OnInit, OnDestroy {
   public isAdmin: boolean;
   public profileURL = '/profile/';
   public isOpenMenu = false;
-  openNav: boolean;
+  public openNav: boolean;
 
-  constructor(private authService: AuthService, private settingsService: SettingsService) {
+  constructor(private authService: AuthService, private settingsService: SettingsService, private route: Router) {
     this.settingsService.getSmallHeaderObservable().subscribe((isShow) => this.setSmallHeader(isShow));
   }
 
@@ -88,7 +90,9 @@ export class HeaderComponent implements OnInit, OnDestroy {
     }
   }
 
-  closeHamburger() {
+  closeHamburger(setSmallHeader = true) {
+    this.showSmallHeaderAfterHamburgerClicked = setSmallHeader;
+
     if (this.toggleNavCheckbox.nativeElement.checked === true) {
       this.toggleNavCheckbox.nativeElement.click();
     }
@@ -122,5 +126,19 @@ export class HeaderComponent implements OnInit, OnDestroy {
 
   toggleNav() {
     this.openNav = !this.openNav;
+    const length = 300;
+    const header = $('div.header');
+
+    if (this.openNav) {
+      document.documentElement.style.setProperty('--app-overflow', 'hidden');
+    } else {
+      document.documentElement.style.setProperty('--app-overflow', 'auto');
+    }
+
+    if (this.openNav) {
+      header.animate({ height: '100vh' }, length);
+    } else if (this.route.url !== '/') {
+      this.setSmallHeader(this.showSmallHeaderAfterHamburgerClicked);
+    }
   }
 }

@@ -1,4 +1,5 @@
 import { Comment, ClientComment } from './comment.model';
+import { Vote } from './vote.model';
 
 export interface Post {
   id: string;
@@ -10,6 +11,7 @@ export interface Post {
   author: string;
   comments: Comment[];
   dates: number[];
+  votes: Map<string, Vote>;
 }
 
 export interface ClientPost extends Post {

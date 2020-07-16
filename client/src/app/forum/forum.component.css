@@ -13,17 +13,13 @@
     background-color: rgb(67, 164, 255);
   }
   to {
-    background-color: rgb(253, 253, 253);
+    background-color: rgba(67, 164, 255, 0);
   }
 }
 
-.comment-container {
+.row-view {
   display: flex;
   flex-direction: row;
-}
-
-.post-content {
-  overflow-wrap: break-word;
 }
 
 .welcome {
@@ -46,6 +42,12 @@
   font-size: 2rem;
   font-weight: bold;
   color: rgb(77, 77, 77);
+}
+
+.post-container {
+  display: flex;
+  flex-direction: row;
+  flex: 1;
 }
 
 .vote {
@@ -106,26 +108,20 @@
   color: red;
 }
 
-/* Chat containers */
 .container {
   position: relative;
   background-color: rgba(235, 235, 235, 0);
   box-shadow: -1px 3px 3px rgba(0, 0, 0, 0.15);
   border-radius: 5px;
-  padding: 10px;
-  margin: 10px 0;
+  padding: 1rem;
+  margin: 1rem 0;
   max-width: 100%;
   border: 1px solid rgba(255, 255, 255, 0.1);
   color: white;
 }
 
 .current-date {
-  background-color: rgb(67, 164, 255) !important;
-  color: white;
-}
-
-.current-date:hover {
-  background-color: rgb(74, 155, 230) !important;
+  background-color: rgb(67, 134, 197) !important;
   color: white;
 }
 
@@ -138,6 +134,7 @@ button {
 }
 
 .edits {
+  z-index: 10;
   position: absolute;
   display: flex;
   flex-direction: column;
@@ -176,9 +173,9 @@ button {
   outline: none;
   border: none;
   width: fit-content;
-  background-color: white;
+  background-color: rgb(74, 78, 85);
   padding: 0.5rem;
-  border-bottom: 1px solid rgb(221, 221, 221);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .edit-date {
@@ -198,7 +195,7 @@ button {
 }
 
 .pop-up button:hover {
-  background-color: rgb(245, 245, 245);
+  background-color: rgb(67, 134, 197);
 }
 
 .starter {
@@ -206,6 +203,7 @@ button {
 }
 
 .clickable {
+  outline: none;
   position: relative;
   cursor: pointer;
 }
@@ -234,33 +232,37 @@ button {
 }
 
 .content {
-  height: calc(100% - 2rem - 16px);
+  height: 100%;
   flex-grow: 1;
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
 }
 
-@media only screen and (max-width: 800px) {
-  .content {
-    flex-direction: column;
-  }
+.post-comment {
+  display: flex;
+  flex-direction: row;
+  padding-top: 1rem;
+  padding-left: 1rem;
 }
 
 .post-comment,
 .spacer {
-  flex-grow: 1;
+  flex: 1;
 }
 
 .post-content {
   flex-grow: 100;
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+  word-break: break-word;
 }
 
 /* Style time text */
 .data-right {
-  flex-grow: 1;
   color: #aaa;
   display: flex;
   flex-direction: column;
+  min-width: fit-content;
 }
 
 /* Style time text */
@@ -301,8 +303,30 @@ button {
   resize: none;
 }
 
+button {
+  outline: none !important;
+}
+
+.alguru-secondary-btn {
+  max-width: 20rem;
+}
+
+.details {
+  display: flex;
+  flex-direction: column;
+}
+
 @media only screen and (max-width: 800px) {
   .forum-container {
     max-width: 95vw;
+  }
+
+  .post-comment,
+  .post-container {
+    flex-direction: column;
+  }
+
+  .data-right {
+    flex-direction: row;
   }
 }

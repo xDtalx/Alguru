@@ -12,16 +12,20 @@ const BACKEND_URL = environment.apiUrl + '/forum';
 @Injectable({ providedIn: 'root' })
 export class ForumService {
   private posts: Post[] = [];
+  private currentPost: Post;
   private postsUpdated = new Subject<Post[]>();
+  private postUpdated = new Subject<Post>();
 
   constructor(private http: HttpClient) {}
 
-  vote(comment: Comment, vote: Vote) {
-    this.http
-      .patch<{ message: string; comment: any }>(`${BACKEND_URL}/${comment.postId}/${comment.id}`, vote)
-      .subscribe((response) => {
-        comment.votes.set(vote.username, vote);
-      });
+  vote(commentOrPost: any, isComment: boolean, vote: Vote) {
+    const url = isComment
+      ? `${BACKEND_URL}/${commentOrPost.postId}/${commentOrPost.id}`
+      : `${BACKEND_URL}/${commentOrPost.id}`;
+    console.log(commentOrPost);
+    this.http.patch<{ message: string; comment: any }>(url, vote).subscribe((response) => {
+      commentOrPost.votes.set(vote.username, vote);
+    });
   }
 
   deletePost(postId: string, postIndex: number) {
@@ -106,52 +110,65 @@ export class ForumService {
     return this.postsUpdated.asObservable();
   }
 
+  getPostUpdatedListener() {
+    return this.postUpdated.asObservable();
+  }
+
   getPosts() {
     this.http
       .get<any>(BACKEND_URL)
-      .pipe(
-        map((posts) => {
-          return posts.map((post) => {
-            return {
-              id: post._id,
-              currentTitle: post.currentTitle,
-              currentContent: post.currentContent,
-              currentDate: post.currentDate,
-              titles: post.titles,
-              contents: post.contents,
-              author: post.author,
-              comments: post.comments.map((comment) => {
-                return {
-                  id: comment._id,
-                  postId: comment.postId,
-                  currentTitle: comment.currentTitle,
-                  currentContent: comment.currentContent,
-                  currentDate: comment.currentDate,
-                  titles: comment.titles,
-                  contents: comment.contents,
-                  author: comment.author,
-                  dates: comment.dates,
-                  votes: new Map<string, Vote>(Object.keys(comment.votes).map((key) => this.mapVotes(key, comment)))
-                };
-              }),
-              dates: post.dates
-            };
-          });
-        })
-      )
+      .pipe(map((posts) => posts.map((post) => this.mapPost(post))))
       .subscribe((posts) => {
         this.posts = posts;
         this.postsUpdated.next([...this.posts]);
       });
   }
 
-  mapVotes(voteKey, comment): [string, Vote] {
+  getPost(postId: string) {
+    this.http
+      .get<any>(`${BACKEND_URL}/${postId}`)
+      .pipe(map((post) => this.mapPost(post)))
+      .subscribe((post) => {
+        this.currentPost = post;
+        this.postUpdated.next(post);
+      });
+  }
+
+  private mapPost(post: any) {
+    return {
+      id: post._id,
+      currentTitle: post.currentTitle,
+      currentContent: post.currentContent,
+      currentDate: post.currentDate,
+      titles: post.titles,
+      contents: post.contents,
+      author: post.author,
+      comments: post.comments.map((comment) => {
+        return {
+          id: comment._id,
+          postId: comment.postId,
+          currentTitle: comment.currentTitle,
+          currentContent: comment.currentContent,
+          currentDate: comment.currentDate,
+          titles: comment.titles,
+          contents: comment.contents,
+          author: comment.author,
+          dates: comment.dates,
+          votes: new Map<string, Vote>(Object.keys(comment.votes).map((key) => this.mapVotes(key, comment)))
+        };
+      }),
+      dates: post.dates,
+      votes: new Map<string, Vote>(Object.keys(post.votes).map((key) => this.mapVotes(key, post)))
+    };
+  }
+
+  mapVotes(voteKey, postOrComment): [string, Vote] {
     return [
       voteKey,
       {
-        id: comment.votes[voteKey]._id,
-        username: comment.votes[voteKey].username,
-        isUp: comment.votes[voteKey].isUp
+        id: postOrComment.votes[voteKey]._id,
+        username: postOrComment.votes[voteKey].username,
+        isUp: postOrComment.votes[voteKey].isUp
       }
     ];
   }
@@ -169,7 +186,8 @@ export class ForumService {
         dates: response.post.dates,
         comments: response.post.comments,
         onEditPostMode: false,
-        showEdits: false
+        showEdits: false,
+        votes: new Map()
       };
 
       this.posts.push(post);

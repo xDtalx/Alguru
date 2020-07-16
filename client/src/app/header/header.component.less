@@ -254,8 +254,9 @@ img {
   }
 
   input#open-nav:checked ~ .nav {
+    display: block;
     opacity: 1;
-    height: 100vh;
+    height: 0;
     animation: inc-opacity 1s ease forwards;
   }
 
@@ -264,6 +265,7 @@ img {
   }
 
   #right .nav {
+    display: none;
     opacity: 0;
     padding: 0;
     height: 0;

@@ -6,6 +6,7 @@ import { ForumService } from './forum.service';
 import { ClientComment } from './comment.model';
 import { Subscription } from 'rxjs';
 import { ThemeService } from '../editor/theme/theme.service';
+import { ActivatedRoute, ParamMap } from '@angular/router';
 
 const editorConfig: AngularEditorConfig = {
   editable: true,
@@ -58,6 +59,7 @@ const editorConfig: AngularEditorConfig = {
 })
 export class ForumComponent implements OnInit, OnDestroy, AfterViewInit {
   public showPost = false;
+  public showWelcome = false;
   public addNewPost = false;
   public selectedPost: ClientPost;
   public titleDefaultValue: string;
@@ -72,34 +74,46 @@ export class ForumComponent implements OnInit, OnDestroy, AfterViewInit {
   private editCommentIndex = -1;
   private maxDescriptionLength = 60;
   private theme = 'dark';
+  private selectedPostId: string;
 
   constructor(
     private forumService: ForumService,
     private authService: AuthService,
     private renderer: Renderer2,
-    private themeService: ThemeService
-  ) {
-    this.isAdmin = this.authService.getIsAdmin();
-    this.loggedInUsername = this.authService.getUsername();
-  }
+    private themeService: ThemeService,
+    private route: ActivatedRoute
+  ) {}
 
   ngAfterViewInit(): void {
     document.documentElement.style.setProperty('--site-background-img', 'none');
   }
 
   ngOnInit() {
-    this.themeService.overrideProperty('--main-display', 'block');
-    this.themeService.overrideProperty(
-      '--site-background-img',
-      'url("assets/home-page/homePageBackground.png") no-repeat'
-    );
-    this.themeService.overrideProperty('--main-padding', '3rem 0 0 0');
-    this.themeService.setActiveThemeByName(this.theme);
+    this.initTheme();
+    this.isAdmin = this.authService.getIsAdmin();
+    this.loggedInUsername = this.authService.getUsername();
 
-    this.forumService.getPosts();
-    this.postsSub = this.forumService.getPostsUpdatedListener().subscribe((posts: Post[]) => {
-      this.posts = posts as ClientPost[];
+    this.route.paramMap.subscribe((paramMap: ParamMap) => {
+      if (paramMap.has('postId')) {
+        this.selectedPostId = paramMap.get('postId');
+      }
     });
+
+    if (!this.selectedPostId) {
+      this.postsSub = this.forumService.getPostsUpdatedListener().subscribe((posts: Post[]) => {
+        this.posts = posts as ClientPost[];
+        this.onPostClick(this.selectedPostId);
+        this.showWelcome = this.posts.length === 0;
+      });
+      this.forumService.getPosts();
+    } else {
+      this.postsSub = this.forumService.getPostUpdatedListener().subscribe((post: Post) => {
+        this.posts = [post as ClientPost];
+        this.onPostClick(this.selectedPostId);
+      });
+      this.forumService.getPost(this.selectedPostId);
+    }
+
     document.addEventListener('click', this.onMouseUp.bind(this));
     document.addEventListener('keyup', this.onKeyUp.bind(this));
   }
@@ -121,6 +135,16 @@ export class ForumComponent implements OnInit, OnDestroy, AfterViewInit {
     }
   }
 
+  initTheme() {
+    this.themeService.overrideProperty('--main-display', 'block');
+    this.themeService.overrideProperty(
+      '--site-background-img',
+      'url("assets/home-page/homePageBackground.png") no-repeat'
+    );
+    this.themeService.overrideProperty('--main-padding', '3rem 0 0 0');
+    this.themeService.setActiveThemeByName(this.theme);
+  }
+
   hideEditsPopup() {
     this.posts.forEach((post: ClientPost) => {
       post.showEdits = false;
@@ -130,21 +154,36 @@ export class ForumComponent implements OnInit, OnDestroy, AfterViewInit {
     });
   }
 
-  onPostClick(post: ClientPost) {
-    this.showPost = !this.showPost;
+  onPostClick(postId: string) {
+    let clickedPost;
 
-    if (!post && this.selectedPost) {
-      this.selectedPost.onEditPostMode = false;
-      this.selectedPost = null;
+    if (this.posts.length > 0) {
+      for (let i = 0; i < this.posts.length; i++) {
+        if (this.posts[i].id === postId) {
+          clickedPost = this.posts[i];
+          break;
+        }
+      }
+
+      if (postId) {
+        this.showPost = true;
+      } else {
+        this.showPost = false;
+      }
+
+      if (!clickedPost && this.selectedPost) {
+        this.selectedPost.onEditPostMode = false;
+        this.selectedPost = null;
+      }
+
+      this.selectedPost = clickedPost;
     }
-
-    this.selectedPost = post;
   }
 
-  getCommentVotes(comment: ClientComment) {
+  getVotes(commentOrPost: any) {
     let votes = 0;
 
-    comment.votes.forEach((vote) => {
+    commentOrPost.votes.forEach((vote) => {
       if (vote.isUp) {
         votes++;
       } else {
@@ -155,16 +194,16 @@ export class ForumComponent implements OnInit, OnDestroy, AfterViewInit {
     return votes;
   }
 
-  voteUp(comment) {
-    this.forumService.vote(comment, {
+  voteUp(commentOrPost: any, isComment: boolean) {
+    this.forumService.vote(commentOrPost, isComment, {
       id: null,
       username: this.authService.getUsername(),
       isUp: true
     });
   }
 
-  voteDown(comment) {
-    this.forumService.vote(comment, {
+  voteDown(commentOrPost: any, isComment: boolean) {
+    this.forumService.vote(commentOrPost, isComment, {
       id: null,
       username: this.authService.getUsername(),
       isUp: false
@@ -334,7 +373,8 @@ export class ForumComponent implements OnInit, OnDestroy, AfterViewInit {
       dates: [0],
       comments: [],
       onEditPostMode: false,
-      showEdits: false
+      showEdits: false,
+      votes: new Map()
     };
 
     if (this.editPostIndex >= 0) {
@@ -355,7 +395,7 @@ export class ForumComponent implements OnInit, OnDestroy, AfterViewInit {
     this.authService.resetErrorMessages();
   }
 
-  onSubmitComment(title?: string, content?: string) {
+  onSubmitComment(content?: string) {
     if (this.editCommentIndex >= 0) {
       const comment = this.selectedPost.comments[this.editCommentIndex];
       comment.onEditPostMode = false;
@@ -364,10 +404,10 @@ export class ForumComponent implements OnInit, OnDestroy, AfterViewInit {
       const comment: ClientComment = {
         id: null,
         postId: this.selectedPost.id,
-        currentTitle: title || '',
+        currentTitle: null,
         currentContent: content || '',
         currentDate: 0,
-        titles: [title],
+        titles: [],
         contents: [content],
         dates: [0],
         author: this.authService.getUsername(),

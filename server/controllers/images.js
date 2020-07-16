@@ -20,6 +20,8 @@ exports.uploadImage = (req, res) => {
     }
   });
 
+  fs.unlinkSync(filePath);
+
   Image.exists({ name: image.name }).then(async (isExists) => {
     if (isExists) {
       await updateImage(res, image);
