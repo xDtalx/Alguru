@@ -1,4 +1,4 @@
-export interface RegisterAuthData {
+export interface IRegisterAuthData {
   username: string;
   email: string;
   password: string;

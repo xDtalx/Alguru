@@ -1,17 +1,17 @@
-import { Component, OnInit, OnDestroy, ViewEncapsulation, Renderer2 } from '@angular/core';
-import { Subscription } from 'rxjs';
-import { CodeService } from './code.service';
-import { ExecuteResponse } from './execute-response.model';
-import { QuestionsService } from '../questions/questions.service';
-import { Question } from '../questions/question.model';
+import { Component, OnDestroy, OnInit, Renderer2, ViewEncapsulation } from '@angular/core';
 import { ActivatedRoute, ParamMap } from '@angular/router';
 import * as $ from 'jquery';
-import { EditorService } from '../editor/editor.service';
+import { Subscription } from 'rxjs';
+import { Question } from '../questions/question.model';
+import { QuestionsService } from '../questions/questions.service';
+import { ThemeService } from '../theme/theme.service';
+import { CodeService } from './code.service';
+import { ExecuteResponse } from './execute-response.model';
 
 @Component({
   selector: 'app-ide',
-  templateUrl: './ide.component.html',
-  styleUrls: ['./ide.component.css']
+  styleUrls: ['./ide.component.css'],
+  templateUrl: './ide.component.html'
 })
 export class IDEComponent implements OnInit, OnDestroy {
   private executeListenerSubs: Subscription;
@@ -34,27 +34,29 @@ export class IDEComponent implements OnInit, OnDestroy {
     private questionsService: QuestionsService,
     private codeService: CodeService,
     private renderer: Renderer2,
-    private editorService: EditorService
+    private themeService: ThemeService
   ) {
     $(document).ready(this.onPageLoaded.bind(this));
   }
 
-  ngOnInit(): void {
+  public ngOnInit(): void {
+    this.themeService.setDarkTheme();
+
     this.route.paramMap.subscribe((paramMap: ParamMap) => {
       if (paramMap.has('questionId')) {
         this.questionId = paramMap.get('questionId');
 
         this.questionsService.getQuestion(this.questionId).subscribe((questionData) => {
           this.questionToSolve = {
-            id: questionData._id,
-            title: questionData.title,
             content: questionData.content,
-            solutionTemplate: questionData.solutionTemplate,
-            solution: questionData.solution,
-            tests: questionData.tests,
+            creator: questionData.creator,
             hints: questionData.hints,
+            id: questionData._id,
             level: questionData.level,
-            creator: questionData.creator
+            solution: questionData.solution,
+            solutionTemplate: questionData.solutionTemplate,
+            tests: questionData.tests,
+            title: questionData.title
           };
           this.solValue = this.questionToSolve.solutionTemplate[0];
           this.testsValue = this.questionToSolve.tests[0];
@@ -74,37 +76,37 @@ export class IDEComponent implements OnInit, OnDestroy {
     });
   }
 
-  ngOnDestroy(): void {
+  public ngOnDestroy(): void {
     this.executeListenerSubs.unsubscribe();
   }
 
-  onPageLoaded(): void {
+  public onPageLoaded(): void {
     $('.container').each((index, container) => {
       const style: CSSStyleDeclaration = getComputedStyle(container);
       this.makeContainerWithFixHeight(container, style);
     });
   }
 
-  onKeyDown(event: KeyboardEvent) {
-    const editor: HTMLElement = event.target as HTMLElement;
-    const lastLine: HTMLElement = $(editor).find('.view-line').last()[0];
-    const sel: Selection = document.getSelection();
-    const currentLine: HTMLElement = this.editorService.getSelectedElementParentLine(editor, sel);
-    let editorContainer = editor;
+  // public onKeyDown(event: KeyboardEvent) {
+  //   const editor: HTMLElement = event.target as HTMLElement;
+  //   const lastLine: HTMLElement = $(editor).find('.view-line').last()[0];
+  //   const sel: Selection = document.getSelection();
+  //   const currentLine: HTMLElement = this.editorService.getSelectedElementParentLine(editor, sel);
+  //   let editorContainer = editor;
 
-    while (!$(editorContainer).hasClass('editor-container')) {
-      editorContainer = editorContainer.parentElement;
-    }
+  //   while (!$(editorContainer).hasClass('editor-container')) {
+  //     editorContainer = editorContainer.parentElement;
+  //   }
 
-    if (currentLine && currentLine === lastLine) {
-      editorContainer.scrollTop = lastLine.offsetTop;
-    }
-  }
+  //   if (currentLine && currentLine === lastLine) {
+  //     editorContainer.scrollTop = lastLine.offsetTop;
+  //   }
+  // }
 
-  makeContainerWithFixHeight(container: HTMLElement, style: CSSStyleDeclaration): void {
+  public makeContainerWithFixHeight(container: HTMLElement, style: CSSStyleDeclaration): void {
     setTimeout(() => {
       if (!$(container).hasClass('static-size')) {
-        const editor: HTMLElement = $(container).find('app-editor')[0];
+        const editor: HTMLElement = $(container).find('nt-editor')[0];
         const editorStyle: CSSStyleDeclaration = getComputedStyle(editor);
 
         this.renderer.setStyle(container, 'height', style.height);
@@ -113,15 +115,15 @@ export class IDEComponent implements OnInit, OnDestroy {
     }, 500);
   }
 
-  onSolutionChanged(value): void {
+  public onSolutionChanged(value): void {
     this.solutionCode = value;
   }
 
-  onTestsChanged(value): void {
+  public onTestsChanged(value): void {
     this.testsCode = value;
   }
 
-  onRunCode(): void {
+  public onRunCode(): void {
     this.loading = true;
 
     if (!this.testsCode || this.testsCode.trim() === '') {
@@ -135,20 +137,20 @@ export class IDEComponent implements OnInit, OnDestroy {
     this.codeService.runCode(this.lang, this.solutionCode, this.testsCode);
   }
 
-  onCustomClick(): void {
+  public onCustomClick(): void {
     this.currentOutput = 'Custom> ' + this.executeResponse.message;
   }
 
-  onRawOutputClick(): void {
+  public onRawOutputClick(): void {
     this.currentOutput =
       'Output> ' + (this.executeResponse.errors === '' ? this.executeResponse.output : this.executeResponse.errors);
   }
 
-  onSolutionCodeChanged(value: string): void {
+  public onSolutionCodeChanged(value: string): void {
     this.solutionCode = value;
   }
 
-  onTestsCodeChanged(value: string): void {
+  public onTestsCodeChanged(value: string): void {
     this.testsCode = value;
   }
 }

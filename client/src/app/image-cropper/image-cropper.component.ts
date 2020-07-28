@@ -1,5 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import {
+  AfterViewInit,
   Component,
   ElementRef,
   EventEmitter,
@@ -16,20 +17,21 @@ import { ProfileService } from '../profile/profile.service';
 
 @Component({
   selector: 'app-cropper',
-  templateUrl: './image-cropper.component.html',
-  styleUrls: ['./image-cropper.component.css']
+  styleUrls: ['./image-cropper.component.css'],
+  templateUrl: './image-cropper.component.html'
 })
-export class CropperComponent {
+export class CropperComponent implements AfterViewInit {
   @ViewChild('image')
   public imageElement: ElementRef;
 
+  // tslint:disable: no-input-rename
   @Input('src')
   public imageSource: string | ArrayBuffer;
 
   @Input('uploadto')
   public uploadTo: string;
 
-  @Output('cropclick')
+  @Output()
   public cropClick = new EventEmitter<boolean>();
 
   public imageDestination: string;

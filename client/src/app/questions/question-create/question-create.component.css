@@ -82,6 +82,11 @@ app-question-create .editor:focus {
   animation: fadein 0.5s forwards;
 }
 
+nt-editor {
+  padding-top: 1rem;
+  padding-bottom: 1rem;
+}
+
 @keyframes fadein {
   from {
     border-bottom: 2px solid rgb(159, 196, 243);

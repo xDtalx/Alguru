@@ -1,10 +1,9 @@
-import { Injectable } from '@angular/core';
-import { Subject } from 'rxjs';
-import { ExecuteResponse } from './execute-response.model';
 import { HttpClient } from '@angular/common/http';
+import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
+import { Subject } from 'rxjs';
 import { environment } from 'src/environments/environment';
-import { StringFormat } from 'src/utils/string-utils';
+import { ExecuteResponse } from './execute-response.model';
 
 @Injectable({ providedIn: 'root' })
 export class CodeService {
@@ -12,15 +11,15 @@ export class CodeService {
 
   constructor(private http: HttpClient, private router: Router) {}
 
-  getExecuteResponseListener() {
+  public getExecuteResponseListener() {
     return this.executeResponseListener.asObservable();
   }
 
-  runCode(lang: string, code: string, tests: string) {
+  public runCode(lang: string, code: string, tests: string) {
     const runRequest = {
-      lang: lang,
-      code: code,
-      tests: tests
+      code,
+      lang,
+      tests
     };
 
     this.http.post<ExecuteResponse>(environment.runCodeApi + '/execute', runRequest).subscribe((output) => {

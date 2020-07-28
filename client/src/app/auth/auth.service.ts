@@ -1,11 +1,11 @@
-import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { map } from 'rxjs/operators';
-import { RegisterAuthData } from './register-auth-data.model';
-import { LoginAuthData } from './login-auth-data.model';
-import { Subject } from 'rxjs';
+import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
+import { Subject } from 'rxjs';
+import { map } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
+import { ILoginAuthData } from './login-auth-data.model';
+import { IRegisterAuthData } from './register-auth-data.model';
 
 const BACKEND_URL = environment.apiUrl + '/users';
 
@@ -26,15 +26,15 @@ export class AuthService {
 
   constructor(private http: HttpClient, private router: Router) {}
 
-  getToken() {
+  public getToken() {
     return this.token;
   }
 
-  getUserSavedListener() {
+  public getUserSavedListener() {
     return this.userSavedListener.asObservable();
   }
 
-  getUsername() {
+  public getUsername() {
     if (!this.username) {
       this.username = localStorage.getItem('username');
     }
@@ -42,15 +42,15 @@ export class AuthService {
     return this.username;
   }
 
-  getAdminListener() {
+  public getAdminListener() {
     return this.adminListener.asObservable();
   }
 
-  getAuthErrorListener() {
+  public getAuthErrorListener() {
     return this.authErrorListener.asObservable();
   }
 
-  addErrorMessages(errors: string[]) {
+  public addErrorMessages(errors: string[]) {
     if (errors && errors.length > 0 && errors.forEach) {
       this.errors = [];
       errors.forEach((error) => this.errors.push(error));
@@ -58,33 +58,33 @@ export class AuthService {
     }
   }
 
-  resetErrorMessages() {
+  public resetErrorMessages() {
     this.errors = [];
     this.authErrorListener.next([...this.errors]);
   }
 
-  getIsAuth() {
+  public getIsAuth() {
     return this.isAuth;
   }
 
-  getIsAdmin() {
+  public getIsAdmin() {
     return this.isAdmin;
   }
 
-  getAuthStatusListener() {
+  public getAuthStatusListener() {
     return this.authStatusListener.asObservable();
   }
 
-  getUsers() {
+  public getUsers() {
     this.http
       .get<any>(BACKEND_URL)
       .pipe(
         map((usersData) => {
           return usersData.map((user) => {
             return {
+              hashedPassword: user.hashedPassword,
               id: user._id,
-              username: user.username,
-              hashedPassword: user.hashedPassword
+              username: user.username
             };
           });
         })
@@ -94,18 +94,18 @@ export class AuthService {
       });
   }
 
-  createUserAndSave(username: string, email: string, password: string, confirmPassword: string) {
-    const authData: RegisterAuthData = {
-      username,
+  public createUserAndSave(username: string, email: string, password: string, confirmPassword: string) {
+    const authData: IRegisterAuthData = {
+      confirmPassword,
       email,
       password,
-      confirmPassword
+      username
     };
 
     this.saveUser(authData);
   }
 
-  saveUser(authData: RegisterAuthData) {
+  public saveUser(authData: IRegisterAuthData) {
     this.errors = [];
     this.http.post(BACKEND_URL + '/register', authData).subscribe(
       () => {
@@ -119,18 +119,18 @@ export class AuthService {
     );
   }
 
-  deleteUser(id: string) {
+  public deleteUser(id: string) {
     this.http.delete(BACKEND_URL + '/' + id).subscribe(() => {
       console.log('User deleted');
     });
   }
 
-  login(username: string, password: string) {
+  public login(username: string, password: string) {
     this.errors = [];
 
-    const authData: LoginAuthData = {
-      username,
-      password
+    const authData: ILoginAuthData = {
+      password,
+      username
     };
 
     this.http
@@ -166,11 +166,11 @@ export class AuthService {
       );
   }
 
-  getUserId() {
+  public getUserId() {
     return this.userId;
   }
 
-  autoAuthUser() {
+  public autoAuthUser() {
     const authInfo = this.getAuthData();
 
     if (!authInfo) {
@@ -192,7 +192,7 @@ export class AuthService {
     }
   }
 
-  logout() {
+  public logout() {
     this.errors = [];
     this.token = null;
     this.isAuth = false;
@@ -234,10 +234,10 @@ export class AuthService {
     }
 
     return {
-      token,
       expirationDate: new Date(expirationDate),
-      userId,
       isAdmin,
+      token,
+      userId,
       username
     };
   }

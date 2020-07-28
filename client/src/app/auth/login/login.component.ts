@@ -1,22 +1,26 @@
-import { Component, OnInit, OnDestroy, Output, EventEmitter } from '@angular/core';
+import { Component, EventEmitter, OnDestroy, OnInit, Output } from '@angular/core';
 import { NgForm } from '@angular/forms';
-import { AuthService } from '../auth.service';
 import { Subscription } from 'rxjs';
+import { AuthService } from '../auth.service';
 
 @Component({
   selector: 'app-login',
-  templateUrl: './login.component.html',
-  styleUrls: ['./login.component.less']
+  styleUrls: ['./login.component.less'],
+  templateUrl: './login.component.html'
 })
 export class LoginComponent implements OnInit, OnDestroy {
+  @Output()
+  public modalClosed: EventEmitter<any> = new EventEmitter();
+
+  @Output()
+  public regiterOpened: EventEmitter<any> = new EventEmitter();
+
   public isLoading = false;
-  authStatusSub: Subscription;
-  @Output() onCloseModal: EventEmitter<any> = new EventEmitter();
-  @Output() onRegisterOpen: EventEmitter<any> = new EventEmitter();
+  public authStatusSub: Subscription;
 
   constructor(private authService: AuthService) {}
 
-  ngOnInit() {
+  public ngOnInit() {
     this.authStatusSub = this.authService.getAuthStatusListener().subscribe((authStatus) => {
       this.isLoading = authStatus;
     });
@@ -24,12 +28,12 @@ export class LoginComponent implements OnInit, OnDestroy {
     window.addEventListener('keyup', this.onKeyUp.bind(this));
   }
 
-  ngOnDestroy() {
+  public ngOnDestroy() {
     this.authStatusSub.unsubscribe();
     window.removeEventListener('keyup', this.onKeyUp.bind(this));
   }
 
-  onLogin(loginForm: NgForm) {
+  public onLogin(loginForm: NgForm) {
     if (loginForm.invalid) {
       return;
     }
@@ -38,15 +42,15 @@ export class LoginComponent implements OnInit, OnDestroy {
     this.authService.login(loginForm.value.username, loginForm.value.password);
   }
 
-  hide() {
-    this.onCloseModal.emit();
+  public hide() {
+    this.modalClosed.emit();
   }
 
-  openRegister() {
-    this.onRegisterOpen.emit();
+  public openRegister() {
+    this.regiterOpened.emit();
   }
 
-  onKeyUp(event: KeyboardEvent) {
+  public onKeyUp(event: KeyboardEvent) {
     if (event.key === 'Escape') {
       this.hide();
     }

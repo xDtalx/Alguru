@@ -1,22 +1,24 @@
-import { Component, OnInit, OnDestroy, Output, EventEmitter } from '@angular/core';
+import { Component, EventEmitter, OnDestroy, OnInit, Output } from '@angular/core';
 import { NgForm } from '@angular/forms';
-import { AuthService } from '../auth.service';
 import { Subscription } from 'rxjs';
+import { AuthService } from '../auth.service';
 
 @Component({
   selector: 'app-register',
-  templateUrl: './register.component.html',
-  styleUrls: ['./register.component.less']
+  styleUrls: ['./register.component.less'],
+  templateUrl: './register.component.html'
 })
 export class RegisterComponent implements OnInit, OnDestroy {
+  @Output()
+  public modalClosed: EventEmitter<any> = new EventEmitter();
+
   private authStatusSub: Subscription;
   private userSavedSub: Subscription;
   public isLoading = false;
-  @Output() onCloseModal: EventEmitter<any> = new EventEmitter();
 
   constructor(private authService: AuthService) {}
 
-  ngOnInit() {
+  public ngOnInit() {
     this.authStatusSub = this.authService.getAuthStatusListener().subscribe((authStatus) => {
       this.isLoading = authStatus;
     });
@@ -30,12 +32,13 @@ export class RegisterComponent implements OnInit, OnDestroy {
     window.addEventListener('keyup', this.onKeyUp.bind(this));
   }
 
-  ngOnDestroy() {
+  public ngOnDestroy() {
+    this.userSavedSub.unsubscribe();
     this.authStatusSub.unsubscribe();
     window.removeEventListener('keyup', this.onKeyUp.bind(this));
   }
 
-  onRegister(registerForm: NgForm) {
+  public onRegister(registerForm: NgForm) {
     if (registerForm.invalid) {
       return;
     }
@@ -49,15 +52,15 @@ export class RegisterComponent implements OnInit, OnDestroy {
     );
   }
 
-  onDelete(userId: string) {
+  public onDelete(userId: string) {
     this.authService.deleteUser(userId);
   }
 
-  hide() {
-    this.onCloseModal.emit();
+  public hide() {
+    this.modalClosed.emit();
   }
 
-  onKeyUp(event: KeyboardEvent) {
+  public onKeyUp(event: KeyboardEvent) {
     if (event.key === 'Escape') {
       this.hide();
     }

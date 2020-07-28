@@ -1,11 +1,11 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
-import { AuthService } from '../auth/auth.service';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Subscription } from 'rxjs';
+import { AuthService } from '../auth/auth.service';
 
 @Component({
   selector: 'app-error',
-  templateUrl: './error.component.html',
-  styleUrls: ['./error.component.css']
+  styleUrls: ['./error.component.css'],
+  templateUrl: './error.component.html'
 })
 export class ErrorComponent implements OnInit, OnDestroy {
   public errors: string[];
@@ -13,11 +13,11 @@ export class ErrorComponent implements OnInit, OnDestroy {
 
   constructor(private authService: AuthService) {}
 
-  ngOnDestroy() {
+  public ngOnDestroy() {
     this.authErrorsSub.unsubscribe();
   }
 
-  ngOnInit() {
+  public ngOnInit() {
     this.authErrorsSub = this.authService.getAuthErrorListener().subscribe((errors: string[]) => {
       this.errors = errors;
     });

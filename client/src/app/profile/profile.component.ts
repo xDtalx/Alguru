@@ -3,7 +3,7 @@ import { ActivatedRoute, ParamMap } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import { AuthService } from '../auth/auth.service';
-import { ThemeService } from '../editor/theme/theme.service';
+import { ThemeService } from '../theme/theme.service';
 import { ProfileService } from './profile.service';
 
 const BACKEND_URL = `${environment.apiUrl}/image`;
@@ -11,12 +11,12 @@ const UPLOAD_URL = BACKEND_URL + '/upload';
 
 @Component({
   selector: 'app-profile',
-  templateUrl: './profile.component.html',
-  styleUrls: ['./profile.component.css']
+  styleUrls: ['./profile.component.css'],
+  templateUrl: './profile.component.html'
 })
 export class ProfileComponent implements OnInit, OnDestroy, AfterViewInit {
-  @ViewChild('selectFile', { read: ElementRef }) selectFile: ElementRef;
-  @ViewChild('uploadImageForm', { read: ElementRef }) uploadImageForm: ElementRef;
+  @ViewChild('selectFile', { read: ElementRef }) public selectFile: ElementRef;
+  @ViewChild('uploadImageForm', { read: ElementRef }) public uploadImageForm: ElementRef;
 
   public username = '';
   public profileImageURL: string;
@@ -41,16 +41,16 @@ export class ProfileComponent implements OnInit, OnDestroy, AfterViewInit {
     private authService: AuthService
   ) {}
 
-  ngAfterViewInit(): void {
+  public ngAfterViewInit(): void {
     document.documentElement.style.setProperty('--site-background-img', 'none');
   }
 
-  ngOnDestroy(): void {
+  public ngOnDestroy(): void {
     this.sub.unsubscribe();
     this.themeService.reset();
   }
 
-  ngOnInit(): void {
+  public ngOnInit(): void {
     this.themeService.overrideProperty('--main-display', 'block');
     this.themeService.overrideProperty(
       '--site-background-img',
@@ -70,15 +70,15 @@ export class ProfileComponent implements OnInit, OnDestroy, AfterViewInit {
     });
   }
 
-  onImageURLBroken() {
+  public onImageURLBroken() {
     this.profileImageURL = null;
   }
 
-  onSelectFileClick() {
+  public onSelectFileClick() {
     this.selectFile.nativeElement.click();
   }
 
-  submit(event) {
+  public submit(event) {
     this.openCropPopup();
 
     if (!event.target || !event.target.files || event.target.files.length !== 1) {
@@ -103,24 +103,23 @@ export class ProfileComponent implements OnInit, OnDestroy, AfterViewInit {
     this.isLoading = false;
   }
 
-  closeCropPopup() {
+  public closeCropPopup() {
     this.isLoading = false;
     this.cropPopupOpen = false;
   }
 
-  openCropPopup() {
+  public openCropPopup() {
     this.isLoading = true;
     this.cropPopupOpen = true;
   }
 
-  onCropBtnClick() {
+  public onCropBtnClick() {
     this.isLoading = true;
   }
 
-  onUploaded(url) {
+  public onUploaded(url) {
     this.timestamp = new Date().getTime().toString();
     this.profileImageURL = `${url}?${this.timestamp}`;
-    console.log(this.profileImageURL);
     this.closeCropPopup();
   }
 }

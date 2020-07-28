@@ -17,5 +17,5 @@ exports.executeCode = (req, res, next) => {
       res.setHeader('Content-Type', 'application/json');
       res.status(result.status).send(result.data);
     })
-    .catch(() => res.status(500).json({ message: 'Unknown error' }));
+    .catch((err) => res.status(500).json({ message: err }));
 };

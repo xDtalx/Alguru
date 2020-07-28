@@ -1,77 +1,70 @@
 import { NgModule } from '@angular/core';
-import { Routes, RouterModule } from '@angular/router';
-import { RegisterComponent } from './auth/register/register.component';
-import { QuestionCreateComponent } from './questions/question-create/question-create.component';
-import { LoginComponent } from './auth/login/login.component';
-import { QuestionListComponent } from './questions/question-list/question-list.component';
+import { RouterModule, Routes } from '@angular/router';
 import { AuthGuard } from './auth/auth.guard';
-import { IDEComponent } from './ide/ide.component';
-import { EditorComponent } from './editor/editor.component';
+import { LoginComponent } from './auth/login/login.component';
+import { RegisterComponent } from './auth/register/register.component';
 import { ForumComponent } from './forum/forum.component';
 import { HomeComponent } from './home/home.component';
+import { IDEComponent } from './ide/ide.component';
 import { ProfileComponent } from './profile/profile.component';
+import { QuestionCreateComponent } from './questions/question-create/question-create.component';
+import { QuestionListComponent } from './questions/question-list/question-list.component';
 
 const routes: Routes = [
   {
-    path: '',
     component: HomeComponent,
-    data: { showSmallHeader: false }
+    data: { showSmallHeader: false },
+    path: ''
   },
   {
-    path: 'code-editor',
-    component: EditorComponent,
-    data: { showSmallHeader: true },
-    canActivate: [AuthGuard]
-  },
-  {
-    path: 'questions-list',
+    canActivate: [AuthGuard],
     component: QuestionListComponent,
     data: { showSmallHeader: true },
-    canActivate: [AuthGuard]
+    path: 'questions-list'
   },
   {
-    path: 'profile/:username',
+    canActivate: [AuthGuard],
     component: ProfileComponent,
     data: { showSmallHeader: true },
-    canActivate: [AuthGuard]
+    path: 'profile/:username'
   },
   {
-    path: 'solve/:questionId',
+    canActivate: [AuthGuard],
     component: IDEComponent,
     data: { showSmallHeader: true },
-    canActivate: [AuthGuard]
+    path: 'solve/:questionId'
   },
   {
-    path: 'edit/:questionId',
+    canActivate: [AuthGuard],
     component: QuestionCreateComponent,
     data: { showSmallHeader: true },
-    canActivate: [AuthGuard]
+    path: 'edit/:questionId'
   },
   { path: 'register', component: RegisterComponent },
   { path: 'login', component: LoginComponent },
   {
-    path: 'create-question',
+    canActivate: [AuthGuard],
     component: QuestionCreateComponent,
     data: { showSmallHeader: true },
-    canActivate: [AuthGuard]
+    path: 'create-question'
   },
   {
-    path: 'forum',
+    canActivate: [AuthGuard],
     component: ForumComponent,
     data: { showSmallHeader: true },
-    canActivate: [AuthGuard]
+    path: 'forum'
   },
   {
-    path: 'forum/:postId',
+    canActivate: [AuthGuard],
     component: ForumComponent,
     data: { showSmallHeader: true },
-    canActivate: [AuthGuard]
+    path: 'forum/:postId'
   }
 ];
 
 @NgModule({
-  imports: [RouterModule.forRoot(routes)],
   exports: [RouterModule],
+  imports: [RouterModule.forRoot(routes)],
   providers: [AuthGuard]
 })
 export class AppRoutingModule {}

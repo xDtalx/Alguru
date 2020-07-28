@@ -5,6 +5,10 @@
   box-sizing: border-box;
 }
 
+:host {
+  overflow: hidden;
+}
+
 #ide {
   position: relative;
   display: flex;
@@ -21,17 +25,16 @@
   }
 }
 
-app-editor {
+nt-editor {
   position: relative;
-  display: flex;
-  height: 100%;
-  width: 100%;
   max-width: calc((100vw - 2rem) / 2);
   background-color: var(--editor-background);
+  padding-top: 1rem;
+  padding-bottom: 1rem;
 }
 
 @media only screen and (max-width: 800px) {
-  app-editor {
+  nt-editor {
     max-width: calc(100vw - 1rem);
   }
 }

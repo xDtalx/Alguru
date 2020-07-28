@@ -76,7 +76,7 @@
     [src]="tmpProfileImageURL"
     [uploadto]="uploadURL"
     (click)="$event.stopPropagation()"
-    (cropclick)="onCropBtnClick()"
+    (cropClick)="onCropBtnClick()"
   >
   </app-cropper>
   <div *ngIf="isLoading" class="loader"></div>

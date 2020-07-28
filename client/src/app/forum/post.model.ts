@@ -1,7 +1,7 @@
-import { Comment, ClientComment } from './comment.model';
+import { ClientComment, Comment } from './comment.model';
 import { Vote } from './vote.model';
 
-export interface Post {
+export interface IPost {
   id: string;
   currentTitle: string;
   currentContent: string;
@@ -14,7 +14,7 @@ export interface Post {
   votes: Map<string, Vote>;
 }
 
-export interface ClientPost extends Post {
+export interface IClientPost extends IPost {
   onEditPostMode: boolean;
   comments: ClientComment[];
   showEdits: boolean;

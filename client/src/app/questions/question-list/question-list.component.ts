@@ -1,17 +1,17 @@
-import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
-import { Question } from '../question.model';
-import { QuestionsService } from '../questions.service';
-import { Subscription } from 'rxjs';
-import { AuthService } from 'src/app/auth/auth.service';
-import { MatTableDataSource } from '@angular/material/table';
+import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
-import { ThemeService } from 'src/app/editor/theme/theme.service';
+import { MatTableDataSource } from '@angular/material/table';
+import { Subscription } from 'rxjs';
+import { AuthService } from 'src/app/auth/auth.service';
+import { ThemeService } from 'src/app/theme/theme.service';
+import { Question } from '../question.model';
+import { QuestionsService } from '../questions.service';
 
 @Component({
   selector: 'app-question-list',
-  templateUrl: './question-list.component.html',
-  styleUrls: ['./question-list.component.css']
+  styleUrls: ['./question-list.component.css'],
+  templateUrl: './question-list.component.html'
 })
 export class QuestionListComponent implements OnInit, OnDestroy {
   // used in order to unsubscribe from the service when the page, which the list in, not shown
@@ -24,8 +24,8 @@ export class QuestionListComponent implements OnInit, OnDestroy {
   private questionsSub: Subscription;
   private theme = 'dark';
 
-  @ViewChild(MatPaginator, { static: true }) paginator: MatPaginator;
-  @ViewChild(MatSort, { static: true }) sort: MatSort;
+  @ViewChild(MatPaginator, { static: true }) public paginator: MatPaginator;
+  @ViewChild(MatSort, { static: true }) public sort: MatSort;
 
   constructor(
     private questionService: QuestionsService,
@@ -33,7 +33,7 @@ export class QuestionListComponent implements OnInit, OnDestroy {
     private themeService: ThemeService
   ) {}
 
-  ngOnInit() {
+  public ngOnInit() {
     this.themeService.overrideProperty('--main-display', 'block');
     this.themeService.setActiveThemeByName(this.theme);
 
@@ -56,16 +56,16 @@ export class QuestionListComponent implements OnInit, OnDestroy {
     this.isAdmin = this.authService.getIsAdmin();
   }
 
-  ngOnDestroy() {
+  public ngOnDestroy() {
     this.themeService.reset();
     this.questionsSub.unsubscribe();
   }
 
-  onDelete(questionId: string) {
+  public onDelete(questionId: string) {
     this.questionService.deleteQuestion(questionId);
   }
 
-  getLevelNumber(level: string) {
+  public getLevelNumber(level: string) {
     let levelNumber = -1;
 
     if ('easy'.startsWith(level)) {
@@ -79,7 +79,7 @@ export class QuestionListComponent implements OnInit, OnDestroy {
     return levelNumber;
   }
 
-  applyFilter(event: Event) {
+  public applyFilter(event: Event) {
     this.dataSource.filterPredicate = (data: Question, filter: string) => this.getLevelNumber(filter) === data.level;
     const filterValue = (event.target as HTMLInputElement).value;
     this.dataSource.filter = filterValue.trim().toLowerCase();

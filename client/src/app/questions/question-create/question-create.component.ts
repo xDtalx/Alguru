@@ -1,16 +1,16 @@
-import { Component, OnInit, AfterViewInit, OnDestroy, ViewChildren, QueryList, ElementRef } from '@angular/core';
-import { QuestionsService } from '../questions.service';
-import { Question } from '../question.model';
+import { AfterViewInit, Component, ElementRef, OnDestroy, OnInit, QueryList, ViewChildren } from '@angular/core';
 import { ActivatedRoute, ParamMap } from '@angular/router';
-import { ThemeService } from 'src/app/editor/theme/theme.service';
+import { ThemeService } from 'src/app/theme/theme.service';
+import { Question } from '../question.model';
+import { QuestionsService } from '../questions.service';
 
 @Component({
   selector: 'app-question-create',
-  templateUrl: './question-create.component.html',
-  styleUrls: ['./question-create.component.css']
+  styleUrls: ['./question-create.component.css'],
+  templateUrl: './question-create.component.html'
 })
 export class QuestionCreateComponent implements OnInit, OnDestroy, AfterViewInit {
-  @ViewChildren('checkbox') checkboxes: QueryList<ElementRef>;
+  @ViewChildren('checkbox') public checkboxes: QueryList<ElementRef>;
 
   public retrievedQuestionData: Question;
   public newQuestionData: Question;
@@ -25,18 +25,18 @@ export class QuestionCreateComponent implements OnInit, OnDestroy, AfterViewInit
     private themeService: ThemeService
   ) {}
 
-  ngAfterViewInit(): void {
+  public ngAfterViewInit(): void {
     this.themeService.overrideProperty('--main-display', 'block');
     this.themeService.overrideProperty('--main-padding', '1rem 1rem 0 1rem');
     this.themeService.overrideProperty('--main-background-color', 'rgb(53, 58, 66)');
     this.themeService.setActiveThemeByName(this.theme);
   }
 
-  ngOnDestroy(): void {
+  public ngOnDestroy(): void {
     this.themeService.reset();
   }
 
-  ngOnInit() {
+  public ngOnInit() {
     this.newQuestionData = {
       id: null,
       title: null,
@@ -58,7 +58,7 @@ export class QuestionCreateComponent implements OnInit, OnDestroy, AfterViewInit
     });
   }
 
-  uncheckOther(event: MouseEvent) {
+  public uncheckOther(event: MouseEvent) {
     const target: HTMLInputElement = event.target as HTMLInputElement;
 
     this.checkboxes.forEach((checkbox) => {
@@ -80,13 +80,13 @@ export class QuestionCreateComponent implements OnInit, OnDestroy, AfterViewInit
     }
   }
 
-  setEditMode(paramMap) {
+  public setEditMode(paramMap) {
     this.mode = 'edit';
     this.questionId = paramMap.get('questionId');
     this.questionService.getQuestion(this.questionId).subscribe(this.setQuestion.bind(this));
   }
 
-  setQuestion(questionData) {
+  public setQuestion(questionData) {
     this.retrievedQuestionData = {
       id: questionData._id,
       title: questionData.title,
@@ -100,12 +100,12 @@ export class QuestionCreateComponent implements OnInit, OnDestroy, AfterViewInit
     };
   }
 
-  setCreateMode() {
+  public setCreateMode() {
     this.mode = 'create';
     this.questionId = null;
   }
 
-  onSaveQuestion() {
+  public onSaveQuestion() {
     this.isLoading = true;
 
     if (this.mode === 'create') {
@@ -116,7 +116,7 @@ export class QuestionCreateComponent implements OnInit, OnDestroy, AfterViewInit
     }
   }
 
-  fillNotUpdatedFieldsWithOldValues(question) {
+  public fillNotUpdatedFieldsWithOldValues(question) {
     Object.keys(question).forEach((value) => {
       if (!question[value] || (Array.isArray(question[value]) && !question[value][0])) {
         question[value] = this.retrievedQuestionData[value];
@@ -124,31 +124,31 @@ export class QuestionCreateComponent implements OnInit, OnDestroy, AfterViewInit
     });
   }
 
-  onSolTemplateValueChanged(value) {
+  public onSolTemplateValueChanged(value) {
     this.newQuestionData.solutionTemplate[0] = value;
   }
 
-  onTestsValueChanged(value) {
+  public onTestsValueChanged(value) {
     this.newQuestionData.tests[0] = value;
   }
 
-  onSolValueChanged(value) {
+  public onSolValueChanged(value) {
     this.newQuestionData.solution[0] = value;
   }
 
-  onContentValueChanged(value) {
+  public onContentValueChanged(value) {
     this.newQuestionData.content = value;
   }
 
-  onTitleValueChanged(value) {
+  public onTitleValueChanged(value) {
     this.newQuestionData.title = value;
   }
 
-  onHintsValueChanged(value) {
+  public onHintsValueChanged(value) {
     this.newQuestionData.hints = value;
   }
 
-  setLevel(level: number) {
+  public setLevel(level: number) {
     this.newQuestionData.level = level;
   }
 }

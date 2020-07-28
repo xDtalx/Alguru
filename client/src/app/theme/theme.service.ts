@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Theme, light, dark } from './theme';
+import { dark, light, Theme } from './theme';
 
 @Injectable({
   providedIn: 'root'
@@ -10,31 +10,31 @@ export class ThemeService {
   private previousProperties: Map<string, string>;
   private propToOverride: Map<string, string> = new Map<string, string>();
 
-  overrideProperty(propName: string, propVal: string) {
+  public overrideProperty(propName: string, propVal: string) {
     this.propToOverride.set(propName, propVal);
   }
 
-  getAvailableThemes(): Theme[] {
+  public getAvailableThemes(): Theme[] {
     return this.availableThemes;
   }
 
-  getActiveTheme(): Theme {
+  public getActiveTheme(): Theme {
     return this.active;
   }
 
-  isDarkTheme(): boolean {
+  public isDarkTheme(): boolean {
     return this.active.name === dark.name;
   }
 
-  setDarkTheme(): void {
+  public setDarkTheme(): void {
     this.setActiveTheme(dark);
   }
 
-  setLightTheme(): void {
+  public setLightTheme(): void {
     this.setActiveTheme(light);
   }
 
-  setActiveTheme(theme: Theme): void {
+  public setActiveTheme(theme: Theme): void {
     this.active = theme;
 
     if (!this.previousProperties) {
@@ -58,7 +58,7 @@ export class ThemeService {
     });
   }
 
-  reset() {
+  public reset() {
     Object.keys(this.active.properties).forEach((property) => {
       if (document.documentElement.style.getPropertyValue(property)) {
         document.documentElement.style.removeProperty(property);
@@ -72,7 +72,7 @@ export class ThemeService {
     this.propToOverride.clear();
   }
 
-  setActiveThemeByName(name: string) {
+  public setActiveThemeByName(name: string) {
     const availables: Theme[] = this.getAvailableThemes();
     const count = availables.length;
 

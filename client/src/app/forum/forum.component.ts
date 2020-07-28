@@ -1,17 +1,17 @@
-import { Component, OnInit, OnDestroy, AfterViewInit, Renderer2 } from '@angular/core';
-import { ClientPost, Post } from './post.model';
-import { AuthService } from '../auth/auth.service';
-import { AngularEditorConfig } from '@kolkov/angular-editor';
-import { ForumService } from './forum.service';
-import { ClientComment } from './comment.model';
-import { Subscription } from 'rxjs';
-import { ThemeService } from '../editor/theme/theme.service';
+import { AfterViewInit, Component, OnDestroy, OnInit, Renderer2 } from '@angular/core';
 import { ActivatedRoute, ParamMap } from '@angular/router';
+import { AngularEditorConfig } from '@kolkov/angular-editor';
+import { Subscription } from 'rxjs';
+import { AuthService } from '../auth/auth.service';
+import { ThemeService } from '../theme/theme.service';
+import { ClientComment } from './comment.model';
+import { ForumService } from './forum.service';
+import { IClientPost, IPost } from './post.model';
 
 const editorConfig: AngularEditorConfig = {
+  height: '15rem',
   editable: true,
   spellcheck: true,
-  height: '15rem',
   minHeight: '5rem',
   maxHeight: '50rem',
   width: 'auto',
@@ -37,16 +37,16 @@ const editorConfig: AngularEditorConfig = {
   ],
   customClasses: [
     {
-      name: 'quote',
-      class: 'quote'
+      class: 'quote',
+      name: 'quote'
     },
     {
-      name: 'redText',
-      class: 'redText'
+      class: 'redText',
+      name: 'redText'
     },
     {
-      name: 'titleText',
       class: 'titleText',
+      name: 'titleText',
       tag: 'h1'
     }
   ]
@@ -54,20 +54,20 @@ const editorConfig: AngularEditorConfig = {
 
 @Component({
   selector: 'app-forum',
-  templateUrl: './forum.component.html',
-  styleUrls: ['./forum.component.css']
+  styleUrls: ['./forum.component.css'],
+  templateUrl: './forum.component.html'
 })
 export class ForumComponent implements OnInit, OnDestroy, AfterViewInit {
   public showPost = false;
   public showWelcome = false;
   public addNewPost = false;
-  public selectedPost: ClientPost;
+  public selectedPost: IClientPost;
   public titleDefaultValue: string;
   public messageDefaultValue: string;
   public isEmptyTitle = false;
   public isEmptyMessage = false;
   public isAdmin: boolean;
-  public posts: ClientPost[] = [];
+  public posts: IClientPost[] = [];
   public postsSub: Subscription;
   public loggedInUsername: string;
   private editPostIndex = -1;
@@ -84,11 +84,11 @@ export class ForumComponent implements OnInit, OnDestroy, AfterViewInit {
     private route: ActivatedRoute
   ) {}
 
-  ngAfterViewInit(): void {
+  public ngAfterViewInit(): void {
     document.documentElement.style.setProperty('--site-background-img', 'none');
   }
 
-  ngOnInit() {
+  public ngOnInit() {
     this.initTheme();
     this.isAdmin = this.authService.getIsAdmin();
     this.loggedInUsername = this.authService.getUsername();
@@ -100,15 +100,15 @@ export class ForumComponent implements OnInit, OnDestroy, AfterViewInit {
     });
 
     if (!this.selectedPostId) {
-      this.postsSub = this.forumService.getPostsUpdatedListener().subscribe((posts: Post[]) => {
-        this.posts = posts as ClientPost[];
+      this.postsSub = this.forumService.getPostsUpdatedListener().subscribe((posts: IPost[]) => {
+        this.posts = posts as IClientPost[];
         this.onPostClick(this.selectedPostId);
         this.showWelcome = this.posts.length === 0;
       });
       this.forumService.getPosts();
     } else {
-      this.postsSub = this.forumService.getPostUpdatedListener().subscribe((post: Post) => {
-        this.posts = [post as ClientPost];
+      this.postsSub = this.forumService.getPostUpdatedListener().subscribe((post: IPost) => {
+        this.posts = [post as IClientPost];
         this.onPostClick(this.selectedPostId);
       });
       this.forumService.getPost(this.selectedPostId);
@@ -118,24 +118,24 @@ export class ForumComponent implements OnInit, OnDestroy, AfterViewInit {
     document.addEventListener('keyup', this.onKeyUp.bind(this));
   }
 
-  ngOnDestroy() {
+  public ngOnDestroy() {
     this.postsSub.unsubscribe();
     this.themeService.reset();
     document.removeEventListener('click', this.onMouseUp.bind(this));
     document.removeEventListener('keyup', this.onKeyUp.bind(this));
   }
 
-  onMouseUp() {
+  public onMouseUp() {
     this.hideEditsPopup();
   }
 
-  onKeyUp(event) {
+  public onKeyUp(event) {
     if (event.key === 'Escape') {
       this.hideEditsPopup();
     }
   }
 
-  initTheme() {
+  public initTheme() {
     this.themeService.overrideProperty('--main-display', 'block');
     this.themeService.overrideProperty(
       '--site-background-img',
@@ -145,8 +145,8 @@ export class ForumComponent implements OnInit, OnDestroy, AfterViewInit {
     this.themeService.setActiveThemeByName(this.theme);
   }
 
-  hideEditsPopup() {
-    this.posts.forEach((post: ClientPost) => {
+  public hideEditsPopup() {
+    this.posts.forEach((post: IClientPost) => {
       post.showEdits = false;
       post.comments.forEach((comment: ClientComment) => {
         comment.showEdits = false;
@@ -154,13 +154,13 @@ export class ForumComponent implements OnInit, OnDestroy, AfterViewInit {
     });
   }
 
-  onPostClick(postId: string) {
+  public onPostClick(postId: string) {
     let clickedPost;
 
     if (this.posts.length > 0) {
-      for (let i = 0; i < this.posts.length; i++) {
-        if (this.posts[i].id === postId) {
-          clickedPost = this.posts[i];
+      for (const post of this.posts) {
+        if (post.id === postId) {
+          clickedPost = post;
           break;
         }
       }
@@ -180,7 +180,7 @@ export class ForumComponent implements OnInit, OnDestroy, AfterViewInit {
     }
   }
 
-  getVotes(commentOrPost: any) {
+  public getVotes(commentOrPost: any) {
     let votes = 0;
 
     commentOrPost.votes.forEach((vote) => {
@@ -194,23 +194,23 @@ export class ForumComponent implements OnInit, OnDestroy, AfterViewInit {
     return votes;
   }
 
-  voteUp(commentOrPost: any, isComment: boolean) {
+  public voteUp(commentOrPost: any, isComment: boolean) {
     this.forumService.vote(commentOrPost, isComment, {
       id: null,
-      username: this.authService.getUsername(),
-      isUp: true
+      isUp: true,
+      username: this.authService.getUsername()
     });
   }
 
-  voteDown(commentOrPost: any, isComment: boolean) {
+  public voteDown(commentOrPost: any, isComment: boolean) {
     this.forumService.vote(commentOrPost, isComment, {
       id: null,
-      username: this.authService.getUsername(),
-      isUp: false
+      isUp: false,
+      username: this.authService.getUsername()
     });
   }
 
-  getShortDescription(content: string) {
+  public getShortDescription(content: string) {
     const dom = new DOMParser().parseFromString(content, 'text/html');
     let text = Array.from(dom.body.childNodes)
       .map((node) => node.textContent)
@@ -228,11 +228,11 @@ export class ForumComponent implements OnInit, OnDestroy, AfterViewInit {
     return description;
   }
 
-  getEditorConfig() {
+  public getEditorConfig() {
     return editorConfig;
   }
 
-  getRecentDate(commentOrPost: any): string {
+  public getRecentDate(commentOrPost: any): string {
     let dateStr = '';
 
     if (commentOrPost && commentOrPost.dates && commentOrPost.dates.length > 0) {
@@ -243,7 +243,7 @@ export class ForumComponent implements OnInit, OnDestroy, AfterViewInit {
     return dateStr;
   }
 
-  getDate(date: number) {
+  public getDate(date: number) {
     const objDate = new Date(date);
     const dateStr = `${this.getDayStr(objDate.getDay())}
       ${this.getMonthStr(objDate.getMonth())}
@@ -254,13 +254,13 @@ export class ForumComponent implements OnInit, OnDestroy, AfterViewInit {
     return dateStr;
   }
 
-  getTime(date) {
+  public getTime(date) {
     return `${this.formatTime(date.getHours())}:${this.formatTime(date.getMinutes())}:${this.formatTime(
       date.getSeconds()
     )}`;
   }
 
-  formatTime(digits: number): string {
+  public formatTime(digits: number): string {
     let timeStr = '';
 
     if (digits < 10) {
@@ -272,7 +272,7 @@ export class ForumComponent implements OnInit, OnDestroy, AfterViewInit {
     return timeStr;
   }
 
-  getMonthStr(month: number) {
+  public getMonthStr(month: number) {
     let monthStr = '';
 
     switch (month) {
@@ -317,7 +317,7 @@ export class ForumComponent implements OnInit, OnDestroy, AfterViewInit {
     return monthStr;
   }
 
-  getDayStr(day: number) {
+  public getDayStr(day: number) {
     let dayStr = '';
 
     switch (day) {
@@ -347,7 +347,7 @@ export class ForumComponent implements OnInit, OnDestroy, AfterViewInit {
     return dayStr;
   }
 
-  reset(resetSelectedPost?: boolean) {
+  public reset(resetSelectedPost?: boolean) {
     this.titleDefaultValue = '';
     this.messageDefaultValue = '';
     this.editPostIndex = -1;
@@ -358,22 +358,22 @@ export class ForumComponent implements OnInit, OnDestroy, AfterViewInit {
     }
   }
 
-  onSubmitPost(title?: string, content?: string) {
-    const post: ClientPost = {
-      id: null,
-      currentTitle:
-        title || (this.selectedPost ? (this.selectedPost.currentTitle ? this.selectedPost.currentTitle : '') : ''),
+  public onSubmitPost(title?: string, content?: string) {
+    const post: IClientPost = {
+      author: this.authService.getUsername(),
+      comments: [],
+      contents: content ? [content] : this.selectedPost ? this.selectedPost.contents : [''],
       currentContent:
         content ||
         (this.selectedPost ? (this.selectedPost.currentContent ? this.selectedPost.currentContent : '') : ''),
       currentDate: 0,
-      titles: title ? [title] : this.selectedPost ? this.selectedPost.titles : [''],
-      contents: content ? [content] : this.selectedPost ? this.selectedPost.contents : [''],
-      author: this.authService.getUsername(),
+      currentTitle:
+        title || (this.selectedPost ? (this.selectedPost.currentTitle ? this.selectedPost.currentTitle : '') : ''),
       dates: [0],
-      comments: [],
+      id: null,
       onEditPostMode: false,
       showEdits: false,
+      titles: title ? [title] : this.selectedPost ? this.selectedPost.titles : [''],
       votes: new Map()
     };
 
@@ -395,24 +395,24 @@ export class ForumComponent implements OnInit, OnDestroy, AfterViewInit {
     this.authService.resetErrorMessages();
   }
 
-  onSubmitComment(content?: string) {
+  public onSubmitComment(content?: string) {
     if (this.editCommentIndex >= 0) {
       const comment = this.selectedPost.comments[this.editCommentIndex];
       comment.onEditPostMode = false;
       this.forumService.updateComment(comment);
     } else {
       const comment: ClientComment = {
-        id: null,
-        postId: this.selectedPost.id,
-        currentTitle: null,
+        author: this.authService.getUsername(),
+        contents: [content],
         currentContent: content || '',
         currentDate: 0,
-        titles: [],
-        contents: [content],
+        currentTitle: null,
         dates: [0],
-        author: this.authService.getUsername(),
+        id: null,
         onEditPostMode: false,
+        postId: this.selectedPost.id,
         showEdits: false,
+        titles: [],
         votes: new Map()
       };
 
@@ -423,7 +423,7 @@ export class ForumComponent implements OnInit, OnDestroy, AfterViewInit {
     this.authService.resetErrorMessages();
   }
 
-  onEditDateClicked(event: MouseEvent, commentOrPost: any, date: string) {
+  public onEditDateClicked(event: MouseEvent, commentOrPost: any, date: string) {
     const dateIndex = commentOrPost.dates.indexOf(date);
     commentOrPost.currentTitle = commentOrPost.titles[dateIndex];
     commentOrPost.currentContent = commentOrPost.contents[dateIndex];
@@ -442,18 +442,18 @@ export class ForumComponent implements OnInit, OnDestroy, AfterViewInit {
     }, 300);
   }
 
-  onShowEdits(commentOrPost: any) {
+  public onShowEdits(commentOrPost: any) {
     const show = !commentOrPost.showEdits;
     this.hideEditsPopup();
     commentOrPost.showEdits = show;
   }
 
-  onAddNewPostClick() {
+  public onAddNewPostClick() {
     this.addNewPost = !this.addNewPost;
     this.reset(true);
   }
 
-  onDeletePostClick(post: ClientPost) {
+  public onDeletePostClick(post: IClientPost) {
     const index: number = this.posts.indexOf(post);
     this.showPost = false;
 
@@ -464,7 +464,7 @@ export class ForumComponent implements OnInit, OnDestroy, AfterViewInit {
     this.reset(true);
   }
 
-  onDeleteCommentClick(comment: ClientComment) {
+  public onDeleteCommentClick(comment: ClientComment) {
     const index: number = this.selectedPost.comments.indexOf(comment);
 
     if (index >= -1) {
@@ -472,7 +472,7 @@ export class ForumComponent implements OnInit, OnDestroy, AfterViewInit {
     }
   }
 
-  onEditPostClick(post: ClientPost) {
+  public onEditPostClick(post: IClientPost) {
     if (post) {
       const index: number = this.posts.indexOf(post);
 
@@ -486,7 +486,7 @@ export class ForumComponent implements OnInit, OnDestroy, AfterViewInit {
     }
   }
 
-  onEditCommentClick(comment: ClientComment) {
+  public onEditCommentClick(comment: ClientComment) {
     if (comment) {
       const commentIndex: number = this.selectedPost.comments.indexOf(comment);
       const postIndex: number = this.posts.indexOf(this.selectedPost);

@@ -1,41 +1,40 @@
-import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { Injectable } from '@angular/core';
 import { Subject } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
-import { Post, ClientPost } from './post.model';
-import { Comment, ClientComment } from './comment.model';
+import { ClientComment, Comment } from './comment.model';
+import { IClientPost, IPost } from './post.model';
 import { Vote } from './vote.model';
 
 const BACKEND_URL = environment.apiUrl + '/forum';
 
 @Injectable({ providedIn: 'root' })
 export class ForumService {
-  private posts: Post[] = [];
-  private currentPost: Post;
-  private postsUpdated = new Subject<Post[]>();
-  private postUpdated = new Subject<Post>();
+  private posts: IPost[] = [];
+  private currentPost: IPost;
+  private postsUpdated = new Subject<IPost[]>();
+  private postUpdated = new Subject<IPost>();
 
   constructor(private http: HttpClient) {}
 
-  vote(commentOrPost: any, isComment: boolean, vote: Vote) {
+  public vote(commentOrPost: any, isComment: boolean, vote: Vote) {
     const url = isComment
       ? `${BACKEND_URL}/${commentOrPost.postId}/${commentOrPost.id}`
       : `${BACKEND_URL}/${commentOrPost.id}`;
-    console.log(commentOrPost);
     this.http.patch<{ message: string; comment: any }>(url, vote).subscribe((response) => {
       commentOrPost.votes.set(vote.username, vote);
     });
   }
 
-  deletePost(postId: string, postIndex: number) {
+  public deletePost(postId: string, postIndex: number) {
     this.http.delete<{ message: string }>(`${BACKEND_URL}/${postId}`).subscribe(() => {
       this.posts.splice(postIndex, 1);
       this.postsUpdated.next([...this.posts]);
     });
   }
 
-  deleteComment(post: Post, comment: Comment) {
+  public deleteComment(post: IPost, comment: Comment) {
     this.http.delete<{ message: string }>(`${BACKEND_URL}/${comment.postId}/${comment.id}`).subscribe(() => {
       const postIndex = this.posts.indexOf(post);
       const commentToDeleteIndex = this.posts[postIndex].comments.indexOf(comment);
@@ -44,7 +43,7 @@ export class ForumService {
     });
   }
 
-  updateComment(updatedComment: Comment) {
+  public updateComment(updatedComment: Comment) {
     this.http
       .put<{ message: string; comment: any }>(
         `${BACKEND_URL}/${updatedComment.postId}/${updatedComment.id}`,
@@ -57,7 +56,7 @@ export class ForumService {
       });
   }
 
-  addComment(selectedPost: Post, commentToAdd: Comment) {
+  public addComment(selectedPost: IPost, commentToAdd: Comment) {
     this.http
       .post<{ message: string; comment: any }>(BACKEND_URL + '/' + selectedPost.id, commentToAdd)
       .subscribe((response) => {
@@ -80,7 +79,7 @@ export class ForumService {
       });
   }
 
-  updatePost(post: Post, oldPost: Post) {
+  public updatePost(post: IPost, oldPost: IPost) {
     this.http.put<{ message: string; post: any }>(BACKEND_URL + '/' + post.id, post).subscribe((responseData) => {
       oldPost.comments = responseData.post.comments.map((comment) => {
         return {
@@ -106,15 +105,15 @@ export class ForumService {
     });
   }
 
-  getPostsUpdatedListener() {
+  public getPostsUpdatedListener() {
     return this.postsUpdated.asObservable();
   }
 
-  getPostUpdatedListener() {
+  public getPostUpdatedListener() {
     return this.postUpdated.asObservable();
   }
 
-  getPosts() {
+  public getPosts() {
     this.http
       .get<any>(BACKEND_URL)
       .pipe(map((posts) => posts.map((post) => this.mapPost(post))))
@@ -124,7 +123,7 @@ export class ForumService {
       });
   }
 
-  getPost(postId: string) {
+  public getPost(postId: string) {
     this.http
       .get<any>(`${BACKEND_URL}/${postId}`)
       .pipe(map((post) => this.mapPost(post)))
@@ -162,20 +161,21 @@ export class ForumService {
     };
   }
 
-  mapVotes(voteKey, postOrComment): [string, Vote] {
+  public mapVotes(voteKey, postOrComment): [string, Vote] {
     return [
       voteKey,
       {
         id: postOrComment.votes[voteKey]._id,
-        username: postOrComment.votes[voteKey].username,
-        isUp: postOrComment.votes[voteKey].isUp
+        isUp: postOrComment.votes[voteKey].isUp,
+        username: postOrComment.votes[voteKey].username
       }
     ];
   }
 
-  addPost(post: Post) {
+  public addPost(post: IPost) {
     this.http.post<{ message: string; post: any }>(BACKEND_URL, post).subscribe((response) => {
-      const post: ClientPost = {
+      // tslint:disable-next-line: no-shadowed-variable
+      const post: IClientPost = {
         id: response.post._id,
         currentTitle: response.post.titles[response.post.titles.length - 1],
         currentContent: response.post.contents[response.post.contents.length - 1],

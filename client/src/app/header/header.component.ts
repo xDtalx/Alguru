@@ -1,10 +1,10 @@
-import { Component, OnInit, OnDestroy, ViewChild, ElementRef, Renderer2, AfterViewInit } from '@angular/core';
-import { AuthService } from '../auth/auth.service';
+import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { Router } from '@angular/router';
+import * as $ from 'jquery';
 import { Subscription } from 'rxjs';
 import { environment } from '../../environments/environment';
+import { AuthService } from '../auth/auth.service';
 import { SettingsService } from '../settings.service';
-import * as $ from 'jquery';
-import { Router } from '@angular/router';
 
 enum ModalTypes {
   LoginModal = 'loginModal',
@@ -13,11 +13,12 @@ enum ModalTypes {
 
 @Component({
   selector: 'app-header',
-  templateUrl: './header.component.html',
-  styleUrls: ['./header.component.less']
+  styleUrls: ['./header.component.less'],
+  templateUrl: './header.component.html'
 })
 export class HeaderComponent implements OnInit, OnDestroy {
-  @ViewChild('toggleNavCheckbox', { read: ElementRef }) toggleNavCheckbox: ElementRef;
+  @ViewChild('toggleNavCheckbox', { read: ElementRef })
+  public toggleNavCheckbox: ElementRef;
 
   private authListenerSubs: Subscription;
   private adminListenerSubs: Subscription;
@@ -38,7 +39,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
     this.settingsService.getSmallHeaderObservable().subscribe((isShow) => this.setSmallHeader(isShow));
   }
 
-  ngOnInit() {
+  public ngOnInit() {
     this.isRelease = environment.isRelease;
     this.isUserAuth = this.authService.getIsAuth();
     this.isAdmin = this.authService.getIsAdmin();
@@ -61,12 +62,12 @@ export class HeaderComponent implements OnInit, OnDestroy {
     }
   }
 
-  ngOnDestroy() {
+  public ngOnDestroy() {
     this.authListenerSubs.unsubscribe();
     this.adminListenerSubs.unsubscribe();
   }
 
-  setSmallHeader(isShow: boolean) {
+  public setSmallHeader(isShow: boolean) {
     const length = 300;
     this.showSmallHeader = isShow;
 
@@ -90,7 +91,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
     }
   }
 
-  closeHamburger(setSmallHeader = true) {
+  public closeHamburger(setSmallHeader = true) {
     this.showSmallHeaderAfterHamburgerClicked = setSmallHeader;
 
     if (this.toggleNavCheckbox.nativeElement.checked === true) {
@@ -98,12 +99,12 @@ export class HeaderComponent implements OnInit, OnDestroy {
     }
   }
 
-  onLogout() {
+  public onLogout() {
     this.setSmallHeader(false);
     this.authService.logout();
   }
 
-  show(type: ModalTypes) {
+  public show(type: ModalTypes) {
     this.showModal = true;
 
     if (type === ModalTypes.LoginModal) {
@@ -113,18 +114,18 @@ export class HeaderComponent implements OnInit, OnDestroy {
     }
   }
 
-  hide() {
+  public hide() {
     this.showModal = false;
     this.showLoginModal = false;
     this.showRegister = false;
   }
 
-  openRegister() {
+  public openRegister() {
     this.showLoginModal = false;
     this.showRegister = true;
   }
 
-  toggleNav() {
+  public toggleNav() {
     this.openNav = !this.openNav;
     const length = 300;
     const header = $('div.header');

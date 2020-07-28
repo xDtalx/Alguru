@@ -1,19 +1,19 @@
 import { Component, OnInit } from '@angular/core';
 
 @Component({
-  templateUrl: './home.component.html',
-  styleUrls: ['./home.component.css']
+  styleUrls: ['./home.component.css'],
+  templateUrl: './home.component.html'
 })
 export class HomeComponent implements OnInit {
-  ngOnInit(): void {
+  public ngOnInit(): void {
     document.documentElement.style.setProperty('--main-padding', 'none');
   }
 
-  goToNext(event: MouseEvent): void {
+  public goToNext(event: MouseEvent): void {
     this.getCardTarget(event).scrollIntoView({ behavior: 'smooth' });
   }
 
-  goToPrev(event) {
+  public goToPrev(event) {
     const target = this.getCardTarget(event);
 
     if (target.previousElementSibling) {
@@ -21,7 +21,7 @@ export class HomeComponent implements OnInit {
     }
   }
 
-  getCardTarget(event: MouseEvent): HTMLElement {
+  public getCardTarget(event: MouseEvent): HTMLElement {
     let target = event.target as HTMLElement;
 
     while (!target.classList.contains('info-container')) {
