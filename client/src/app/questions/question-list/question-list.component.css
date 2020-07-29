@@ -57,6 +57,14 @@ mat-paginator * {
   color: white;
 }
 
+.alguru-secondary-btn {
+  margin-right: 1rem;
+}
+
+.alguru-secondary-btn:last-child {
+  margin-right: 0;
+}
+
 @media only screen and (max-width: 800px) {
   .list-container {
     max-width: 95vw;

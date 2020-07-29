@@ -88,7 +88,6 @@ html {
 
 html,
 body {
-  overflow: var(--app-overflow);
   font-size: 62.5%;
   min-height: 100vh;
   background-color: var(--site-background) !important;

@@ -1,9 +1,10 @@
 <div id="background">
+  <div class="loader" *ngIf="loading"></div>
   <div id="cropper-container">
-    <div class="img-container">
+    <div [style.opacity]="loading ? 0 : 1" class="img-container">
       <img #image id="src-img" [src]="imageSource" crossorigin />
     </div>
-    <img [src]="imageDestination" class="img-preview" />
+    <img [style.opacity]="loading ? 0 : 1" [src]="imageDestination" class="img-preview" />
   </div>
-  <button (click)="uploadImage()" class="alguru-primary-btn">Crop</button>
+  <button (click)="uploadImage()" class="alguru-primary-btn" [style.opacity]="loading ? 0 : 1">Crop</button>
 </div>

@@ -34,6 +34,7 @@ export class CropperComponent implements AfterViewInit {
   @Output()
   public cropClick = new EventEmitter<boolean>();
 
+  public loading = true;
   public imageDestination: string;
   private cropper: Cropper;
 
@@ -42,15 +43,16 @@ export class CropperComponent implements AfterViewInit {
   }
 
   public ngAfterViewInit() {
+    setTimeout(() => (this.loading = false), 150);
     setTimeout(() => {
       this.cropper = new Cropper(this.imageElement.nativeElement, {
-        zoomable: false,
-        scalable: false,
         aspectRatio: 1,
         crop: () => {
           const canvas = this.cropper.getCroppedCanvas();
           this.imageDestination = canvas.toDataURL('image/png');
-        }
+        },
+        scalable: false,
+        zoomable: false
       });
     }, 100);
   }

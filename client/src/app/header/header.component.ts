@@ -23,6 +23,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
   private authListenerSubs: Subscription;
   private adminListenerSubs: Subscription;
   private showSmallHeaderAfterHamburgerClicked = true;
+  private username: string;
   public showLoginModal: boolean;
   public showRegister: boolean;
   public showModal: boolean;
@@ -54,11 +55,17 @@ export class HeaderComponent implements OnInit, OnDestroy {
 
     this.adminListenerSubs = this.authService.getAdminListener().subscribe((isAdmin) => {
       this.isAdmin = isAdmin;
-      this.profileURL += this.authService.getUsername();
+
+      if (!this.username) {
+        this.username = this.authService.getUsername();
+        this.profileURL += this.username;
+      }
     });
 
-    if (this.authService.getUsername()) {
-      this.profileURL += this.authService.getUsername();
+    this.username = this.authService.getUsername();
+
+    if (this.username) {
+      this.profileURL += this.username;
     }
   }
 
@@ -100,6 +107,10 @@ export class HeaderComponent implements OnInit, OnDestroy {
   }
 
   public onLogout() {
+    this.username = null;
+    this.isAdmin = false;
+    this.profileURL = '/users/profile/';
+
     this.setSmallHeader(false);
     this.authService.logout();
   }

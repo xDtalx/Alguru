@@ -1,5 +1,7 @@
 import { AfterViewInit, Component, ElementRef, OnDestroy, OnInit, QueryList, ViewChildren } from '@angular/core';
 import { ActivatedRoute, ParamMap } from '@angular/router';
+import { Subscription } from 'rxjs';
+import { AuthService } from 'src/app/auth/auth.service';
 import { ThemeService } from 'src/app/theme/theme.service';
 import { Question } from '../question.model';
 import { QuestionsService } from '../questions.service';
@@ -18,11 +20,14 @@ export class QuestionCreateComponent implements OnInit, OnDestroy, AfterViewInit
   public theme = 'dark';
   private mode = 'create';
   private questionId: string;
+  private questionUpdatedSub: Subscription;
+  private errorsSub: Subscription;
 
   constructor(
     private questionService: QuestionsService,
     private route: ActivatedRoute,
-    private themeService: ThemeService
+    private themeService: ThemeService,
+    private authService: AuthService
   ) {}
 
   public ngAfterViewInit(): void {
@@ -34,19 +39,21 @@ export class QuestionCreateComponent implements OnInit, OnDestroy, AfterViewInit
 
   public ngOnDestroy(): void {
     this.themeService.reset();
+    this.questionUpdatedSub.unsubscribe();
+    this.errorsSub.unsubscribe();
   }
 
   public ngOnInit() {
     this.newQuestionData = {
-      id: null,
-      title: null,
       content: null,
+      creator: null,
+      hints: null,
+      id: null,
+      level: null,
       solution: [],
       solutionTemplate: [],
       tests: [],
-      creator: null,
-      hints: null,
-      level: null
+      title: null
     };
 
     this.route.paramMap.subscribe((paramMap: ParamMap) => {
@@ -56,6 +63,12 @@ export class QuestionCreateComponent implements OnInit, OnDestroy, AfterViewInit
         this.setCreateMode();
       }
     });
+
+    this.questionUpdatedSub = this.questionService
+      .getQuestionUpdatedListener()
+      .subscribe(() => (this.isLoading = false));
+
+    this.errorsSub = this.authService.getAuthErrorListener().subscribe(() => (this.isLoading = false));
   }
 
   public uncheckOther(event: MouseEvent) {
@@ -88,15 +101,15 @@ export class QuestionCreateComponent implements OnInit, OnDestroy, AfterViewInit
 
   public setQuestion(questionData) {
     this.retrievedQuestionData = {
-      id: questionData._id,
-      title: questionData.title,
       content: questionData.content,
-      solutionTemplate: questionData.solutionTemplate,
-      solution: questionData.solution,
-      tests: questionData.tests,
+      creator: questionData.creator,
       hints: questionData.hints,
+      id: questionData._id,
       level: questionData.level,
-      creator: questionData.creator
+      solution: questionData.solution,
+      solutionTemplate: questionData.solutionTemplate,
+      tests: questionData.tests,
+      title: questionData.title
     };
   }
 

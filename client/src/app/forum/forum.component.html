@@ -7,10 +7,6 @@
     <button class="forum-btn alguru-primary-btn" (click)="onAddNewPostClick()">
       {{ addNewPost ? 'Cancel' : 'Add new post' }}
     </button>
-    <div class="container welcome" *ngIf="showWelcome">
-      <h1>Welcome to Alguru forum.</h1>
-      <h3>There are no posts at this moment. Be the first!</h3>
-    </div>
     <!--Add new Post mode-->
     <div class="container" *ngIf="addNewPost">
       <div class="form-group green-border-focus">
@@ -33,6 +29,10 @@
       <button class="forum-btn alguru-primary-btn" (click)="onAddNewPostClick()">
         Cancel
       </button>
+    </div>
+    <div class="container welcome" *ngIf="showWelcome">
+      <h1>Welcome to Alguru forum.</h1>
+      <h3>There are no posts at this moment. Be the first!</h3>
     </div>
     <!--Regular Mode-->
     <div class="container starter" *ngFor="let post of posts.slice().reverse()">

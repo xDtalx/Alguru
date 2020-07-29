@@ -86,7 +86,6 @@ export class QuestionsService {
       question.id = responseData.questionId;
       this.questions.push(question);
       this.questionsUpdated.next([...this.questions]);
-      this.router.navigate(['/']);
     });
   }
 

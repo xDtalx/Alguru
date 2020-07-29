@@ -15,7 +15,11 @@ export class ErrorInterceptor implements HttpInterceptor {
         let errorMessage: string[] = ['An unknown error occurred!'];
 
         if (error.error.message) {
-          errorMessage = error.error.message;
+          if (Array.isArray(error.error.message)) {
+            errorMessage = error.error.message;
+          } else {
+            errorMessage = [error.error.message];
+          }
         } else if (error.error.errors) {
           errorMessage = [];
           // tslint:disable-next-line: no-shadowed-variable

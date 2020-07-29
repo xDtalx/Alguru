@@ -25,10 +25,22 @@
   width: fit-content;
   border-radius: 1rem;
   box-shadow: 0 8px 10px rgba(0, 0, 0, 0.315);
+  align-items: center;
 }
 
 .alguru-primary-btn {
+  width: 100%;
   margin-top: 1rem;
+  background-color: rgb(67, 134, 197);
+}
+
+.alguru-primary-btn:hover {
+  background-color: rgb(80, 147, 209) !important;
+}
+
+.loader {
+  position: absolute;
+  margin: auto;
 }
 
 #cropper-container {
