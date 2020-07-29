@@ -59,7 +59,7 @@
           </div>
         </div>
       </div>
-      <div class="row-view clickable" [routerLink]="['/forum', post.id]" *ngIf="!post.onEditPostMode">
+      <div class="row-view clickable" [routerLink]="['/forum/post', post.id]" *ngIf="!post.onEditPostMode">
         <div class="voting" (click)="$event.stopPropagation()">
           <div class="vote vote-up" (click)="voteUp(post, false)"></div>
           <div class="votes">{{ getVotes(post) }}</div>

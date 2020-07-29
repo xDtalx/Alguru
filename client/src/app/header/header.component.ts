@@ -31,7 +31,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
   public isRelease: boolean;
   public showSmallHeader: boolean;
   public isAdmin: boolean;
-  public profileURL = '/profile/';
+  public profileURL = '/users/profile/';
   public isOpenMenu = false;
   public openNav: boolean;
 

@@ -11,11 +11,11 @@ export class ProfileService {
 
   constructor(private http: HttpClient) {}
 
-  getURLUpdatedListener() {
+  public getURLUpdatedListener() {
     return this.urlUpdated.asObservable();
   }
 
-  uploadImage(blob): void {
+  public uploadImage(blob): void {
     const formData = new FormData();
     formData.append('image', blob);
 

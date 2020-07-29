@@ -1,5 +1,5 @@
 <div class="list-container">
-  <button class="create-question-btn alguru-primary-btn" [routerLink]="['/create-question']">Create Question</button>
+  <button class="create-question-btn alguru-primary-btn" [routerLink]="['/questions/create']">Create Question</button>
   <mat-form-field id="filter" color="warn">
     <mat-label>Filter by level</mat-label>
     <input matInput (keyup)="applyFilter($event)" placeholder="Enter search term" autocomplete="off" />
@@ -25,12 +25,12 @@
       <ng-container matColumnDef="actions">
         <th mat-header-cell *matHeaderCellDef mat-sort-header>Actions</th>
         <td mat-cell *matCellDef="let question">
-          <button *ngIf="isUserAuth" [routerLink]="['/solve', question.id]" class="alguru-secondary-btn">
+          <button *ngIf="isUserAuth" [routerLink]="['/questions/solve', question.id]" class="alguru-secondary-btn">
             Solve
           </button>
           <button
             *ngIf="(isUserAuth && userId === question.creator) || isAdmin"
-            [routerLink]="['/edit', question.id]"
+            [routerLink]="['/questions/edit', question.id]"
             class="alguru-secondary-btn"
           >
             Edit

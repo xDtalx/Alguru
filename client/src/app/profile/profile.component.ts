@@ -58,9 +58,7 @@ export class ProfileComponent implements OnInit, OnDestroy, AfterViewInit {
     );
     this.themeService.overrideProperty('--main-padding', '3rem 0 0 0');
     this.themeService.setActiveThemeByName(this.theme);
-
     this.sub = this.profileService.getURLUpdatedListener().subscribe(this.onUploaded.bind(this));
-
     this.route.paramMap.subscribe((paramMap: ParamMap) => {
       if (paramMap.has('username')) {
         this.username = paramMap.get('username');
