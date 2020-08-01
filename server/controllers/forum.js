@@ -326,9 +326,9 @@ async function updatePostVotes(post, newVote, req, res) {
       const isModified = result.n > 0;
 
       if (isModified) {
-        res.status(200).json({ message: 'Post updated.' });
+        return res.status(200).json({ message: 'Post updated.' });
       } else {
-        res.status(500).json({ message: 'Something went wrong. Post was not updated.' });
+        return res.status(500).json({ message: 'Something went wrong. Post was not updated.' });
       }
     })
     .catch(() => res.status(500).json({ message: 'Something went wrong. Post was not updated.' }));
