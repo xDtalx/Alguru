@@ -23,8 +23,8 @@ router.delete('/:id', checkAuth, QuestionsController.deleteQuestion);
 // admin path
 router.put('/:id', checkAuth, validations, QuestionsController.updateQuestion);
 
-router.get('', QuestionsController.getQuestions);
+router.get('', checkAuth, QuestionsController.getQuestions);
 
-router.get('/:id', QuestionsController.getQuestion);
+router.get('/:id', checkAuth, QuestionsController.getQuestion);
 
 module.exports = router;
