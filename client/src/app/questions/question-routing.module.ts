@@ -16,6 +16,11 @@ const routes = [
     path: 'create'
   },
   {
+    component: QuestionCreateComponent,
+    data: { showSmallHeader: true, navigateUrlOnLogout: '/' },
+    path: 'edit/:questionId'
+  },
+  {
     component: QuestionListComponent,
     data: { showSmallHeader: true, navigateUrlOnLogout: '/' },
     path: 'list'

@@ -52,7 +52,12 @@
   </label>
   <label for="title">
     <span class="title">Hints</span>
-    <nt-editor [value]="retrievedQuestionData?.hints" (valueChanged)="onHintsValueChanged($event)" editable></nt-editor>
+    <nt-editor
+      fontSize="1.6rem"
+      [value]="retrievedQuestionData?.hints"
+      (valueChanged)="onHintsValueChanged($event)"
+      editable
+    ></nt-editor>
   </label>
   <div class="levels">
     <div class="level">
