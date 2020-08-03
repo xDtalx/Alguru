@@ -8,27 +8,32 @@
       {{ addNewPost ? 'Cancel' : 'Add new post' }}
     </button>
     <!--Add new Post mode-->
-    <div class="container" *ngIf="addNewPost">
-      <div class="form-group green-border-focus">
-        <label for="titleTextarea1">Title:</label>
-        <textarea
-          class="title-input"
-          id="titleTextarea1"
-          rows="1"
-          #newPostTitle
-          [(ngModel)]="titleDefaultValue"
-        ></textarea>
-        <div class="error-message" *ngIf="isEmptyTitle">Title can not be empty</div>
-        <div class="message">Message:</div>
-        <angular-editor id="editor1" [config]="getEditorConfig()" [(ngModel)]="messageDefaultValue"></angular-editor>
-        <div class="error-message" *ngIf="isEmptyMessage">Message can not be empty</div>
+    <div [ngClass]="{ container: true, 'auth-message-color': !isAuth }" class="container" *ngIf="addNewPost">
+      <div *ngIf="!isAuth">
+        Please login to add a new post.
       </div>
-      <button class="forum-btn alguru-primary-btn" (click)="onSubmitPost(newPostTitle.value, messageDefaultValue)">
-        Submit
-      </button>
-      <button class="forum-btn alguru-primary-btn" (click)="onAddNewPostClick()">
-        Cancel
-      </button>
+      <div *ngIf="isAuth" id="new-post-editor">
+        <div class="form-group green-border-focus">
+          <label for="titleTextarea1">Title:</label>
+          <textarea
+            class="title-input"
+            id="titleTextarea1"
+            rows="1"
+            #newPostTitle
+            [(ngModel)]="titleDefaultValue"
+          ></textarea>
+          <div class="error-message" *ngIf="isEmptyTitle">Title can not be empty</div>
+          <div class="message">Message:</div>
+          <angular-editor id="editor1" [config]="getEditorConfig()" [(ngModel)]="messageDefaultValue"></angular-editor>
+          <div class="error-message" *ngIf="isEmptyMessage">Message can not be empty</div>
+        </div>
+        <button class="forum-btn alguru-primary-btn" (click)="onSubmitPost(newPostTitle.value, messageDefaultValue)">
+          Submit
+        </button>
+        <button class="forum-btn alguru-primary-btn" (click)="onAddNewPostClick()">
+          Cancel
+        </button>
+      </div>
     </div>
     <div class="container welcome" *ngIf="showWelcome">
       <h1>Welcome to Alguru forum.</h1>
@@ -61,9 +66,9 @@
       </div>
       <div class="row-view clickable" [routerLink]="['/forum/post', post.id]" *ngIf="!post.onEditPostMode">
         <div class="voting" (click)="$event.stopPropagation()">
-          <div class="vote vote-up" (click)="voteUp(post, false)"></div>
+          <div [ngClass]="{ 'vote vote-up': true, 'btn-disable': !isAuth }" (click)="voteUp(post, false)"></div>
           <div class="votes">{{ getVotes(post) }}</div>
-          <div class="vote vote-down" (click)="voteDown(post, false)"></div>
+          <div [ngClass]="{ 'vote vote-down': true, 'btn-disable': !isAuth }" (click)="voteDown(post, false)"></div>
         </div>
         <div class="post-container">
           <div class="content">
@@ -140,9 +145,12 @@
       </div>
       <div class="row-view" *ngIf="!selectedPost.onEditPostMode">
         <div class="voting">
-          <div class="vote vote-up" (click)="voteUp(selectedPost, false)"></div>
+          <div [ngClass]="{ 'vote vote-up': true, 'btn-disable': !isAuth }" (click)="voteUp(selectedPost, false)"></div>
           <div class="votes">{{ getVotes(selectedPost) }}</div>
-          <div class="vote vote-down" (click)="voteDown(selectedPost, false)"></div>
+          <div
+            [ngClass]="{ 'vote vote-down': true, 'btn-disable': !isAuth }"
+            (click)="voteDown(selectedPost, false)"
+          ></div>
         </div>
         <div class="post-container">
           <div class="content">
@@ -194,36 +202,36 @@
     </div>
     <!-- comments -->
     <div class="container" *ngFor="let comment of selectedPost.comments">
-      <div class="row-view" *ngIf="!comment.onEditPostMode">
-        <div class="voting">
-          <div class="vote vote-up" (click)="voteUp(comment, true)"></div>
-          <div class="votes">{{ getVotes(comment) }}</div>
-          <div class="vote vote-down" (click)="voteDown(comment, true)"></div>
-        </div>
-        <div class="post-comment">
-          <div class="respect-padding">
-            <div class="edits">
-              <div class="edits-btn-container">
-                <button
-                  class="edits-btn"
-                  *ngIf="comment.titles.length > 1"
-                  (click)="onShowEdits(comment); $event.stopPropagation()"
-                >
-                  edits
-                </button>
-              </div>
-              <div class="pop-up" *ngIf="comment.showEdits">
-                <div *ngFor="let date of comment.dates">
-                  <button
-                    [ngClass]="date === comment.currentDate ? 'edit-date current-date' : 'edit-date'"
-                    (click)="onEditDateClicked($event, comment, date); $event.stopPropagation()"
-                  >
-                    {{ getDate(date) }}
-                  </button>
-                </div>
-              </div>
+      <div class="respect-padding">
+        <div class="edits">
+          <div class="edits-btn-container">
+            <button
+              class="edits-btn"
+              *ngIf="comment.titles.length > 1"
+              (click)="onShowEdits(comment); $event.stopPropagation()"
+            >
+              edits
+            </button>
+          </div>
+          <div class="pop-up" *ngIf="comment.showEdits">
+            <div *ngFor="let date of comment.dates">
+              <button
+                [ngClass]="date === comment.currentDate ? 'edit-date current-date' : 'edit-date'"
+                (click)="onEditDateClicked($event, comment, date); $event.stopPropagation()"
+              >
+                {{ getDate(date) }}
+              </button>
             </div>
           </div>
+        </div>
+      </div>
+      <div class="row-view" *ngIf="!comment.onEditPostMode">
+        <div class="voting">
+          <div [ngClass]="{ 'vote vote-up': true, 'btn-disable': !isAuth }" (click)="voteUp(comment, true)"></div>
+          <div class="votes">{{ getVotes(comment) }}</div>
+          <div [ngClass]="{ 'vote vote-down': true, 'btn-disable': !isAuth }" (click)="voteDown(comment, true)"></div>
+        </div>
+        <div class="post-comment">
           <div class="content">
             <div class="post-content" [innerHTML]="comment.currentContent"></div>
           </div>
@@ -274,14 +282,19 @@
     <div class="app-error-container">
       <app-error></app-error>
     </div>
-    <div class="container">
-      <h4>New Comment</h4>
-      <div class="form-group green-border-focus">
-        <angular-editor id="editor2" [config]="getEditorConfig()" [(ngModel)]="messageDefaultValue"></angular-editor>
+    <div [ngClass]="{ container: true, 'auth-message-color': !isAuth }">
+      <div *ngIf="!isAuth" class="auth-message-color">
+        please login to add new comment.
       </div>
-      <button class="forum-btn alguru-primary-btn" (click)="onSubmitComment(messageDefaultValue)">
-        Submit
-      </button>
+      <div *ngIf="isAuth" id="new-comment-editor">
+        <h4>New Comment</h4>
+        <div class="form-group green-border-focus">
+          <angular-editor id="editor2" [config]="getEditorConfig()" [(ngModel)]="messageDefaultValue"></angular-editor>
+        </div>
+        <button class="forum-btn alguru-primary-btn" (click)="onSubmitComment(messageDefaultValue)">
+          Submit
+        </button>
+      </div>
     </div>
   </div>
 </div>

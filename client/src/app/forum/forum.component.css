@@ -234,6 +234,11 @@ button {
   margin-right: 0;
 }
 
+.btn-disable {
+  cursor: default !important;
+  border-color: rgba(0, 0, 0, 0.15) !important;
+}
+
 .content {
   height: 100%;
   flex-grow: 1;
@@ -317,6 +322,10 @@ button {
 .details {
   display: flex;
   flex-direction: column;
+}
+
+.auth-message-color {
+  background-color: rgb(214, 69, 69);
 }
 
 @media only screen and (max-width: 800px) {

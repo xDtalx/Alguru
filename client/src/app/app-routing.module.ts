@@ -20,7 +20,6 @@ const routes: Routes = [
     path: 'questions'
   },
   {
-    canActivate: [AuthGuard],
     loadChildren: () => import('./forum/forum.module').then((mod) => mod.ForumModule),
     path: 'forum'
   }
