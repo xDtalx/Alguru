@@ -100,9 +100,7 @@ export class ForumComponent implements OnInit, OnDestroy, AfterViewInit {
       this.loggedInUsername = this.authService.getUsername();
     }
 
-    this.authSub = this.authService
-    .getAuthStatusListener()
-    .subscribe((isAuth) => {
+    this.authSub = this.authService.getAuthStatusListener().subscribe((isAuth) => {
       this.isAuth = isAuth;
 
       if (!isAuth) {

@@ -22,8 +22,13 @@ export class HeaderComponent implements OnInit, OnDestroy {
 
   private authListenerSubs: Subscription;
   private adminListenerSubs: Subscription;
+  private smallHeaderSubs: Subscription;
+  private smallHeaderOnLogoutSubs: Subscription;
+  private navigateUrlOnLogoutSubs: Subscription;
   private showSmallHeaderAfterHamburgerClicked = true;
   private username: string;
+  private navigateUrlOnLogout: string;
+  private showSmallHeaderOnLogout: boolean;
   public showLoginModal: boolean;
   public showRegister: boolean;
   public showModal: boolean;
@@ -37,7 +42,15 @@ export class HeaderComponent implements OnInit, OnDestroy {
   public openNav: boolean;
 
   constructor(private authService: AuthService, private settingsService: SettingsService, private route: Router) {
-    this.settingsService.getSmallHeaderObservable().subscribe((isShow) => this.setSmallHeader(isShow));
+    this.smallHeaderSubs = this.settingsService
+      .getSmallHeaderObservable()
+      .subscribe((isShow) => this.setSmallHeader(isShow));
+    this.navigateUrlOnLogoutSubs = this.settingsService
+      .getNavigateUrlOnLogoutObservable()
+      .subscribe((url) => (this.navigateUrlOnLogout = url));
+    this.smallHeaderOnLogoutSubs = this.settingsService
+      .getSmallHeaderOnLogoutObservable()
+      .subscribe((isShow) => (this.showSmallHeaderOnLogout = isShow));
   }
 
   public ngOnInit() {
@@ -72,6 +85,9 @@ export class HeaderComponent implements OnInit, OnDestroy {
   public ngOnDestroy() {
     this.authListenerSubs.unsubscribe();
     this.adminListenerSubs.unsubscribe();
+    this.smallHeaderSubs.unsubscribe();
+    this.smallHeaderOnLogoutSubs.unsubscribe();
+    this.navigateUrlOnLogoutSubs.unsubscribe();
   }
 
   public setSmallHeader(isShow: boolean) {
@@ -111,8 +127,8 @@ export class HeaderComponent implements OnInit, OnDestroy {
     this.isAdmin = false;
     this.profileURL = '/users/profile/';
 
-    this.setSmallHeader(false);
-    this.authService.logout();
+    this.setSmallHeader(this.showSmallHeaderOnLogout);
+    this.authService.logout(this.navigateUrlOnLogout);
   }
 
   public show(type: ModalTypes) {

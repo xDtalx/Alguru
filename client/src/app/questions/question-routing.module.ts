@@ -7,17 +7,17 @@ import { QuestionListComponent } from './question-list/question-list.component';
 const routes = [
   {
     component: IDEComponent,
-    data: { showSmallHeader: true },
+    data: { showSmallHeader: true, navigateUrlOnLogout: '/' },
     path: 'solve/:questionId'
   },
   {
     component: QuestionCreateComponent,
-    data: { showSmallHeader: true },
+    data: { showSmallHeader: true, navigateUrlOnLogout: '/' },
     path: 'create'
   },
   {
     component: QuestionListComponent,
-    data: { showSmallHeader: true },
+    data: { showSmallHeader: true, navigateUrlOnLogout: '/' },
     path: 'list'
   }
 ];

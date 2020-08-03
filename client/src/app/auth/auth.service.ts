@@ -125,7 +125,7 @@ export class AuthService {
     });
   }
 
-  public login(username: string, password: string) {
+  public login(username: string, password: string, urlToNavigateAfter?: string) {
     this.errors = [];
 
     const authData: ILoginAuthData = {
@@ -156,7 +156,10 @@ export class AuthService {
             const now = new Date();
             const expirationDate = new Date(now.getTime() + response.expiresIn * 1000);
             this.saveAuthData(this.token, expirationDate, this.userId, this.username, String(this.isAdmin));
-            this.router.navigate(['/']);
+
+            if (urlToNavigateAfter) {
+              this.router.navigate([urlToNavigateAfter]);
+            }
           }
         },
         () => {
@@ -192,7 +195,7 @@ export class AuthService {
     }
   }
 
-  public logout() {
+  public logout(url?: string) {
     this.errors = [];
     this.token = null;
     this.isAuth = false;
@@ -200,10 +203,13 @@ export class AuthService {
     this.username = null;
     this.authStatusListener.next(false);
     this.adminListener.next(false);
-    this.router.navigate(['/']);
     this.clearAuthData();
     this.userId = null;
     clearTimeout(this.tokenTimer);
+
+    if (url) {
+      this.router.navigate([url]);
+    }
   }
 
   private saveAuthData(token: string, expirationDate: Date, userId: string, username: string, isAdmin: string) {

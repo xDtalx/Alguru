@@ -1,6 +1,7 @@
 import { Component, EventEmitter, OnDestroy, OnInit, Output } from '@angular/core';
 import { NgForm } from '@angular/forms';
 import { Subscription } from 'rxjs';
+import { SettingsService } from 'src/app/settings.service';
 import { AuthService } from '../auth.service';
 
 @Component({
@@ -16,9 +17,15 @@ export class LoginComponent implements OnInit, OnDestroy {
   public regiterOpened: EventEmitter<any> = new EventEmitter();
 
   public isLoading = false;
-  public authStatusSub: Subscription;
+  private authStatusSub: Subscription;
+  private navigateUrlOnLoginSub: Subscription;
+  private navigateUrlOnLogin: string;
 
-  constructor(private authService: AuthService) {}
+  constructor(private authService: AuthService, private settingsService: SettingsService) {
+    this.navigateUrlOnLoginSub = this.settingsService
+      .getNavigateUrlOnLoginObservable()
+      .subscribe((url) => (this.navigateUrlOnLogin = url));
+  }
 
   public ngOnInit() {
     this.authStatusSub = this.authService.getAuthStatusListener().subscribe((authStatus) => {
@@ -29,6 +36,7 @@ export class LoginComponent implements OnInit, OnDestroy {
   }
 
   public ngOnDestroy() {
+    this.navigateUrlOnLoginSub.unsubscribe();
     this.authStatusSub.unsubscribe();
     window.removeEventListener('keyup', this.onKeyUp.bind(this));
   }
@@ -39,7 +47,7 @@ export class LoginComponent implements OnInit, OnDestroy {
     }
 
     this.isLoading = true;
-    this.authService.login(loginForm.value.username, loginForm.value.password);
+    this.authService.login(loginForm.value.username, loginForm.value.password, this.navigateUrlOnLogin);
   }
 
   public hide() {
