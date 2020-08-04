@@ -1,4 +1,5 @@
 const Question = require('../models/question');
+const Vote = require('../models/vote.js');
 const { validationResult } = require('express-validator');
 
 exports.createQuestion = (req, res, next) => {
@@ -17,6 +18,7 @@ exports.createQuestion = (req, res, next) => {
     tests: req.body.tests,
     hints: req.body.hints,
     level: req.body.level,
+    votes: {},
     creator: req.userData.userId
   });
 
@@ -117,17 +119,30 @@ exports.voteOnQuestion = (req, res, next) => {
     return res.status(422).json({ errors: errors.array({ onlyFirstError: true }) });
   }
 
+  
   Question.findById(req.params.id)
-    .then((question) => putNewVote(req, res, question))
-    .catch(() => res.status(401).json({ message: 'Unauthorized!' }));
+    .then((question) => {
+    if (question)
+     {
+      putNewVote(req, res, question);
+     }
+    else
+    {
+      return res.status(403).json({ message: 'Cant find the question! '});
+    }
+
+    });
 };
 
+
 async function putNewVote(req, res, toPutIn) {
-  if (toPutIn.author === req.userData.username) {
+
+  if (toPutIn.creator == req.userData.userId) {
     return res.status(403).json({ message: 'User cannot vote on his own question' });
   } else if (toPutIn.votes.has(req.userData.username)) {
     return res.status(403).json({ message: 'User voted already' });
   }
+
 
   const newVote = new Vote({
     username: req.userData.username,

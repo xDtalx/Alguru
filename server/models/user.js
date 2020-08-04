@@ -6,6 +6,7 @@ const userSchema = mongoose.Schema({
   username_lower: { type: String, unique: true },
   email: { type: String, require: true, unique: true },
   hashedPassword: { type: String, require: true },
+  numberOfSolvedQuestoins: { type : Number },
   isAdmin: { type: Boolean, require: true }
 });
 
