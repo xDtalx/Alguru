@@ -27,4 +27,15 @@ router.get('', QuestionsController.getQuestions);
 
 router.get('/:id', QuestionsController.getQuestion);
 
+// vote on question
+router.patch(
+  '/:id',
+  checkAuth,
+  [
+    check('username', 'Username in vote is invalid').exists().trim().isLength({ min: 6 }),
+    check('isUp', 'Vote type not specified').exists()
+  ],
+  QuestionsController.voteOnQuestion
+);
+
 module.exports = router;
