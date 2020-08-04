@@ -16,7 +16,7 @@ exports.createUser = (req, res, next) => {
       username_lower: req.body.username.toLowerCase(),
       email: req.body.email,
       hashedPassword: hash,
-      numberOfSolvedQuestoins : 0,
+      solvedQuestoins : {},
       isAdmin: false
     });
 
