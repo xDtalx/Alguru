@@ -1,4 +1,5 @@
 const axios = require('axios');
+const User = require('../models/user');
 
 exports.executeCode = (req, res, next) => {
   const data = {
@@ -13,7 +14,16 @@ exports.executeCode = (req, res, next) => {
 
   axios
     .post(process.env.RUN_CODE_API + '/execute', JSON.stringify(data), config)
-    .then((result) => {
+    .then(async (result) => {
+      if (result.data.testsFailed === '') {
+        const questionId = req.body.questionId;
+
+        await User.findOne({ _id: req.userData.userId }).then(async (user) => {
+          user.solvedQuestions.set(questionId, 'true');
+          await User.updateOne({ _id: req.userData.userId }, user);
+        });
+      }
+
       res.setHeader('Content-Type', 'application/json');
       res.status(result.status).send(result.data);
     })

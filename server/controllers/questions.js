@@ -9,7 +9,6 @@ exports.createQuestion = (req, res, next) => {
     return res.status(422).json({ errors: errors.array({ onlyFirstError: true }) });
   }
 
-
   const question = new Question({
     title: req.body.title,
     content: req.body.content,
@@ -37,28 +36,25 @@ exports.deleteQuestion = (req, res, next) => {
     searchOptions = { _id: req.params.id };
   } else {
     searchOptions = { _id: req.params.id, creator: req.userData.userId };
-  }  
+  }
 
   // we need to delete from the comments array of that post
   Question.deleteOne(searchOptions)
-    .then( async (deleteResult) => {
+    .then(async (deleteResult) => {
       const isDeleted = deleteResult.n > 0;
 
       if (isDeleted) {
-          res.status(200).json({ message: 'Question deleted' });
+        res.status(200).json({ message: 'Question deleted' });
       } else {
-         res.status(500).json({ message: 'Deleting the Question was unsuccessful' });
+        res.status(500).json({ message: 'Deleting the Question was unsuccessful' });
       }
     })
     .catch(() => res.status(401).json({ message: 'Not authorized!' }));
 };
 
-
-
 exports.getQuestions = (req, res, next) => {
   Question.find().then((documents) => res.status(200).json(documents));
 };
-
 
 exports.updateQuestion = (req, res, next) => {
   const errors = validationResult(req);
@@ -77,7 +73,6 @@ exports.updateQuestion = (req, res, next) => {
 
   Question.findOne(searchOptions)
     .then(async (question) => {
-
       question.title = req.body.title;
       question.content = req.body.content;
       question.tests = req.body.tests;
@@ -119,30 +114,21 @@ exports.voteOnQuestion = (req, res, next) => {
     return res.status(422).json({ errors: errors.array({ onlyFirstError: true }) });
   }
 
-  
-  Question.findById(req.params.id)
-    .then((question) => {
-    if (question)
-     {
+  Question.findById(req.params.id).then((question) => {
+    if (question) {
       putNewVote(req, res, question);
-     }
-    else
-    {
-      return res.status(403).json({ message: 'Cant find the question! '});
+    } else {
+      return res.status(404).json({ message: 'Question not found!' });
     }
-
-    });
+  });
 };
 
-
 async function putNewVote(req, res, toPutIn) {
-
-  if (toPutIn.creator == req.userData.userId) {
-    return res.status(403).json({ message: 'User cannot vote on his own question' });
+  if (toPutIn.creator === req.userData.userId) {
+    return res.status(400).json({ message: 'User cannot vote on his own question' });
   } else if (toPutIn.votes.has(req.userData.username)) {
-    return res.status(403).json({ message: 'User voted already' });
+    return res.status(400).json({ message: 'User voted already' });
   }
-
 
   const newVote = new Vote({
     username: req.userData.username,
