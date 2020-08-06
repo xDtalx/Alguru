@@ -59,6 +59,6 @@
   aria-labelledby="myModalLabel"
   aria-hidden="true"
 >
-  <app-login *ngIf="showLoginModal" (onCloseModal)="hide()" (onRegisterOpen)="openRegister()"></app-login>
-  <app-register *ngIf="showRegister" (onCloseModal)="hide()"></app-register>
+  <app-login *ngIf="showLogin" (modalClosed)="hide()" (registerOpened)="show(ModalTypes.RegisterModal)"></app-login>
+  <app-register *ngIf="showRegister" (modalClosed)="hide()"></app-register>
 </div>

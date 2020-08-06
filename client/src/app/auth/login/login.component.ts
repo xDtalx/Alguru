@@ -14,7 +14,7 @@ export class LoginComponent implements OnInit, OnDestroy {
   public modalClosed: EventEmitter<any> = new EventEmitter();
 
   @Output()
-  public regiterOpened: EventEmitter<any> = new EventEmitter();
+  public registerOpened: EventEmitter<any> = new EventEmitter();
 
   public isLoading = false;
   private authStatusSub: Subscription;
@@ -55,7 +55,7 @@ export class LoginComponent implements OnInit, OnDestroy {
   }
 
   public openRegister() {
-    this.regiterOpened.emit();
+    this.registerOpened.emit();
   }
 
   public onKeyUp(event: KeyboardEvent) {

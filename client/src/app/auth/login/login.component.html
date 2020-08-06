@@ -20,7 +20,6 @@
           <button type="submit" class="btn btn-primary login-btn btn-block">Sign in</button>
         </div>
         <div class="login-options">
-          <div class="option"><input type="checkbox" />Remember me</div>
           <div class="option clickable">Forgot Password?</div>
         </div>
         <div class="or-seperator"><i>or</i></div>
@@ -31,7 +30,7 @@
           <a href="#" class="btn btn-danger">Google</a>
         </div>
         <p class="text-center text-muted small">
-          Don't have an account? <a href="#" class="sign-up" (click)="openRegister()">Sign up here!</a>
+          Don't have an account? <button class="sign-up" (click)="openRegister()">Sign up here!</button>
         </p>
         <p class="text-center"><button (click)="hide()" class="btn close-button">Close</button></p>
       </div>

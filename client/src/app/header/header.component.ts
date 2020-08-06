@@ -29,7 +29,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
   private username: string;
   private navigateUrlOnLogout: string;
   private showSmallHeaderOnLogout: boolean;
-  public showLoginModal: boolean;
+  public showLogin: boolean;
   public showRegister: boolean;
   public showModal: boolean;
   public ModalTypes = ModalTypes;
@@ -135,21 +135,18 @@ export class HeaderComponent implements OnInit, OnDestroy {
     this.showModal = true;
 
     if (type === ModalTypes.LoginModal) {
-      this.showLoginModal = true;
+      this.showLogin = true;
+      this.showRegister = false;
     } else {
+      this.showLogin = false;
       this.showRegister = true;
     }
   }
 
   public hide() {
     this.showModal = false;
-    this.showLoginModal = false;
+    this.showLogin = false;
     this.showRegister = false;
-  }
-
-  public openRegister() {
-    this.showLoginModal = false;
-    this.showRegister = true;
   }
 
   public toggleNav() {
