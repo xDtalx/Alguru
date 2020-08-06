@@ -1,5 +1,6 @@
 import { Component, OnDestroy, OnInit, Renderer2, ViewEncapsulation } from '@angular/core';
 import { ActivatedRoute, ParamMap } from '@angular/router';
+import { toInteger } from '@ng-bootstrap/ng-bootstrap/util/util';
 import * as $ from 'jquery';
 import { Subscription } from 'rxjs';
 import { Question } from '../questions/question.model';
@@ -15,6 +16,9 @@ import { ExecuteResponse } from './execute-response.model';
 })
 export class IDEComponent implements OnInit, OnDestroy {
   private executeListenerSubs: Subscription;
+  private time: number;
+  private stopwatchInterval;
+  public timeStr = '00:00:00';
   public executeResponse: ExecuteResponse;
   public currentOutput: string;
   public solutionCode: string;
@@ -25,9 +29,9 @@ export class IDEComponent implements OnInit, OnDestroy {
   public theme = 'dark';
   public solutionTemplate: string;
   public code: string;
-  public solValue: string;
   public testsValue: string;
   public loading = false;
+  public showHint = false;
 
   constructor(
     private route: ActivatedRoute,
@@ -41,37 +45,24 @@ export class IDEComponent implements OnInit, OnDestroy {
 
   public ngOnInit(): void {
     this.themeService.setDarkTheme();
-
     this.route.paramMap.subscribe((paramMap: ParamMap) => {
       if (paramMap.has('questionId')) {
         this.questionId = paramMap.get('questionId');
-
-        this.questionsService.getQuestion(this.questionId).subscribe((questionData) => {
-          this.questionToSolve = {
-            content: questionData.content,
-            creator: questionData.creator,
-            hints: questionData.hints,
-            id: questionData._id,
-            level: questionData.level,
-            solution: questionData.solution,
-            solutionTemplate: questionData.solutionTemplate,
-            tests: questionData.tests,
-            title: questionData.title
-          };
-          this.solValue = this.questionToSolve.solutionTemplate[0];
-          this.testsValue = this.questionToSolve.tests[0];
-        });
+        this.getQuestion();
       }
     });
 
-    this.executeResponse = { message: '', output: '', errors: '' };
     this.currentOutput = '';
     this.executeListenerSubs = this.codeService.getExecuteResponseListener().subscribe((response) => {
       this.executeResponse = response;
       this.loading = false;
 
-      if (this.executeResponse !== null) {
+      if (this.executeResponse) {
         this.currentOutput = 'Custom> ' + this.executeResponse.message;
+
+        if (this.executeResponse.errors === '') {
+          clearInterval(this.stopwatchInterval);
+        }
       }
     });
   }
@@ -86,22 +77,6 @@ export class IDEComponent implements OnInit, OnDestroy {
       this.makeContainerWithFixHeight(container, style);
     });
   }
-
-  // public onKeyDown(event: KeyboardEvent) {
-  //   const editor: HTMLElement = event.target as HTMLElement;
-  //   const lastLine: HTMLElement = $(editor).find('.view-line').last()[0];
-  //   const sel: Selection = document.getSelection();
-  //   const currentLine: HTMLElement = this.editorService.getSelectedElementParentLine(editor, sel);
-  //   let editorContainer = editor;
-
-  //   while (!$(editorContainer).hasClass('editor-container')) {
-  //     editorContainer = editorContainer.parentElement;
-  //   }
-
-  //   if (currentLine && currentLine === lastLine) {
-  //     editorContainer.scrollTop = lastLine.offsetTop;
-  //   }
-  // }
 
   public makeContainerWithFixHeight(container: HTMLElement, style: CSSStyleDeclaration): void {
     setTimeout(() => {
@@ -124,33 +99,101 @@ export class IDEComponent implements OnInit, OnDestroy {
   }
 
   public onRunCode(): void {
-    this.loading = true;
+    if (this.executeResponse && this.executeResponse.errors === '') {
+      this.resetQuestion();
+    } else {
+      this.loading = true;
 
-    if (!this.testsCode || this.testsCode.trim() === '') {
-      this.testsCode = this.questionToSolve.tests[0];
+      if (!this.testsCode || this.testsCode.trim() === '') {
+        this.testsCode = this.questionToSolve.tests[0];
+      }
+
+      if (!this.solutionCode || this.solutionCode.trim() === '') {
+        this.solutionCode = this.questionToSolve.solutionTemplate[0];
+      }
+
+      this.codeService.runCode(this.lang, this.solutionCode, this.testsCode);
     }
-
-    if (!this.solutionCode || this.solutionCode.trim() === '') {
-      this.solutionCode = this.questionToSolve.solutionTemplate[0];
-    }
-
-    this.codeService.runCode(this.lang, this.solutionCode, this.testsCode);
   }
 
   public onCustomClick(): void {
-    this.currentOutput = 'Custom> ' + this.executeResponse.message;
+    this.currentOutput = 'Custom> ';
+
+    if (this.executeResponse) {
+      this.currentOutput += this.executeResponse.message;
+    }
   }
 
   public onRawOutputClick(): void {
-    this.currentOutput =
-      'Output> ' + (this.executeResponse.errors === '' ? this.executeResponse.output : this.executeResponse.errors);
+    this.currentOutput = 'Output> ';
+
+    if (this.executeResponse) {
+      this.currentOutput +=
+        this.executeResponse.errors === '' ? this.executeResponse.output : this.executeResponse.errors;
+    }
   }
 
   public onSolutionCodeChanged(value: string): void {
-    this.solutionCode = value;
+    if (this.solutionCode !== value) {
+      this.solutionCode = value;
+    }
   }
 
   public onTestsCodeChanged(value: string): void {
     this.testsCode = value;
+  }
+
+  public getVotes(): number {
+    return -1;
+  }
+
+  /*eslint-disable */
+  public voteUp(): void {}
+
+  public voteDown(): void {}
+  /* eslint-enable */
+
+  public setShowHint(show: boolean): void {
+    this.showHint = show;
+  }
+
+  private getQuestion(): void {
+    this.questionsService.getQuestion(this.questionId).subscribe((questionData) => {
+      this.questionToSolve = {
+        content: questionData.content,
+        creator: questionData.creator,
+        hints: questionData.hints,
+        id: questionData._id,
+        level: questionData.level,
+        solution: questionData.solution,
+        solutionTemplate: questionData.solutionTemplate,
+        tests: questionData.tests,
+        title: questionData.title
+      };
+      this.solutionCode = this.questionToSolve.solutionTemplate[0];
+      this.testsValue = this.questionToSolve.tests[0];
+    });
+    this.initStopwatch();
+  }
+
+  private initStopwatch(): void {
+    this.time = Date.now() / 1000;
+    this.stopwatchInterval = setInterval(() => {
+      const currentSeconds = Date.now() / 1000 - this.time;
+      const seconds = Math.floor(currentSeconds % 60);
+      const minutes = Math.floor(currentSeconds / 60);
+      const hours = Math.floor(currentSeconds / 3600);
+      const formatedSeconds = seconds > 9 ? `${seconds}` : `0${seconds}`;
+      const formatedMinutes = minutes > 9 ? `${minutes}` : `0${minutes}`;
+      const formatedHours = hours > 9 ? `${hours}` : `0${hours}`;
+
+      this.timeStr = `${formatedHours}:${formatedMinutes}:${formatedSeconds}`;
+    }, 1000);
+  }
+
+  private resetQuestion(): void {
+    this.executeResponse = null;
+    this.currentOutput = 'Custom> ';
+    this.getQuestion();
   }
 }
