@@ -68,6 +68,7 @@ export class IDEComponent implements OnInit, OnDestroy {
   }
 
   public ngOnDestroy(): void {
+    this.themeService.reset();
     this.executeListenerSubs.unsubscribe();
   }
 

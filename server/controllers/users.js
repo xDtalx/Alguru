@@ -1,4 +1,5 @@
 const User = require('../models/user');
+const TmpToken = require('../models/tmp-token');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const { validationResult } = require('express-validator');
@@ -141,22 +142,33 @@ exports.resetPassword = async (req, res, next) => {
   try {
     const decodedToken = jwt.verify(resetToken, process.env.JWT_KEY);
 
-    await bcrypt
-      .hash(req.body.password, 10)
-      .then(async (hash) => {
-        await User.updateOne({ _id: decodedToken.userId }, { $set: { hashedPassword: hash } })
-          .then((result) => {
-            const isModified = result.n > 0;
+    // deleting the tmp token so next time it couldn't be used.
+    await TmpToken.deleteOne({ token: resetToken })
+      .then(async (result) => {
+        const deleted = result.n > 0;
 
-            if (isModified) {
-              res.status(200).json({ message: 'Password changed successfully' });
-            } else {
-              res.status(500).json({ message: 'Unknown error on password update' });
-            }
+        if (!deleted) {
+          return res.status(400).json({ message: 'This token already used to reset password...' });
+        }
+
+        await bcrypt
+          .hash(req.body.password, 10)
+          .then(async (hash) => {
+            await User.updateOne({ _id: decodedToken.userId }, { $set: { hashedPassword: hash } })
+              .then((result) => {
+                const isModified = result.n > 0;
+
+                if (isModified) {
+                  res.status(200).json({ message: 'Password changed successfully' });
+                } else {
+                  res.status(500).json({ message: 'Unknown error on password update' });
+                }
+              })
+              .catch((err) => console.log(err));
           })
           .catch((err) => console.log(err));
       })
-      .catch((err) => console.log(err));
+      .catch(() => res.status(500).json({ message: 'Unknown error when trying to use the reset token' }));
   } catch {
     res.status(400).json({ message: 'Reset token is invalid' });
   }
@@ -296,25 +308,28 @@ async function sendResetPasswordEmail(userData) {
     },
     process.env.JWT_KEY,
     {
-      expiresIn: '5h'
+      expiresIn: 1000 * 60 * 10 // 10 minutes
     }
   );
 
-  // send mail with defined transport object
-  const info = await mailer.sendMail({
-    from: '"No Reply" <alguru.dev@gmail.com>', // sender address
-    to: userData.email, // list of receivers
-    subject: 'Reset Password', // Subject line
-    html: `<p>Hello ${userData.username},</p>
-    <p>
-      <a href="${process.env.CLIENT_URL}/users/login/reset/${token}">
-        Click here
-      </a>
-      <span> to reset your password.</span>
-    </p>`
-  });
+  const tmpToken = new TmpToken({ token });
+  await tmpToken.save().then(async (savedTmpToken) => {
+    // send mail with defined transport object
+    const info = await mailer.sendMail({
+      from: '"No Reply" <alguru.dev@gmail.com>', // sender address
+      to: userData.email, // list of receivers
+      subject: 'Reset Password', // Subject line
+      html: `<p>Hello ${userData.username},</p>
+      <p>
+        <a href="${process.env.CLIENT_URL}/users/login/reset/${token}">
+          Click here
+        </a>
+        <span> to reset your password.</span>
+      </p>`
+    });
 
-  console.log('Preview URL: %s', nodemailer.getTestMessageUrl(info));
+    console.log('Preview URL: %s', nodemailer.getTestMessageUrl(info));
+  });
 }
 
 async function sendVarificationEmail(userData) {
