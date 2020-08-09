@@ -7,7 +7,7 @@ const validations = [
   check('username', 'Username should be at least 6 characters').exists().trim().isLength({ min: 6 }),
   check('password', 'Password should be at least 6 characters').exists().trim().isLength({ min: 6 })
 ];
-const registerCheck = [
+const confirmPasswordCheck = [
   check('confirmPassword', 'Password should be at least 6 characters')
     .exists()
     .trim()
@@ -20,17 +20,30 @@ const registerCheck = [
       } else {
         return value;
       }
-    }),
-  check('email', 'Invalid email').exists().isEmail().normalizeEmail({ gmail_remove_dots: false })
+    })
 ];
+const emailCheck = [check('email', 'Invalid email').exists().isEmail().normalizeEmail({ gmail_remove_dots: false })];
 
-router.post('/register', validations, registerCheck, UserController.createUser);
+router.post('/register', validations, confirmPasswordCheck, emailCheck, UserController.createUser);
 
 router.post('/login', validations, UserController.userLogin);
 
+router.post(
+  '/login/reset',
+  [check('email', 'Invalid email').exists().isEmail().normalizeEmail({ gmail_remove_dots: false })],
+  UserController.sendResetPasswordEmail
+);
+
+router.post(
+  '/login/reset/:resetToken',
+  [check('password', 'Password should be at least 6 characters').exists().trim().isLength({ min: 6 })],
+  confirmPasswordCheck,
+  UserController.resetPassword
+);
+
 router.delete('/delete', checkAuth, UserController.deleteUser);
 
-router.put('/update', checkAuth, validations, registerCheck, UserController.updateUser);
+router.put('/update', checkAuth, validations, confirmPasswordCheck, emailCheck, UserController.updateUser);
 
 router.get('/verify/:verifyToken', UserController.verifyUser);
 

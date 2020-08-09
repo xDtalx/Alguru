@@ -1,7 +1,9 @@
 <div (click)="hide()" class="background-unclickable">
   <div class="login-form" (click)="$event.stopPropagation()">
-    <app-error></app-error>
-    <form (submit)="onLogin(userLoginForm)" #userLoginForm="ngForm">
+    <div class="app-error-container">
+      <app-error></app-error>
+    </div>
+    <form *ngIf="!forgetPass" (submit)="onLogin(userLoginForm)" #userLoginForm="ngForm">
       <div *ngIf="isLoading" class="loader">Loading...</div>
       <div *ngIf="!isLoading">
         <div class="form-group">
@@ -30,10 +32,20 @@
           Don't have an account? <button class="sign-up" (click)="openRegister()">Register here!</button>
         </div>
         <div class="login-options">
-          <div class="option clickable">Forgot Password?</div>
+          <button id="forget-pass" (click)="showForgetPassForm()">Forgot Password?</button>
         </div>
         <div class="text-center"><button (click)="hide()" class="btn close-button">Close</button></div>
       </div>
+    </form>
+    <form (submit)="resetPassword(forgetPassForm)" id="forget-pass-form" *ngIf="forgetPass" #forgetPassForm="ngForm">
+      <div *ngIf="isLoading" class="loader">Loading...</div>
+      <div *ngIf="!isLoading" class="form-group">
+        <div class="input-group">
+          <label for="email">Please enter the email address you registered with:</label>
+          <input placeholder="Email" type="email" name="email" class="form-control" ngModel />
+        </div>
+      </div>
+      <button *ngIf="!isLoading" type="submit" class="btn close-button">Reset</button>
     </form>
   </div>
 </div>

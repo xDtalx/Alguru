@@ -17,12 +17,44 @@ export class AuthService {
   private authErrorListener = new Subject<string[]>();
   private userSavedListener = new Subject<boolean>();
   private emailVerifiedListener = new Subject<boolean>();
+  private resetPasswordEmailSentListener = new Subject<boolean>();
+  private passwordChangedListener = new Subject<boolean>();
   private isAuth: boolean;
   private authData: IAuthData = {};
   private tokenTimer: any;
   private errors: string[] = [];
 
   constructor(private http: HttpClient, private router: Router) {}
+
+  public resetPassword(resetToken: string, password: string, confirmPassword: string) {
+    this.http.post(BACKEND_URL + '/login/reset/' + resetToken, { password, confirmPassword }).subscribe(
+      () => {
+        this.passwordChangedListener.next(true);
+      },
+      () => {
+        this.passwordChangedListener.next(false);
+      }
+    );
+  }
+
+  public sendResetPasswordEmail(email: string): void {
+    this.http.post(BACKEND_URL + '/login/reset', { email }).subscribe(
+      () => {
+        this.resetPasswordEmailSentListener.next(true);
+      },
+      () => {
+        this.resetPasswordEmailSentListener.next(false);
+      }
+    );
+  }
+
+  public getResetPasswordEmailSentListener(): Observable<boolean> {
+    return this.resetPasswordEmailSentListener.asObservable();
+  }
+
+  public getPasswordChangedListener(): Observable<boolean> {
+    return this.passwordChangedListener.asObservable();
+  }
 
   public resendVarificationEmail(): void {
     this.http.post(BACKEND_URL + '/verify/resend', null).subscribe();

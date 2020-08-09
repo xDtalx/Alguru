@@ -129,6 +129,65 @@ exports.updateUser = (req, res, next) => {
   });
 };
 
+exports.resetPassword = async (req, res, next) => {
+  const errors = validationResult(req);
+
+  if (!errors.isEmpty()) {
+    return res.status(422).json({ errors: errors.array({ onlyFirstError: true }) });
+  }
+
+  const resetToken = req.params.resetToken;
+
+  try {
+    const decodedToken = jwt.verify(resetToken, process.env.JWT_KEY);
+
+    await bcrypt
+      .hash(req.body.password, 10)
+      .then(async (hash) => {
+        await User.updateOne({ _id: decodedToken.userId }, { $set: { hashedPassword: hash } })
+          .then((result) => {
+            const isModified = result.n > 0;
+
+            if (isModified) {
+              res.status(200).json({ message: 'Password changed successfully' });
+            } else {
+              res.status(500).json({ message: 'Unknown error on password update' });
+            }
+          })
+          .catch((err) => console.log(err));
+      })
+      .catch((err) => console.log(err));
+  } catch {
+    res.status(400).json({ message: 'Reset token is invalid' });
+  }
+};
+
+exports.sendResetPasswordEmail = (req, res, next) => {
+  const errors = validationResult(req);
+
+  if (!errors.isEmpty()) {
+    return res.status(422).json({ errors: errors.array({ onlyFirstError: true }) });
+  }
+
+  const email = req.body.email;
+
+  User.findOne({ email: email })
+    .then((user) => {
+      sendResetPasswordEmail({
+        username: user.username,
+        email: user.email,
+        id: user._id,
+        isAdmin: user.isAdmin,
+        verified: user.verified
+      });
+
+      res.status(200).json({ message: 'Reset password email sent' });
+    })
+    .catch(() => {
+      res.status(400).json({ message: 'User with the given email address not exists' });
+    });
+};
+
 exports.userLogin = (req, res, next) => {
   const errors = validationResult(req);
 
@@ -202,7 +261,7 @@ function handleSuccessfulSave(savedUser, res) {
   });
 }
 
-async function sendVarificationEmail(userData) {
+async function initMailer() {
   if (!mailer) {
     let testAccount;
 
@@ -222,6 +281,44 @@ async function sendVarificationEmail(userData) {
       }
     });
   }
+}
+
+async function sendResetPasswordEmail(userData) {
+  await initMailer();
+
+  const token = jwt.sign(
+    {
+      username: userData.username,
+      email: userData.email,
+      userId: userData.id,
+      isAdmin: userData.isAdmin,
+      verified: false
+    },
+    process.env.JWT_KEY,
+    {
+      expiresIn: '5h'
+    }
+  );
+
+  // send mail with defined transport object
+  const info = await mailer.sendMail({
+    from: '"No Reply" <alguru.dev@gmail.com>', // sender address
+    to: userData.email, // list of receivers
+    subject: 'Reset Password', // Subject line
+    html: `<p>Hello ${userData.username},</p>
+    <p>
+      <a href="${process.env.CLIENT_URL}/users/login/reset/${token}">
+        Click here
+      </a>
+      <span> to reset your password.</span>
+    </p>`
+  });
+
+  console.log('Preview URL: %s', nodemailer.getTestMessageUrl(info));
+}
+
+async function sendVarificationEmail(userData) {
+  await initMailer();
 
   const token = jwt.sign(
     {

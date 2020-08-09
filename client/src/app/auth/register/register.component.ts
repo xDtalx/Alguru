@@ -1,9 +1,10 @@
-import { Component, EventEmitter, OnDestroy, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, OnDestroy, OnInit, Output, ViewEncapsulation } from '@angular/core';
 import { NgForm } from '@angular/forms';
 import { Subscription } from 'rxjs';
 import { AuthService } from '../auth.service';
 
 @Component({
+  encapsulation: ViewEncapsulation.None,
   selector: 'app-register',
   styleUrls: ['./register.component.less'],
   templateUrl: './register.component.html'

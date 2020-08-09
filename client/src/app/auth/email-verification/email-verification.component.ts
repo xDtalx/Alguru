@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, ParamMap } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { AuthService } from '../auth.service';
@@ -7,7 +7,7 @@ import { AuthService } from '../auth.service';
   styleUrls: ['./email-verification.component.css'],
   templateUrl: './email-verification.component.html'
 })
-export class EmailVerificationComponent implements OnInit {
+export class EmailVerificationComponent implements OnInit, OnDestroy {
   private emailVerifiedSub: Subscription;
   private verifyToken: string;
   public verified: boolean;
@@ -18,6 +18,10 @@ export class EmailVerificationComponent implements OnInit {
         this.verifyToken = paramMap.get('verifyToken');
       }
     });
+  }
+
+  public ngOnDestroy(): void {
+    this.emailVerifiedSub.unsubscribe();
   }
 
   public ngOnInit(): void {
