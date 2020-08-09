@@ -10,6 +10,7 @@ import { faArrowDown } from '@fortawesome/free-solid-svg-icons';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { AuthInterceptor } from './auth/auth-interceptor';
+import { EmailVerificationComponent } from './auth/email-verification/email-verification.component';
 import { LoginComponent } from './auth/login/login.component';
 import { RegisterComponent } from './auth/register/register.component';
 import { ErrorInterceptor } from './error-interceptor';
@@ -20,7 +21,15 @@ import { HomeComponent } from './home/home.component';
 
 @NgModule({
   bootstrap: [AppComponent],
-  declarations: [AppComponent, HeaderComponent, FooterComponent, RegisterComponent, LoginComponent, HomeComponent],
+  declarations: [
+    AppComponent,
+    EmailVerificationComponent,
+    HeaderComponent,
+    FooterComponent,
+    RegisterComponent,
+    LoginComponent,
+    HomeComponent
+  ],
   imports: [
     BrowserModule,
     AppRoutingModule,

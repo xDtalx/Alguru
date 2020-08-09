@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
-import { Subject } from 'rxjs';
+import { Observable, Subject } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
 import { ILoginAuthData } from './login-auth-data.model';
@@ -25,6 +25,10 @@ export class AuthService {
   private errors: string[] = [];
 
   constructor(private http: HttpClient, private router: Router) {}
+
+  public verifyEmail(verifyToken: string): Observable<{ message }> {
+    return this.http.get<{ message }>(BACKEND_URL + `/verify/${verifyToken}`);
+  }
 
   public getToken() {
     return this.token;
