@@ -4,7 +4,19 @@
     <div class="app-error-container">
       <app-error></app-error>
     </div>
-    <button class="forum-btn alguru-primary-btn" (click)="onAddNewPostClick()">
+    <div *ngIf="!isAuth || !verified" [ngClass]="{ container: true, 'auth-message-color': !isAuth || !verified }">
+      <div *ngIf="!isAuth" class="auth-message-color">
+        Please login to add new post.
+      </div>
+      <div *ngIf="!verified && isAuth && !emailSent" class="auth-message-color">
+        If you wish to add a new post please verify your email address first.
+        <button class="resend-btn" (click)="resendVarificationEmail()">Resend varification email</button>.
+      </div>
+      <div *ngIf="emailSent">
+        Email varification sent.
+      </div>
+    </div>
+    <button class="forum-btn alguru-primary-btn" (click)="onAddNewPostClick()" [disabled]="!verified">
       {{ addNewPost ? 'Cancel' : 'Add new post' }}
     </button>
     <!--Add new Post mode-->
@@ -27,10 +39,14 @@
           <angular-editor id="editor1" [config]="getEditorConfig()" [(ngModel)]="messageDefaultValue"></angular-editor>
           <div class="error-message" *ngIf="isEmptyMessage">Message can not be empty</div>
         </div>
-        <button class="forum-btn alguru-primary-btn" (click)="onSubmitPost(newPostTitle.value, messageDefaultValue)">
+        <button
+          class="forum-btn alguru-primary-btn"
+          (click)="onSubmitPost(newPostTitle.value, messageDefaultValue)"
+          [disabled]="!verified"
+        >
           Submit
         </button>
-        <button class="forum-btn alguru-primary-btn" (click)="onAddNewPostClick()">
+        <button class="forum-btn alguru-primary-btn" (click)="onAddNewPostClick()" [disabled]="!verified">
           Cancel
         </button>
       </div>
@@ -66,9 +82,15 @@
       </div>
       <div class="row-view clickable" [routerLink]="['/forum/post', post.id]" *ngIf="!post.onEditPostMode">
         <div class="voting" (click)="$event.stopPropagation()">
-          <div [ngClass]="{ 'vote vote-up': true, 'btn-disable': !isAuth }" (click)="voteUp(post, false)"></div>
+          <div
+            [ngClass]="{ 'vote vote-up': true, 'btn-disable': !isAuth || !verified }"
+            (click)="voteUp(post, false)"
+          ></div>
           <div class="votes">{{ getVotes(post) }}</div>
-          <div [ngClass]="{ 'vote vote-down': true, 'btn-disable': !isAuth }" (click)="voteDown(post, false)"></div>
+          <div
+            [ngClass]="{ 'vote vote-down': true, 'btn-disable': !isAuth || !verified }"
+            (click)="voteDown(post, false)"
+          ></div>
         </div>
         <div class="post-container">
           <div class="content">
@@ -84,6 +106,7 @@
                 class="alguru-secondary-btn"
                 *ngIf="isAdmin || post.author === loggedInUsername"
                 (click)="onDeletePostClick(post); $event.stopPropagation()"
+                [disabled]="!verified"
               >
                 Delete Post
               </button>
@@ -91,6 +114,7 @@
                 class="alguru-secondary-btn"
                 *ngIf="isAdmin || post.author === loggedInUsername"
                 (click)="onEditPostClick(post); $event.stopPropagation()"
+                [disabled]="!verified"
               >
                 Edit Post
               </button>
@@ -106,10 +130,10 @@
           <div class="message">Message:</div>
           <angular-editor id="editor3" [config]="getEditorConfig()" [(ngModel)]="post.currentContent"></angular-editor>
         </div>
-        <button class="forum-btn alguru-primary-btn" (click)="onSubmitPost()">
+        <button class="forum-btn alguru-primary-btn" (click)="onSubmitPost()" [disabled]="!verified">
           Submit
         </button>
-        <button class="forum-btn alguru-primary-btn" (click)="onEditPostClick(null)">
+        <button class="forum-btn alguru-primary-btn" (click)="onEditPostClick(null)" [disabled]="!verified">
           Cancel
         </button>
       </div>
@@ -118,6 +142,14 @@
   <!-- Post + Comments -->
   <!-- posts -->
   <div *ngIf="showPost">
+    <div *ngIf="!isAuth || !verified" [ngClass]="{ container: true, 'auth-message-color': !isAuth || !verified }">
+      <div *ngIf="!isAuth" class="auth-message-color">
+        Please login to add new comment.
+      </div>
+      <div *ngIf="!verified && isAuth" class="auth-message-color">
+        If you wish to comment please verify your email address first.
+      </div>
+    </div>
     <button class="forum-btn alguru-primary-btn" [routerLink]="['/forum']">Back</button>
     <div class="container starter">
       <div class="respect-padding">
@@ -145,10 +177,13 @@
       </div>
       <div class="row-view" *ngIf="!selectedPost.onEditPostMode">
         <div class="voting">
-          <div [ngClass]="{ 'vote vote-up': true, 'btn-disable': !isAuth }" (click)="voteUp(selectedPost, false)"></div>
+          <div
+            [ngClass]="{ 'vote vote-up': true, 'btn-disable': !isAuth || !verified }"
+            (click)="voteUp(selectedPost, false)"
+          ></div>
           <div class="votes">{{ getVotes(selectedPost) }}</div>
           <div
-            [ngClass]="{ 'vote vote-down': true, 'btn-disable': !isAuth }"
+            [ngClass]="{ 'vote vote-down': true, 'btn-disable': !isAuth || !verified }"
             (click)="voteDown(selectedPost, false)"
           ></div>
         </div>
@@ -166,6 +201,7 @@
                 class="alguru-secondary-btn"
                 *ngIf="isAdmin || selectedPost.author === loggedInUsername"
                 (click)="onDeletePostClick(selectedPost); $event.stopPropagation()"
+                [disabled]="!verified"
               >
                 Delete Post
               </button>
@@ -173,6 +209,7 @@
                 class="alguru-secondary-btn"
                 *ngIf="isAdmin || selectedPost.author === loggedInUsername"
                 (click)="onEditPostClick(selectedPost); $event.stopPropagation()"
+                [disabled]="!verified"
               >
                 Edit Post
               </button>
@@ -192,10 +229,10 @@
             [(ngModel)]="selectedPost.currentContent"
           ></angular-editor>
         </div>
-        <button class="forum-btn alguru-primary-btn" (click)="onSubmitPost()">
+        <button class="forum-btn alguru-primary-btn" (click)="onSubmitPost()" [disabled]="!verified">
           Submit
         </button>
-        <button class="forum-btn alguru-primary-btn" (click)="onEditPostClick(null)">
+        <button class="forum-btn alguru-primary-btn" (click)="onEditPostClick(null)" [disabled]="!verified">
           Cancel
         </button>
       </div>
@@ -227,9 +264,15 @@
       </div>
       <div class="row-view" *ngIf="!comment.onEditPostMode">
         <div class="voting">
-          <div [ngClass]="{ 'vote vote-up': true, 'btn-disable': !isAuth }" (click)="voteUp(comment, true)"></div>
+          <div
+            [ngClass]="{ 'vote vote-up': true, 'btn-disable': !isAuth || !verified }"
+            (click)="voteUp(comment, true)"
+          ></div>
           <div class="votes">{{ getVotes(comment) }}</div>
-          <div [ngClass]="{ 'vote vote-down': true, 'btn-disable': !isAuth }" (click)="voteDown(comment, true)"></div>
+          <div
+            [ngClass]="{ 'vote vote-down': true, 'btn-disable': !isAuth || !verified }"
+            (click)="voteDown(comment, true)"
+          ></div>
         </div>
         <div class="post-comment">
           <div class="content">
@@ -244,6 +287,7 @@
                 class="alguru-secondary-btn"
                 *ngIf="isAdmin || comment.author === loggedInUsername"
                 (click)="onDeleteCommentClick(comment)"
+                [disabled]="!verified"
               >
                 Delete Comment
               </button>
@@ -251,6 +295,7 @@
                 class="alguru-secondary-btn"
                 *ngIf="isAdmin || comment.author === loggedInUsername"
                 (click)="onEditCommentClick(comment)"
+                [disabled]="!verified"
               >
                 Edit Comment
               </button>
@@ -270,10 +315,10 @@
             [(ngModel)]="comment.currentContent"
           ></angular-editor>
         </div>
-        <button class="forum-btn alguru-primary-btn" (click)="onSubmitComment()">
+        <button class="forum-btn alguru-primary-btn" (click)="onSubmitComment()" [disabled]="!verified">
           Submit
         </button>
-        <button class="forum-btn alguru-primary-btn" (click)="onEditCommentClick(null)">
+        <button class="forum-btn alguru-primary-btn" (click)="onEditCommentClick(null)" [disabled]="!verified">
           Cancel
         </button>
       </div>
@@ -282,19 +327,18 @@
     <div class="app-error-container">
       <app-error></app-error>
     </div>
-    <div [ngClass]="{ container: true, 'auth-message-color': !isAuth }">
-      <div *ngIf="!isAuth" class="auth-message-color">
-        Please login to add new comment.
+    <div *ngIf="isAuth && verified" class="container" id="new-comment-editor">
+      <h4>New Comment</h4>
+      <div class="form-group green-border-focus">
+        <angular-editor id="editor2" [config]="getEditorConfig()" [(ngModel)]="messageDefaultValue"></angular-editor>
       </div>
-      <div *ngIf="isAuth" id="new-comment-editor">
-        <h4>New Comment</h4>
-        <div class="form-group green-border-focus">
-          <angular-editor id="editor2" [config]="getEditorConfig()" [(ngModel)]="messageDefaultValue"></angular-editor>
-        </div>
-        <button class="forum-btn alguru-primary-btn" (click)="onSubmitComment(messageDefaultValue)">
-          Submit
-        </button>
-      </div>
+      <button
+        class="forum-btn alguru-primary-btn"
+        (click)="onSubmitComment(messageDefaultValue)"
+        [disabled]="!verified"
+      >
+        Submit
+      </button>
     </div>
   </div>
 </div>

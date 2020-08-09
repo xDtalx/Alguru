@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import { Observable, Subject } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
+import { IAuthData } from './auth-data.model';
 import { ILoginAuthData } from './login-auth-data.model';
 import { IRegisterAuthData } from './register-auth-data.model';
 
@@ -15,35 +16,51 @@ export class AuthService {
   private adminListener = new Subject<boolean>();
   private authErrorListener = new Subject<string[]>();
   private userSavedListener = new Subject<boolean>();
-
-  private isAuth = false;
-  private isAdmin = false;
-  private token: string;
+  private emailVerifiedListener = new Subject<boolean>();
+  private isAuth: boolean;
+  private authData: IAuthData = {};
   private tokenTimer: any;
-  private userId: string;
-  private username: string;
   private errors: string[] = [];
 
   constructor(private http: HttpClient, private router: Router) {}
 
-  public verifyEmail(verifyToken: string): Observable<{ message }> {
-    return this.http.get<{ message }>(BACKEND_URL + `/verify/${verifyToken}`);
+  public resendVarificationEmail(): void {
+    this.http.post(BACKEND_URL + '/verify/resend', null).subscribe();
+  }
+
+  public isVerified(): boolean {
+    return this.authData.verified;
+  }
+
+  public verifyEmail(verifyToken: string): void {
+    this.http.get<{ message; token; expiresIn }>(BACKEND_URL + `/verify/${verifyToken}`).subscribe((resposne) => {
+      this.emailVerifiedListener.next(true);
+      this.authData.token = resposne.token;
+      this.authData.verified = true;
+      this.setAuthTimer(resposne.expiresIn);
+      localStorage.setItem('token', resposne.token);
+      localStorage.setItem('verified', 'true');
+    });
   }
 
   public getToken() {
-    return this.token;
+    return this.authData.token;
   }
 
   public getUserSavedListener() {
     return this.userSavedListener.asObservable();
   }
 
+  public getEmailVerifiedListener() {
+    return this.emailVerifiedListener.asObservable();
+  }
+
   public getUsername() {
-    if (!this.username) {
-      this.username = localStorage.getItem('username');
+    if (!this.authData.username) {
+      this.authData.username = localStorage.getItem('username');
     }
 
-    return this.username;
+    return this.authData.username;
   }
 
   public getAdminListener() {
@@ -72,7 +89,7 @@ export class AuthService {
   }
 
   public getIsAdmin() {
-    return this.isAdmin;
+    return this.authData.isAdmin;
   }
 
   public getAuthStatusListener() {
@@ -137,78 +154,64 @@ export class AuthService {
       username
     };
 
-    this.http
-      .post<{
-        token: string;
-        expiresIn: number;
-        userId: string;
-        username: string;
-        isAdmin: boolean;
-      }>(BACKEND_URL + '/login', authData)
-      .subscribe(
-        (response) => {
-          this.token = response.token;
+    this.http.post<IAuthData>(BACKEND_URL + '/login', authData).subscribe(
+      (response: IAuthData) => {
+        this.saveAuthResponse(response);
 
-          if (this.token) {
-            this.userId = response.userId;
-            this.setAuthTimer(response.expiresIn);
-            this.isAuth = true;
-            this.username = response.username;
-            this.isAdmin = response.isAdmin;
-            this.authStatusListener.next(true);
-            this.adminListener.next(this.isAdmin);
-            const now = new Date();
-            const expirationDate = new Date(now.getTime() + response.expiresIn * 1000);
-            this.saveAuthData(this.token, expirationDate, this.userId, this.username, String(this.isAdmin));
-
-            if (urlToNavigateAfter) {
-              this.router.navigate([urlToNavigateAfter]);
-            }
-          }
-        },
-        () => {
-          this.authStatusListener.next(false);
-          this.adminListener.next(false);
+        if (urlToNavigateAfter) {
+          this.router.navigate([urlToNavigateAfter]);
         }
-      );
+      },
+      () => {
+        this.authStatusListener.next(false);
+        this.adminListener.next(false);
+      }
+    );
+  }
+
+  private saveAuthResponse(authData: IAuthData): void {
+    this.authData.token = authData.token;
+
+    if (this.authData.token) {
+      const now = new Date();
+      authData.expirationDate = new Date(now.getTime() + authData.expiresIn * 1000);
+      this.saveAuthData(authData);
+      this.setAuthTimer(authData.expiresIn);
+      this.isAuth = true;
+      this.authStatusListener.next(true);
+      this.adminListener.next(this.authData.isAdmin);
+    }
   }
 
   public getUserId() {
-    return this.userId;
+    return this.authData.userId;
   }
 
   public autoAuthUser() {
-    const authInfo = this.getAuthData();
+    const authData = this.getAuthData();
 
-    if (!authInfo) {
+    if (!authData) {
       return;
     }
 
     const now = new Date();
-    const expiresIn = authInfo.expirationDate.getTime() - now.getTime();
+    const expiresIn = authData.expirationDate.getTime() - now.getTime();
 
     if (expiresIn > 0) {
-      this.token = authInfo.token;
+      this.authData = authData;
       this.isAuth = true;
-      this.isAdmin = authInfo.isAdmin === 'true';
-      this.userId = authInfo.userId;
-      this.username = authInfo.username;
       this.setAuthTimer(expiresIn / 1000);
       this.authStatusListener.next(true);
-      this.adminListener.next(this.isAdmin);
+      this.adminListener.next(this.authData.isAdmin);
     }
   }
 
   public logout(url?: string) {
     this.errors = [];
-    this.token = null;
     this.isAuth = false;
-    this.isAdmin = false;
-    this.username = null;
     this.authStatusListener.next(false);
     this.adminListener.next(false);
     this.clearAuthData();
-    this.userId = null;
     clearTimeout(this.tokenTimer);
 
     if (url) {
@@ -216,28 +219,34 @@ export class AuthService {
     }
   }
 
-  private saveAuthData(token: string, expirationDate: Date, userId: string, username: string, isAdmin: string) {
-    localStorage.setItem('token', token);
-    localStorage.setItem('expiration', expirationDate.toISOString());
-    localStorage.setItem('userId', userId);
-    localStorage.setItem('username', username);
-    localStorage.setItem('isAdmin', isAdmin);
+  private saveAuthData(authData: IAuthData) {
+    this.authData = authData;
+    localStorage.setItem('token', authData.token);
+    localStorage.setItem('expiration', authData.expirationDate.toISOString());
+    localStorage.setItem('userId', authData.userId);
+    localStorage.setItem('username', authData.username);
+    localStorage.setItem('isAdmin', String(authData.isAdmin));
+    localStorage.setItem('verified', String(authData.verified));
   }
 
   private clearAuthData() {
+    this.authData = {};
+
     localStorage.removeItem('token');
     localStorage.removeItem('expiration');
     localStorage.removeItem('userId');
     localStorage.removeItem('username');
     localStorage.removeItem('isAdmin');
+    localStorage.removeItem('verified');
   }
 
-  private getAuthData() {
+  private getAuthData(): IAuthData {
     const token = localStorage.getItem('token');
     const expirationDate = localStorage.getItem('expiration');
     const userId = localStorage.getItem('userId');
     const isAdmin = localStorage.getItem('isAdmin');
     const username = localStorage.getItem('username');
+    const verified = localStorage.getItem('verified');
 
     if (!(token && expirationDate)) {
       return;
@@ -245,10 +254,11 @@ export class AuthService {
 
     return {
       expirationDate: new Date(expirationDate),
-      isAdmin,
+      isAdmin: isAdmin === 'true',
       token,
       userId,
-      username
+      username,
+      verified: verified === 'true'
     };
   }
 

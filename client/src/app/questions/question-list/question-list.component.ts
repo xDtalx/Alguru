@@ -18,6 +18,8 @@ export class QuestionListComponent implements OnInit, OnDestroy {
   public questions: Question[] = [];
   public isUserAuth: boolean;
   public isAdmin: boolean;
+  public verified: boolean;
+  public emailSent: boolean;
   public userId: string;
   public displayedColumns: string[] = ['title', 'level', 'actions'];
   public dataSource: MatTableDataSource<Question>;
@@ -39,6 +41,7 @@ export class QuestionListComponent implements OnInit, OnDestroy {
 
     this.userId = this.authService.getUserId();
     this.isUserAuth = this.authService.getIsAuth();
+    this.verified = this.authService.isVerified();
     this.questionService.getQuestions();
     this.questionsSub = this.questionService.getQuestionUpdatedListener().subscribe((questions: Question[]) => {
       this.questions = questions;
@@ -77,6 +80,11 @@ export class QuestionListComponent implements OnInit, OnDestroy {
     }
 
     return levelNumber;
+  }
+
+  public resendVarificationEmail(): void {
+    this.authService.resendVarificationEmail();
+    this.emailSent = true;
   }
 
   public applyFilter(event: Event) {

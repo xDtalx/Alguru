@@ -13,7 +13,7 @@ exports.resendVarificationEmail = async (req, res, next) => {
       if (user.verified) {
         res.status(400).json({ message: 'User is already verified' });
       } else {
-        sendVarificationEmail(req.userData.username, req.userData.email);
+        sendVarificationEmail(req.userData);
         res.status(200).json({ message: 'Varification email sent' });
       }
     });
@@ -21,15 +21,28 @@ exports.resendVarificationEmail = async (req, res, next) => {
 };
 
 exports.verifyUser = async (req, res, next) => {
-  const token = req.params.verifyToken;
+  const verifyToken = req.params.verifyToken;
   try {
-    const decodedToken = jwt.verify(token, process.env.JWT_KEY);
+    const decodedToken = jwt.verify(verifyToken, process.env.JWT_KEY);
 
     await User.updateOne({ username: decodedToken.username }, { $set: { verified: true } }).then((result) => {
       const isModified = result.n > 0;
 
       if (isModified) {
-        res.status(200).json({ message: `${decodedToken.username} is verified` });
+        const newToken = jwt.sign(
+          {
+            username: decodedToken.username,
+            email: decodedToken.email,
+            userId: decodedToken._id,
+            isAdmin: decodedToken.isAdmin,
+            verified: true
+          },
+          process.env.JWT_KEY,
+          {
+            expiresIn: '5h'
+          }
+        );
+        res.status(200).json({ message: 'User is verified', token: newToken, expiresIn: 3600 * 5 });
       } else {
         res.status(500).json({ message: 'Unknown error' });
       }
@@ -156,7 +169,8 @@ function handleAuthenticationAndResponse(fetchedUser, res) {
     expiresIn: 3600 * 5,
     username: fetchedUser.username,
     userId: fetchedUser._id,
-    isAdmin: fetchedUser.isAdmin
+    isAdmin: fetchedUser.isAdmin,
+    verified: fetchedUser.verified
   });
 }
 
@@ -171,7 +185,14 @@ function handleFoundUser(user, req, res) {
 }
 
 function handleSuccessfulSave(savedUser, res) {
-  sendVarificationEmail(savedUser.username, savedUser.email);
+  sendVarificationEmail({
+    username: savedUser.username,
+    email: savedUser.email,
+    userId: savedUser._id,
+    isAdmin: savedUser.isAdmin,
+    verified: false
+  });
+
   res.status(201).json({
     message: 'User created',
     user: {
@@ -181,7 +202,7 @@ function handleSuccessfulSave(savedUser, res) {
   });
 }
 
-async function sendVarificationEmail(username, email) {
+async function sendVarificationEmail(userData) {
   if (!mailer) {
     let testAccount;
 
@@ -202,14 +223,26 @@ async function sendVarificationEmail(username, email) {
     });
   }
 
-  const token = jwt.sign({ username: username }, process.env.JWT_KEY, { expiresIn: '5h' });
+  const token = jwt.sign(
+    {
+      username: userData.username,
+      email: userData.email,
+      userId: userData.id,
+      isAdmin: userData.isAdmin,
+      verified: false
+    },
+    process.env.JWT_KEY,
+    {
+      expiresIn: '5h'
+    }
+  );
 
   // send mail with defined transport object
   const info = await mailer.sendMail({
     from: '"No Reply" <alguru.dev@gmail.com>', // sender address
-    to: email, // list of receivers
+    to: userData.email, // list of receivers
     subject: 'Alguru Verification Email', // Subject line
-    html: `<p>Hello ${username},</p>
+    html: `<p>Hello ${userData.username},</p>
     <p>Please verify your email address in. </p>
     <p>
       <a href="${process.env.CLIENT_URL}/users/verify/${token}">

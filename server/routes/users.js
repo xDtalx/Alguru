@@ -36,8 +36,4 @@ router.get('/verify/:verifyToken', UserController.verifyUser);
 
 router.post('/verify/resend', checkAuth, UserController.resendVarificationEmail);
 
-router.options('/login', (req, res, next) => res.status(200).send());
-
-router.get('', (req, res, next) => res.status(200).send());
-
 module.exports = router;

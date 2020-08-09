@@ -73,6 +73,8 @@ export class ForumComponent implements OnInit, OnDestroy, AfterViewInit {
   public authSub: Subscription;
   public loggedInUsername: string;
   public isAuth: boolean;
+  public verified: boolean;
+  public emailSent: boolean;
   private editPostIndex = -1;
   private editCommentIndex = -1;
   private maxDescriptionLength = 60;
@@ -94,6 +96,7 @@ export class ForumComponent implements OnInit, OnDestroy, AfterViewInit {
   public ngOnInit() {
     this.initTheme();
     this.isAuth = this.authService.getIsAuth();
+    this.verified = this.authService.isVerified();
 
     if (this.isAuth) {
       this.isAdmin = this.authService.getIsAdmin();
@@ -221,7 +224,7 @@ export class ForumComponent implements OnInit, OnDestroy, AfterViewInit {
     }
   }
 
-  public voteDown(commentOrPost: any, isComment: boolean) {
+  public voteDown(commentOrPost: any, isComment: boolean): void {
     if (this.isAuth) {
       this.forumService.vote(commentOrPost, isComment, {
         id: null,
@@ -231,7 +234,12 @@ export class ForumComponent implements OnInit, OnDestroy, AfterViewInit {
     }
   }
 
-  public getShortDescription(content: string) {
+  public resendVarificationEmail(): void {
+    this.authService.resendVarificationEmail();
+    this.emailSent = true;
+  }
+
+  public getShortDescription(content: string): string {
     const dom = new DOMParser().parseFromString(content, 'text/html');
     let text = Array.from(dom.body.childNodes)
       .map((node) => node.textContent)

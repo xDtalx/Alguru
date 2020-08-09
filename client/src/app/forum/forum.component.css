@@ -328,6 +328,17 @@ button {
   background-color: rgb(214, 69, 69);
 }
 
+.resend-btn {
+  background-color: transparent;
+  border: none;
+  color: rgb(55, 0, 255);
+}
+
+.resend-btn:hover {
+  color: rgb(55, 0, 255);
+  text-decoration: underline;
+}
+
 @media only screen and (max-width: 800px) {
   .forum-container {
     max-width: 95vw;
