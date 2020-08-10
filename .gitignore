@@ -49,3 +49,4 @@ Thumbs.db
 *.bat
 nodemon.json
 *.exe
+server/public/uploads/*

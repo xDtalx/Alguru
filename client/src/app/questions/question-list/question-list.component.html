@@ -1,5 +1,14 @@
 <div class="list-container">
-  <button class="create-question-btn alguru-primary-btn" [routerLink]="['/questions/create']">Create Question</button>
+  <div *ngIf="!verified && !emailSent" [ngClass]="{ container: true, 'auth-message-color': !verified }">
+    Please verify your email address.
+    <button class="resend-btn" (click)="resendVarificationEmail()">Resend varification email</button>.
+  </div>
+  <div *ngIf="emailSent">
+    Email varification sent.
+  </div>
+  <button class="create-question-btn alguru-primary-btn" [routerLink]="['/questions/create']" [disabled]="!verified">
+    Create Question
+  </button>
   <mat-form-field id="filter" color="warn">
     <mat-label>Filter by level</mat-label>
     <input matInput (keyup)="applyFilter($event)" placeholder="Enter search term" autocomplete="off" />
@@ -25,13 +34,19 @@
       <ng-container matColumnDef="actions">
         <th mat-header-cell *matHeaderCellDef mat-sort-header>Actions</th>
         <td mat-cell *matCellDef="let question">
-          <button *ngIf="isUserAuth" [routerLink]="['/questions/solve', question.id]" class="alguru-secondary-btn">
+          <button
+            *ngIf="isUserAuth"
+            [routerLink]="['/questions/solve', question.id]"
+            class="alguru-secondary-btn"
+            [disabled]="!verified"
+          >
             Solve
           </button>
           <button
             *ngIf="(isUserAuth && userId === question.creator) || isAdmin"
             [routerLink]="['/questions/edit', question.id]"
             class="alguru-secondary-btn"
+            [disabled]="!verified"
           >
             Edit
           </button>
@@ -39,6 +54,7 @@
             *ngIf="(isUserAuth && userId === question.creator) || isAdmin"
             (click)="onDelete(question.id)"
             class="alguru-secondary-btn"
+            [disabled]="!verified"
           >
             Delete
           </button>

@@ -65,6 +65,27 @@ mat-paginator * {
   margin-right: 0;
 }
 
+.auth-message-color {
+  background-color: rgb(214, 69, 69);
+}
+
+.resend-btn {
+  background-color: transparent;
+  border: none;
+  color: rgb(55, 0, 255);
+}
+
+.container {
+  position: relative;
+  box-shadow: -1px 3px 3px rgba(0, 0, 0, 0.15);
+  border-radius: 5px;
+  padding: 1rem;
+  margin: 1rem 0;
+  max-width: 100%;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: white;
+}
+
 @media only screen and (max-width: 800px) {
   .list-container {
     max-width: 95vw;

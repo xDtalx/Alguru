@@ -16,7 +16,8 @@ module.exports = (req, res, next) => {
         username: decodedToken.username,
         email: decodedToken.email,
         userId: decodedToken.userId,
-        isAdmin: decodedToken.isAdmin
+        isAdmin: decodedToken.isAdmin,
+        verified: decodedToken.verified
       };
     }
 

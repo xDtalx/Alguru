@@ -9,7 +9,14 @@ const validations = [
   check('code', 'Code should not be empty').exists().trim().notEmpty(),
   check('tests', 'Tests should not be empty').exists().trim().notEmpty()
 ];
+const emailVerificationValidation = (req, res, next) => {
+  if (!req.userData.verified) {
+    return res.status(401).json({ message: 'Please verify your email address first' });
+  }
 
-router.post('/execute', checkAuth, validations, CodeController.executeCode);
+  next();
+};
+
+router.post('/execute', checkAuth, emailVerificationValidation, validations, CodeController.executeCode);
 
 module.exports = router;

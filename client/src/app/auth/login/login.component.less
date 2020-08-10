@@ -14,12 +14,25 @@
   to {background: rgba(0, 0, 0, 0.5);}
 }
 
+.sign-up {
+  background-color: transparent;
+  border: none;
+  outline: none;
+}
+
 .login-form {
   margin: auto;
   width: 385px;
 }
 
+app-error > .errors {
+  border-top-left-radius: 0.8rem !important;
+  border-top-right-radius: 0.8rem !important;
+}
+
 .login-form form {
+  border-bottom-left-radius: 0.8rem;
+  border-bottom-right-radius: 0.8rem;
   background-color: white;
   box-shadow: 0px 2px 2px rgba(36, 13, 13, 0.3);
   padding: 30px;
@@ -30,6 +43,7 @@
   flex-direction: column;
   justify-content: center;
   text-align: center;
+  margin-top: 0.3rem;
 }
 
 .option * {
@@ -38,14 +52,6 @@
 
 .option {
   margin-bottom: 1rem;
-}
-
-.clickable {
-  cursor: pointer;
-}
-
-.clickable:hover {
-  color: #007bff;
 }
 
 .option:last-child {
@@ -78,6 +84,30 @@
   border: none;
   width: 10rem;
   height: fit-content;
+}
+
+#forget-pass-form {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 30px;
+}
+
+#forget-pass {
+  background-color: transparent;
+  border: none;
+  width: fit-content;
+  outline: none;
+  margin: auto;
+}
+
+#forget-pass:hover {
+  color: #007bff;
+}
+
+.close-button {
+  margin: auto;
+  margin-top: 2rem;
 }
 
 .btn {
@@ -113,14 +143,6 @@
   border-top: 1px solid #ccc;
 }
 
-.or-seperator i {
-  padding: 0 10px;
-  background: #f7f7f7;
-  position: relative;
-  top: -11px;
-  z-index: 1;
-}
-
 .sign-up {
   color:black;
 }
@@ -134,10 +156,6 @@
   display: flex;
   justify-content: center;
   text-align: center;
-}
-
-i {
-  background-color: white !important;
 }
 
 input:-webkit-autofill::first-line {

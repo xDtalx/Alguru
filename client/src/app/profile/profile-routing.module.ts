@@ -5,7 +5,7 @@ import { ProfileComponent } from './profile.component';
 const routes = [
   {
     component: ProfileComponent,
-    data: { showSmallHeader: true },
+    data: { showSmallHeader: true, navigateUrlOnLogout: '/' },
     path: 'profile/:username'
   }
 ];

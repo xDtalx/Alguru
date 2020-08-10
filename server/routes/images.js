@@ -14,9 +14,16 @@ const storage = multer.diskStorage({
 });
 const upload = multer({ storage: storage });
 const checkAuth = require('../filters/check-auth');
+const emailVerificationValidation = (req, res, next) => {
+  if (!req.userData.verified) {
+    return res.status(401).json({ message: 'Please verify your email address first' });
+  }
+
+  next();
+};
 
 router.get('/:imageName', controller.getImage);
 
-router.post('/upload', checkAuth, upload.single('image'), controller.uploadImage);
+router.post('/upload', checkAuth, emailVerificationValidation, upload.single('image'), controller.uploadImage);
 
 module.exports = router;

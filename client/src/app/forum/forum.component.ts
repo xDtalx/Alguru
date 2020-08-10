@@ -1,4 +1,5 @@
-import { AfterViewInit, Component, OnDestroy, OnInit, Renderer2 } from '@angular/core';
+import { compileNgModule } from '@angular/compiler';
+import { AfterViewInit, Component, HostListener, OnDestroy, OnInit, Renderer2 } from '@angular/core';
 import { ActivatedRoute, ParamMap } from '@angular/router';
 import { AngularEditorConfig } from '@kolkov/angular-editor';
 import { Subscription } from 'rxjs';
@@ -69,7 +70,11 @@ export class ForumComponent implements OnInit, OnDestroy, AfterViewInit {
   public isAdmin: boolean;
   public posts: IClientPost[] = [];
   public postsSub: Subscription;
+  public authSub: Subscription;
   public loggedInUsername: string;
+  public isAuth: boolean;
+  public verified: boolean;
+  public emailSent: boolean;
   private editPostIndex = -1;
   private editCommentIndex = -1;
   private maxDescriptionLength = 60;
@@ -90,8 +95,22 @@ export class ForumComponent implements OnInit, OnDestroy, AfterViewInit {
 
   public ngOnInit() {
     this.initTheme();
-    this.isAdmin = this.authService.getIsAdmin();
-    this.loggedInUsername = this.authService.getUsername();
+    this.isAuth = this.authService.getIsAuth();
+    this.verified = this.authService.isVerified();
+
+    if (this.isAuth) {
+      this.isAdmin = this.authService.getIsAdmin();
+      this.loggedInUsername = this.authService.getUsername();
+    }
+
+    this.authSub = this.authService.getAuthStatusListener().subscribe((isAuth) => {
+      this.isAuth = isAuth;
+
+      if (!isAuth) {
+        this.loggedInUsername = null;
+        this.isAdmin = false;
+      }
+    });
 
     this.route.paramMap.subscribe((paramMap: ParamMap) => {
       if (paramMap.has('postId')) {
@@ -119,6 +138,7 @@ export class ForumComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   public ngOnDestroy() {
+    this.authSub.unsubscribe();
     this.postsSub.unsubscribe();
     this.themeService.reset();
     document.removeEventListener('click', this.onMouseUp.bind(this));
@@ -195,22 +215,31 @@ export class ForumComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   public voteUp(commentOrPost: any, isComment: boolean) {
-    this.forumService.vote(commentOrPost, isComment, {
-      id: null,
-      isUp: true,
-      username: this.authService.getUsername()
-    });
+    if (this.isAuth) {
+      this.forumService.vote(commentOrPost, isComment, {
+        id: null,
+        isUp: true,
+        username: this.authService.getUsername()
+      });
+    }
   }
 
-  public voteDown(commentOrPost: any, isComment: boolean) {
-    this.forumService.vote(commentOrPost, isComment, {
-      id: null,
-      isUp: false,
-      username: this.authService.getUsername()
-    });
+  public voteDown(commentOrPost: any, isComment: boolean): void {
+    if (this.isAuth) {
+      this.forumService.vote(commentOrPost, isComment, {
+        id: null,
+        isUp: false,
+        username: this.authService.getUsername()
+      });
+    }
   }
 
-  public getShortDescription(content: string) {
+  public resendVarificationEmail(): void {
+    this.authService.resendVarificationEmail();
+    this.emailSent = true;
+  }
+
+  public getShortDescription(content: string): string {
     const dom = new DOMParser().parseFromString(content, 'text/html');
     let text = Array.from(dom.body.childNodes)
       .map((node) => node.textContent)

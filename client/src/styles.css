@@ -135,7 +135,12 @@ h4 {
   transition: background-color 0.2s ease, box-shadow 0.2s ease, color 0.2s ease;
 }
 
-.alguru-primary-btn:hover {
+button:disabled {
+  opacity: 0.6;
+  cursor: context-menu !important;
+}
+
+.alguru-primary-btn:not(:disabled):hover {
   background-color: rgb(238, 80, 80) !important;
   box-shadow: 0 0 5px rgba(0, 0, 0, 0.25);
   color: rgb(255, 255, 255);
@@ -152,7 +157,7 @@ h4 {
   transition: background-color 0.2s ease, box-shadow 0.2s ease, color 0.2s ease;
 }
 
-.alguru-secondary-btn:hover {
+.alguru-secondary-btn:not(:disabled):hover {
   background-color: rgb(67, 134, 197) !important;
   box-shadow: 0 0 5px rgba(0, 0, 0, 0.25);
   color: rgb(255, 255, 255);

@@ -22,9 +22,14 @@ export class HeaderComponent implements OnInit, OnDestroy {
 
   private authListenerSubs: Subscription;
   private adminListenerSubs: Subscription;
+  private smallHeaderSubs: Subscription;
+  private smallHeaderOnLogoutSubs: Subscription;
+  private navigateUrlOnLogoutSubs: Subscription;
   private showSmallHeaderAfterHamburgerClicked = true;
   private username: string;
-  public showLoginModal: boolean;
+  private navigateUrlOnLogout: string;
+  private showSmallHeaderOnLogout: boolean;
+  public showLogin: boolean;
   public showRegister: boolean;
   public showModal: boolean;
   public ModalTypes = ModalTypes;
@@ -37,7 +42,15 @@ export class HeaderComponent implements OnInit, OnDestroy {
   public openNav: boolean;
 
   constructor(private authService: AuthService, private settingsService: SettingsService, private route: Router) {
-    this.settingsService.getSmallHeaderObservable().subscribe((isShow) => this.setSmallHeader(isShow));
+    this.smallHeaderSubs = this.settingsService
+      .getSmallHeaderObservable()
+      .subscribe((isShow) => this.setSmallHeader(isShow));
+    this.navigateUrlOnLogoutSubs = this.settingsService
+      .getNavigateUrlOnLogoutObservable()
+      .subscribe((url) => (this.navigateUrlOnLogout = url));
+    this.smallHeaderOnLogoutSubs = this.settingsService
+      .getSmallHeaderOnLogoutObservable()
+      .subscribe((isShow) => (this.showSmallHeaderOnLogout = isShow));
   }
 
   public ngOnInit() {
@@ -72,6 +85,9 @@ export class HeaderComponent implements OnInit, OnDestroy {
   public ngOnDestroy() {
     this.authListenerSubs.unsubscribe();
     this.adminListenerSubs.unsubscribe();
+    this.smallHeaderSubs.unsubscribe();
+    this.smallHeaderOnLogoutSubs.unsubscribe();
+    this.navigateUrlOnLogoutSubs.unsubscribe();
   }
 
   public setSmallHeader(isShow: boolean) {
@@ -111,29 +127,26 @@ export class HeaderComponent implements OnInit, OnDestroy {
     this.isAdmin = false;
     this.profileURL = '/users/profile/';
 
-    this.setSmallHeader(false);
-    this.authService.logout();
+    this.setSmallHeader(this.showSmallHeaderOnLogout);
+    this.authService.logout(this.navigateUrlOnLogout);
   }
 
   public show(type: ModalTypes) {
     this.showModal = true;
 
     if (type === ModalTypes.LoginModal) {
-      this.showLoginModal = true;
+      this.showLogin = true;
+      this.showRegister = false;
     } else {
+      this.showLogin = false;
       this.showRegister = true;
     }
   }
 
   public hide() {
     this.showModal = false;
-    this.showLoginModal = false;
+    this.showLogin = false;
     this.showRegister = false;
-  }
-
-  public openRegister() {
-    this.showLoginModal = false;
-    this.showRegister = true;
   }
 
   public toggleNav() {

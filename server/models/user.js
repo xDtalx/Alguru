@@ -8,7 +8,8 @@ const userSchema = mongoose.Schema({
   email: { type: String, require: true, unique: true },
   hashedPassword: { type: String, require: true },
   solvedQuestions: { type: Map, of: String },
-  isAdmin: { type: Boolean, require: true }
+  isAdmin: { type: Boolean, require: true },
+  verified: { type: Boolean, require: true }
 });
 
 // to decide which type will be the set
