@@ -28,11 +28,7 @@ router.post('/register', validations, confirmPasswordCheck, emailCheck, UserCont
 
 router.post('/login', validations, UserController.userLogin);
 
-router.post(
-  '/login/reset',
-  [check('email', 'Invalid email').exists().isEmail().normalizeEmail({ gmail_remove_dots: false })],
-  UserController.sendResetPasswordEmail
-);
+router.post('/login/reset', emailCheck, UserController.sendResetPasswordEmail);
 
 router.post(
   '/login/reset/:resetToken',

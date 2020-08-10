@@ -3,10 +3,10 @@
 // The list of file replacements can be found in `angular.json`.
 
 export const environment = {
+  apiUrl: 'http://192.168.1.13:3000',
+  isRelease: true,
   production: false,
-  apiUrl: 'http://localhost:3000',
-  runCodeApi: 'http://localhost:3000/code',
-  isRelease: true
+  runCodeApi: 'http://192.168.1.13:3000/code'
 };
 
 /*
