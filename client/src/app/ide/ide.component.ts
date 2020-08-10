@@ -1,6 +1,5 @@
 import { Component, OnDestroy, OnInit, Renderer2, ViewEncapsulation } from '@angular/core';
 import { ActivatedRoute, ParamMap } from '@angular/router';
-import { toInteger } from '@ng-bootstrap/ng-bootstrap/util/util';
 import * as $ from 'jquery';
 import { Subscription } from 'rxjs';
 import { Question } from '../questions/question.model';
