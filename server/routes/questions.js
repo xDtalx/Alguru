@@ -38,7 +38,7 @@ router.patch(
   '/:id',
   checkAuth,
   [
-    check('username', 'Username in vote is invalid').exists().trim().isLength({ min: 6 }),
+    check('username', 'Username should be at least 6 characters').exists().trim().isLength({ min: 6 }),
     check('isUp', 'Vote type not specified').exists()
   ],
   QuestionsController.voteOnQuestion

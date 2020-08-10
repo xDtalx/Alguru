@@ -5,7 +5,7 @@ import { MatTableDataSource } from '@angular/material/table';
 import { Subscription } from 'rxjs';
 import { AuthService } from 'src/app/auth/auth.service';
 import { ThemeService } from 'src/app/theme/theme.service';
-import { Question } from '../question.model';
+import { IQuestion } from '../question.model';
 import { QuestionsService } from '../questions.service';
 
 @Component({
@@ -15,14 +15,14 @@ import { QuestionsService } from '../questions.service';
 })
 export class QuestionListComponent implements OnInit, OnDestroy {
   // used in order to unsubscribe from the service when the page, which the list in, not shown
-  public questions: Question[] = [];
+  public questions: IQuestion[] = [];
   public isUserAuth: boolean;
   public isAdmin: boolean;
   public verified: boolean;
   public emailSent: boolean;
   public userId: string;
   public displayedColumns: string[] = ['title', 'level', 'actions'];
-  public dataSource: MatTableDataSource<Question>;
+  public dataSource: MatTableDataSource<IQuestion>;
   private questionsSub: Subscription;
   private theme = 'dark';
 
@@ -43,7 +43,7 @@ export class QuestionListComponent implements OnInit, OnDestroy {
     this.isUserAuth = this.authService.getIsAuth();
     this.verified = this.authService.isVerified();
     this.questionService.getQuestions();
-    this.questionsSub = this.questionService.getQuestionUpdatedListener().subscribe((questions: Question[]) => {
+    this.questionsSub = this.questionService.getQuestionsUpdatedListener().subscribe((questions: IQuestion[]) => {
       this.questions = questions;
       this.dataSource = new MatTableDataSource(questions);
       this.dataSource.paginator = this.paginator;
@@ -88,7 +88,7 @@ export class QuestionListComponent implements OnInit, OnDestroy {
   }
 
   public applyFilter(event: Event) {
-    this.dataSource.filterPredicate = (data: Question, filter: string) => this.getLevelNumber(filter) === data.level;
+    this.dataSource.filterPredicate = (data: IQuestion, filter: string) => this.getLevelNumber(filter) === data.level;
     const filterValue = (event.target as HTMLInputElement).value;
     this.dataSource.filter = filterValue.trim().toLowerCase();
 

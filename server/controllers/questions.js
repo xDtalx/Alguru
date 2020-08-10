@@ -146,7 +146,7 @@ async function updateQuestionVotes(question, newVote, req, res) {
       const isModified = result.n > 0;
 
       if (isModified) {
-        return res.status(200).json({ message: 'Question updated.' });
+        return res.status(200).json({ message: 'Question updated.', votes: question.votes });
       } else {
         return res.status(500).json({ message: 'Something went wrong. Question was not updated.' });
       }

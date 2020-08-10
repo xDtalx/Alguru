@@ -1,8 +1,9 @@
-import { Component, OnDestroy, OnInit, Renderer2, ViewEncapsulation } from '@angular/core';
+import { Component, OnDestroy, OnInit, Renderer2 } from '@angular/core';
 import { ActivatedRoute, ParamMap } from '@angular/router';
 import * as $ from 'jquery';
 import { Subscription } from 'rxjs';
-import { Question } from '../questions/question.model';
+import { AuthService } from '../auth/auth.service';
+import { IQuestion } from '../questions/question.model';
 import { QuestionsService } from '../questions/questions.service';
 import { ThemeService } from '../theme/theme.service';
 import { CodeService } from './code.service';
@@ -15,6 +16,7 @@ import { ExecuteResponse } from './execute-response.model';
 })
 export class IDEComponent implements OnInit, OnDestroy {
   private executeListenerSubs: Subscription;
+  private questionUpdatedSubs: Subscription;
   private time: number;
   private stopwatchInterval;
   public timeStr = '00:00:00';
@@ -24,26 +26,35 @@ export class IDEComponent implements OnInit, OnDestroy {
   public testsCode: string;
   public lang = 'java';
   public questionId: string;
-  public questionToSolve: Question;
+  public questionToSolve: IQuestion;
   public theme = 'dark';
   public solutionTemplate: string;
   public code: string;
   public testsValue: string;
   public loading = false;
   public showHint = false;
+  public voteMessage = '';
+  public votes = 0;
 
   constructor(
     private route: ActivatedRoute,
     private questionsService: QuestionsService,
     private codeService: CodeService,
     private renderer: Renderer2,
-    private themeService: ThemeService
+    private themeService: ThemeService,
+    private authService: AuthService
   ) {
     $(document).ready(this.onPageLoaded.bind(this));
   }
 
   public ngOnInit(): void {
     this.themeService.setDarkTheme();
+    this.questionUpdatedSubs = this.questionsService.getQuestionUpdatedListener().subscribe((question: IQuestion) => {
+      this.questionToSolve = question;
+      this.solutionCode = this.questionToSolve.solutionTemplate[0];
+      this.testsValue = this.questionToSolve.tests[0];
+      this.updateVotes();
+    });
     this.route.paramMap.subscribe((paramMap: ParamMap) => {
       if (paramMap.has('questionId')) {
         this.questionId = paramMap.get('questionId');
@@ -68,6 +79,7 @@ export class IDEComponent implements OnInit, OnDestroy {
 
   public ngOnDestroy(): void {
     this.themeService.reset();
+    this.questionUpdatedSubs.unsubscribe();
     this.executeListenerSubs.unsubscribe();
   }
 
@@ -143,36 +155,32 @@ export class IDEComponent implements OnInit, OnDestroy {
     this.testsCode = value;
   }
 
-  public getVotes(): number {
-    return -1;
+  public updateVotes(): void {
+    this.votes = 0;
+
+    this.questionToSolve.votes.forEach((vote) => {
+      if (vote.isUp) {
+        this.votes++;
+      } else {
+        this.votes--;
+      }
+    });
   }
 
-  /*eslint-disable */
-  public voteUp(): void {}
+  public voteUp(): void {
+    this.questionsService.vote(this.questionToSolve.id, this.authService.getUsername(), true, this.voteMessage);
+  }
 
-  public voteDown(): void {}
-  /* eslint-enable */
+  public voteDown(): void {
+    this.questionsService.vote(this.questionToSolve.id, this.authService.getUsername(), false, this.voteMessage);
+  }
 
   public setShowHint(show: boolean): void {
     this.showHint = show;
   }
 
   private getQuestion(): void {
-    this.questionsService.getQuestion(this.questionId).subscribe((questionData) => {
-      this.questionToSolve = {
-        content: questionData.content,
-        creator: questionData.creator,
-        hints: questionData.hints,
-        id: questionData._id,
-        level: questionData.level,
-        solution: questionData.solution,
-        solutionTemplate: questionData.solutionTemplate,
-        tests: questionData.tests,
-        title: questionData.title
-      };
-      this.solutionCode = this.questionToSolve.solutionTemplate[0];
-      this.testsValue = this.questionToSolve.tests[0];
-    });
+    this.questionsService.getQuestion(this.questionId);
     this.initStopwatch();
   }
 

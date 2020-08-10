@@ -52,8 +52,8 @@
         <span class="title">Question</span>
         <div class="voting">
           <div class="vote vote-up" (click)="voteUp()"></div>
-          <div class="votes" [ngClass]="{ votes: true, positive: getVotes() > 0, negative: getVotes() < 0 }">
-            {{ getVotes() }}
+          <div class="votes" [ngClass]="{ votes: true, positive: votes > 0, negative: votes < 0 }">
+            {{ votes }}
           </div>
           <div class="vote vote-down" (click)="voteDown()"></div>
         </div>

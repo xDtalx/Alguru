@@ -2,8 +2,9 @@ import { AfterViewInit, Component, ElementRef, OnDestroy, OnInit, QueryList, Vie
 import { ActivatedRoute, ParamMap } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { AuthService } from 'src/app/auth/auth.service';
+import { IVote } from 'src/app/forum/vote.model';
 import { ThemeService } from 'src/app/theme/theme.service';
-import { Question } from '../question.model';
+import { IQuestion } from '../question.model';
 import { QuestionsService } from '../questions.service';
 
 @Component({
@@ -14,14 +15,15 @@ import { QuestionsService } from '../questions.service';
 export class QuestionCreateComponent implements OnInit, OnDestroy, AfterViewInit {
   @ViewChildren('checkbox') public checkboxes: QueryList<ElementRef>;
 
-  public retrievedQuestionData: Question;
-  public newQuestionData: Question;
+  public retrievedQuestionData: IQuestion;
+  public newQuestionData: IQuestion;
   public isLoading = false;
   public theme = 'dark';
   private mode = 'create';
   private questionId: string;
-  private questionUpdatedSub: Subscription;
+  private questionsUpdatedSubs: Subscription;
   private errorsSub: Subscription;
+  private questionUpdatedSubs: Subscription;
 
   constructor(
     private questionService: QuestionsService,
@@ -39,11 +41,15 @@ export class QuestionCreateComponent implements OnInit, OnDestroy, AfterViewInit
 
   public ngOnDestroy(): void {
     this.themeService.reset();
-    this.questionUpdatedSub.unsubscribe();
+    this.questionsUpdatedSubs.unsubscribe();
     this.errorsSub.unsubscribe();
+    this.questionUpdatedSubs.unsubscribe();
   }
 
   public ngOnInit() {
+    this.questionUpdatedSubs = this.questionService.getQuestionUpdatedListener().subscribe((question: IQuestion) => {
+      this.retrievedQuestionData = question;
+    });
     this.newQuestionData = {
       content: null,
       creator: null,
@@ -53,7 +59,8 @@ export class QuestionCreateComponent implements OnInit, OnDestroy, AfterViewInit
       solution: [],
       solutionTemplate: [],
       tests: [],
-      title: null
+      title: null,
+      votes: new Map<string, IVote>()
     };
 
     this.route.paramMap.subscribe((paramMap: ParamMap) => {
@@ -64,8 +71,8 @@ export class QuestionCreateComponent implements OnInit, OnDestroy, AfterViewInit
       }
     });
 
-    this.questionUpdatedSub = this.questionService
-      .getQuestionUpdatedListener()
+    this.questionsUpdatedSubs = this.questionService
+      .getQuestionsUpdatedListener()
       .subscribe(() => (this.isLoading = false));
 
     this.errorsSub = this.authService.getAuthErrorListener().subscribe(() => (this.isLoading = false));
@@ -96,21 +103,7 @@ export class QuestionCreateComponent implements OnInit, OnDestroy, AfterViewInit
   public setEditMode(paramMap) {
     this.mode = 'edit';
     this.questionId = paramMap.get('questionId');
-    this.questionService.getQuestion(this.questionId).subscribe(this.setQuestion.bind(this));
-  }
-
-  public setQuestion(questionData) {
-    this.retrievedQuestionData = {
-      content: questionData.content,
-      creator: questionData.creator,
-      hints: questionData.hints,
-      id: questionData._id,
-      level: questionData.level,
-      solution: questionData.solution,
-      solutionTemplate: questionData.solutionTemplate,
-      tests: questionData.tests,
-      title: questionData.title
-    };
+    this.questionService.getQuestion(this.questionId);
   }
 
   public setCreateMode() {
