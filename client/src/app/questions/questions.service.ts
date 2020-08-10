@@ -20,7 +20,7 @@ export class QuestionsService {
 
   public vote(id: string, username: string, isUp: boolean, message: string) {
     this.http
-      .patch<{ votes }>(BACKEND_URL + '/' + id, { username, isUp })
+      .patch<{ votes }>(BACKEND_URL + '/' + id, { username, isUp, message })
       .subscribe((response) => {
         if (this.question) {
           this.question.votes.set(username, { id: response.votes[username]._id, username, isUp, message });
@@ -63,6 +63,7 @@ export class QuestionsService {
   }
 
   public mapVotes(voteKey, votes): [string, IVote] {
+    console.log(votes[voteKey].message);
     return [
       voteKey,
       {

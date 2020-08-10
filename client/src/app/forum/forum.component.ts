@@ -1,5 +1,4 @@
-import { compileNgModule } from '@angular/compiler';
-import { AfterViewInit, Component, HostListener, OnDestroy, OnInit, Renderer2 } from '@angular/core';
+import { AfterViewInit, Component, OnDestroy, OnInit, Renderer2 } from '@angular/core';
 import { ActivatedRoute, ParamMap } from '@angular/router';
 import { AngularEditorConfig } from '@kolkov/angular-editor';
 import { Subscription } from 'rxjs';

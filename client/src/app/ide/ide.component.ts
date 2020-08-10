@@ -1,5 +1,6 @@
 import { Component, OnDestroy, OnInit, Renderer2 } from '@angular/core';
 import { ActivatedRoute, ParamMap } from '@angular/router';
+import { AngularEditorConfig } from '@kolkov/angular-editor';
 import * as $ from 'jquery';
 import { Subscription } from 'rxjs';
 import { AuthService } from '../auth/auth.service';
@@ -33,8 +34,10 @@ export class IDEComponent implements OnInit, OnDestroy {
   public testsValue: string;
   public loading = false;
   public showHint = false;
-  public voteMessage = '';
   public votes = 0;
+  public messageDefaultValue: string;
+  public hidePopUp = true;
+  public voteType: string;
 
   constructor(
     private route: ActivatedRoute,
@@ -168,11 +171,13 @@ export class IDEComponent implements OnInit, OnDestroy {
   }
 
   public voteUp(): void {
-    this.questionsService.vote(this.questionToSolve.id, this.authService.getUsername(), true, this.voteMessage);
+    this.hidePopUp = false;
+    this.voteType = 'up';
   }
 
   public voteDown(): void {
-    this.questionsService.vote(this.questionToSolve.id, this.authService.getUsername(), false, this.voteMessage);
+    this.hidePopUp = false;
+    this.voteType = 'down';
   }
 
   public setShowHint(show: boolean): void {
@@ -204,4 +209,67 @@ export class IDEComponent implements OnInit, OnDestroy {
     this.currentOutput = 'Custom> ';
     this.getQuestion();
   }
+
+  public getEditorConfig(): AngularEditorConfig {
+    return editorConfig;
+  }
+
+  public onSubmitMessage(message: string): void {
+    this.questionsService.vote(
+      this.questionToSolve.id,
+      this.authService.getUsername(),
+      this.voteType === 'up',
+      message
+    );
+    this.hidePopUp = true;
+  }
+
+  public hideVoteMessagePopup(): void {
+    this.hidePopUp = true;
+    this.voteType = null;
+  }
 }
+
+const editorConfig: AngularEditorConfig = {
+  height: '15rem',
+  editable: true,
+  spellcheck: true,
+  minHeight: '5rem',
+  maxHeight: '50rem',
+  width: 'auto',
+  minWidth: '0',
+  translate: 'no',
+  enableToolbar: true,
+  showToolbar: true,
+  defaultParagraphSeparator: 'div',
+  defaultFontName: 'Arial',
+  toolbarHiddenButtons: [
+    [
+      'justifyLeft',
+      'justifyCenter',
+      'justifyRight',
+      'justifyFull',
+      'indent',
+      'outdent',
+      'insertUnorderedList',
+      'insertOrderedList',
+      'fontName'
+    ],
+    ['backgroundColor', 'customClasses', 'insertVideo', 'insertHorizontalRule', 'removeFormat']
+  ],
+  customClasses: [
+    {
+      class: 'quote',
+      name: 'quote'
+    },
+    {
+      class: 'redText',
+      name: 'redText'
+    },
+    {
+      class: 'titleText',
+      name: 'titleText',
+      tag: 'h1'
+    }
+  ]
+};

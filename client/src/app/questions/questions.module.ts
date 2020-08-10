@@ -7,6 +7,7 @@ import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatSortModule } from '@angular/material/sort';
 import { MatTableModule } from '@angular/material/table';
+import { AngularEditorModule } from '@kolkov/angular-editor';
 import { NeutrinoModule } from 'neutrino';
 import { IDEComponent } from '../ide/ide.component';
 import { QuestionCreateComponent } from './question-create/question-create.component';
@@ -25,7 +26,8 @@ import { QuestionRoutingModule } from './question-routing.module';
     QuestionRoutingModule,
     NeutrinoModule,
     FormsModule,
-    CommonModule
+    CommonModule,
+    AngularEditorModule
   ]
 })
 export class QuestionsModule {}
