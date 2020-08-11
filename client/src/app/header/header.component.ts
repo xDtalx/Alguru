@@ -94,6 +94,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
   public setSmallHeader(isShow: boolean) {
     const length = 300;
     this.showSmallHeader = isShow;
+    this.closeAll();
 
     if (this.showSmallHeader) {
       const header = $('div.header');
@@ -152,6 +153,10 @@ export class HeaderComponent implements OnInit, OnDestroy {
 
   public toggleShowNotifications() {
     this.showNotifications = !this.showNotifications;
+  }
+
+  public closeAll() {
+    this.showNotifications = false;
   }
 
   public toggleNav() {
