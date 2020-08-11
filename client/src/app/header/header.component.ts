@@ -40,6 +40,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
   public profileURL = '/users/profile/';
   public isOpenMenu = false;
   public openNav: boolean;
+  public showNotifications: boolean;
 
   constructor(private authService: AuthService, private settingsService: SettingsService, private route: Router) {
     this.smallHeaderSubs = this.settingsService
@@ -147,6 +148,10 @@ export class HeaderComponent implements OnInit, OnDestroy {
     this.showModal = false;
     this.showLogin = false;
     this.showRegister = false;
+  }
+
+  public toggleShowNotifications() {
+    this.showNotifications = !this.showNotifications;
   }
 
   public toggleNav() {

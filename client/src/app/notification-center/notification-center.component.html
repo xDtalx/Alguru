@@ -1,0 +1,32 @@
+<div
+  *ngIf="notifications.length === 0"
+  [ngStyle]="{ backgroundColor: notificationColor }"
+  class="no-notifications-message"
+>
+  <span>There's no new notification at this moment.</span>
+</div>
+<div
+  class="notification-container"
+  [ngStyle]="{ backgroundColor: notificationColor, color: fontColor }"
+  [routerLink]="notification.url"
+  *ngFor="let notification of notifications"
+>
+  <div class="notification-details">
+    <div class="title">
+      <span>
+        {{ notification.title }}
+      </span>
+    </div>
+    <div class="content">
+      <span>
+        {{ notification.content }}
+      </span>
+    </div>
+    <div class="date">
+      <span>
+        {{ notification.date }}
+      </span>
+    </div>
+  </div>
+  <div class="not-seen-circle" *ngIf="!notification.seen" [ngStyle]="{ backgroundColor: notSeenColor }"></div>
+</div>

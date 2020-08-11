@@ -13,6 +13,62 @@ div.header {
   flex-direction: row;
 }
 
+.notification-btn {
+  background-color: transparent;
+  border: none;
+  outline: none;
+}
+
+.notification-btn > svg {
+  transition: all 0.2s ease;
+  width: 2.5rem;
+  height: 2.5rem;
+  color: white;
+}
+
+.notification-btn:hover > svg {
+  filter: brightness(85%);
+}
+
+.notifications-container {
+  position: absolute;
+  top: 60%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+
+.anchor {
+  display: block;
+  transform: rotate(45deg) translateX(70%);
+  background-color: #4a4e55;
+  width: 2.5rem;
+  height: 2.5rem;
+  transform-origin: top left;
+  box-shadow: -3px 3px 5px rgba(0, 0, 0, 0.2);
+}
+
+.notifications {
+  z-index: 999;
+  width: 40rem;
+  max-height: 50vh;
+  border-radius: 0.5rem;
+  background-color: #4a4e55;
+  box-shadow: -2px 3px 5px rgba(0, 0, 0, 0.2);
+  overflow: auto;
+}
+
+.notifications::-webkit-scrollbar,
+.notifications::-webkit-scrollbar-track,
+.notifications::-webkit-scrollbar-thumb {
+  border-radius: 0.5rem;
+}
+
+app-notifications-center {
+  z-index: 999;
+}
+
 div.header * {
   font-size: 1.8rem;
 }
@@ -80,6 +136,11 @@ img {
 }
 
 .nav-item {
+  position: relative;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
   margin-right: 1rem;
 }
 
@@ -229,10 +290,6 @@ img {
   position: absolute;
 }
 
-#right .nav .nav-item:first-child {
-  display: none;
-}
-
 .background {
   display: block;
   position: absolute;
@@ -281,7 +338,8 @@ img {
   .nav-item {
     display: flex;
     flex-direction: column;
-    justify-content: right;
+    justify-content: center;
+    align-items: center;
     margin: 0;
   }
 
@@ -302,12 +360,12 @@ img {
     display: none;
   }
 
-  #home .nav-link {
-    display: none;
-  }
-
   #right .nav .nav-item:first-child {
     display: flex;
+  }
+
+  #home .nav-item {
+    margin-left: 1rem;
   }
 }
 
