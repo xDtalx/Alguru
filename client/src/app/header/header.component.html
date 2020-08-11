@@ -1,13 +1,12 @@
-<div class="close-all" (click)="closeAll()"></div>
 <div class="header">
   <div id="left">
     <div id="container">
       <ul id="home" class="nav">
         <li class="nav-item"><img src="../../assets/logo-light.png" /></li>
-        <li class="nav-item">
+        <li class="nav-item" [ngStyle]="{ display: openNav ? 'none' : 'flex' }">
           <button class="nav-link" (click)="setSmallHeader(false)" routerLink="/">Home</button>
         </li>
-        <li *ngIf="isUserAuth" class="nav-item">
+        <li *ngIf="isUserAuth" class="nav-item" [ngStyle]="{ display: openNav ? 'none' : 'flex' }">
           <button class="notification-btn" (click)="toggleShowNotifications()">
             <svg
               aria-hidden="true"

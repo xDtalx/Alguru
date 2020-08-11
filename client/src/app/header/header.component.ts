@@ -55,6 +55,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
   }
 
   public ngOnInit() {
+    window.addEventListener('click', this.closeNotificationsCenter.bind(this));
     this.isRelease = environment.isRelease;
     this.isUserAuth = this.authService.getIsAuth();
     this.isAdmin = this.authService.getIsAdmin();
@@ -131,6 +132,25 @@ export class HeaderComponent implements OnInit, OnDestroy {
 
     this.setSmallHeader(this.showSmallHeaderOnLogout);
     this.authService.logout(this.navigateUrlOnLogout);
+  }
+
+  public closeNotificationsCenter(event) {
+    let target = event.target as HTMLElement;
+
+    while (
+      target &&
+      !target.classList.contains('notification-container') &&
+      !target.classList.contains('notification-btn')
+    ) {
+      target = target.parentElement;
+    }
+
+    if (
+      !target ||
+      (!target.classList.contains('notification-btn') && !target.classList.contains('notification-container'))
+    ) {
+      this.closeAll();
+    }
   }
 
   public show(type: ModalTypes) {
