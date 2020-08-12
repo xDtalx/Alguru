@@ -1,15 +1,16 @@
 const mongoose = require('mongoose');
+const Notification = require('./notification');
 const uniqueValidator = require('mongoose-unique-validator');
-const Question = require('./question');
 
-
+ 
 const userSchema = mongoose.Schema({
   username: { type: String, require: true, unique: true },
   username_lower: { type: String, unique: true },
   email: { type: String, require: true, unique: true },
   hashedPassword: { type: String, require: true },
   solvedQuestions: { type: Map, of: String },
-  isAdmin: { type: Boolean, require: true }
+  isAdmin: { type: Boolean, require: true },
+  notifications : [Notification.schema]
 });
 
 

@@ -1,5 +1,7 @@
 const Comment = require('../models/comment.js');
 const Post = require('../models/post.js');
+const Notification = require('../models/notification.js');
+const User = require('../models/user.js');
 const Vote = require('../models/vote.js');
 const { validationResult } = require('express-validator');
 
@@ -220,7 +222,7 @@ exports.voteOnComment = (req, res, next) => {
   }
 
   Comment.findById(req.params.commentId)
-    .then((comment) => putNewVote(req, res, comment))
+    .then((comment) => putNewVote(req, res, comment,true))
     .catch(() => res.status(401).json({ message: 'Unauthorized!' }));
 };
 
@@ -301,6 +303,8 @@ async function updateCommentInPost(req, res, updatedComment) {
 }
 
 async function putNewVote(req, res, toPutIn, isComment) {
+
+
   if (toPutIn.author === req.userData.username) {
     return res.status(403).json({ message: 'User cannot vote on his own post or comment' });
   } else if (toPutIn.votes.has(req.userData.username)) {
@@ -309,14 +313,72 @@ async function putNewVote(req, res, toPutIn, isComment) {
 
   const newVote = new Vote({
     username: req.userData.username,
-    isUp: req.body.isUp
+    isUp: req.body.isUp,
+    message: req.body.message
   });
+
+  
+  var firstMessageContent;
+  var  messageToDisplay ;
+  var falseMessage = "false";
+  var isUp = req.body.isUp;
+
+
+  if(isUp.localeCompare(falseMessage))
+  {
+    firstMessageContent = "Like! user " + req.userData.username + " liked ";
+  }
+  else
+  {
+    firstMessageContent = "DisLike! user " + req.userData.username + " disliked ";
+  }
+
+  if(isComment)
+  {
+    messageToDisplay = firstMessageContent + "your comment titled as " + toPutIn.currentTitle + " in forum";
+  }
+  else
+  {
+    messageToDisplay = firstMessageContent + "your post titled as " + toPutIn.currentTitle + " in forum";
+  }
+
+
+  const newNotifaction = new Notification(
+  {
+    sender : req.userData.username,
+    message : messageToDisplay,
+    isViewed : false
+  });
+  
+  await updateUserNotifcation(toPutIn, newNotifaction, req, res);
 
   if (isComment) {
     await updateCommentVotes(toPutIn, newVote, req, res);
   } else {
     await updatePostVotes(toPutIn, newVote, req, res);
   }
+}
+
+async function updateUserNotifcation(entity, newNotifaction, req, res) {
+
+
+  User.findOne({ username: entity.author })
+    .then((user) => {
+      user.notifications.push(newNotifaction);
+
+      User.updateOne({username : entity.author},user)
+      .then((result) => {
+        const isModified = result.n > 0;
+        // if (isModified) {
+        //   res.json({ message2: 'Updating notifications was successful' });
+        // } else {
+        //   res.json({ message2: 'Updating notifications was unsuccessful' });
+        // }
+      })
+  })
+    .catch(() => {
+      return res.status(500).json({ message: 'Failed to find user!' });
+    });
 }
 
 async function updatePostVotes(post, newVote, req, res) {

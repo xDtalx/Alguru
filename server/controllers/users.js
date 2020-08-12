@@ -1,4 +1,5 @@
 const User = require('../models/user');
+const Notification = require('../models/notification');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const { validationResult } = require('express-validator');
@@ -11,14 +12,17 @@ exports.createUser = (req, res, next) => {
   }
 
   bcrypt.hash(req.body.password, 10).then((hash) => {
+
     const user = new User({
       username: req.body.username,
       username_lower: req.body.username.toLowerCase(),
       email: req.body.email,
       hashedPassword: hash,
       solvedQuestoins : {},
-      isAdmin: false
+      isAdmin: false,
+      notifications : []
     });
+
 
     user
       .save()
