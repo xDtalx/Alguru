@@ -1,6 +1,8 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { AuthGuard } from './auth/auth.guard';
+import { EmailVerificationComponent } from './auth/email-verification/email-verification.component';
+import { PasswordResetComponent } from './auth/password-reset/password-reset.component';
 import { HomeComponent } from './home/home.component';
 
 const routes: Routes = [
@@ -8,6 +10,16 @@ const routes: Routes = [
     component: HomeComponent,
     data: { showSmallHeader: false },
     path: ''
+  },
+  {
+    component: EmailVerificationComponent,
+    data: { showSmallHeader: true, showSmallHeaderOnLogout: true },
+    path: 'users/verify/:verifyToken'
+  },
+  {
+    component: PasswordResetComponent,
+    data: { showSmallHeader: true, showSmallHeaderOnLogout: true },
+    path: 'users/login/reset/:resetToken'
   },
   {
     canActivate: [AuthGuard],
@@ -20,7 +32,6 @@ const routes: Routes = [
     path: 'questions'
   },
   {
-    canActivate: [AuthGuard],
     loadChildren: () => import('./forum/forum.module').then((mod) => mod.ForumModule),
     path: 'forum'
   }

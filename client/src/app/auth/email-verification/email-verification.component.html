@@ -1,0 +1,8 @@
+<div class="verification">
+  <div *ngIf="verified">Your email is now verified.</div>
+  <div *ngIf="verified">
+    <fa-icon class="verified" [icon]="['fas', 'check-circle']" size="5x"></fa-icon>
+  </div>
+  <div *ngIf="!verified">Please be patient it might take a couple of seconds...</div>
+  <div *ngIf="!verified" class="loader"></div>
+</div>

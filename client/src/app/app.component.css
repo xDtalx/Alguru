@@ -1,6 +1,5 @@
 main {
   display: var(--main-display);
-  position: relative;
   width: 100vw;
   margin: auto;
   max-width: 100%;
@@ -24,4 +23,19 @@ main {
   display: flex;
   justify-content: center;
   align-items: center;
+  opacity: 1;
+}
+
+.hide {
+  animation: 0.2s ease zero-opacity forwards;
+}
+
+.overlay * {
+  margin: 0 !important;
+}
+
+@keyframes zero-opacity {
+  to {
+    opacity: 0;
+  }
 }

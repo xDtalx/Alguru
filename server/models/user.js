@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const Notification = require('./notification');
 const uniqueValidator = require('mongoose-unique-validator');
+const Question = require('./question');
 
  
 const userSchema = mongoose.Schema({
@@ -10,7 +11,8 @@ const userSchema = mongoose.Schema({
   hashedPassword: { type: String, require: true },
   solvedQuestions: { type: Map, of: String },
   isAdmin: { type: Boolean, require: true },
-  notifications : [Notification.schema]
+  notifications : [Notification.schema],
+  verified: { type: Boolean, require: true }
 });
 
 

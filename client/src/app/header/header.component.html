@@ -30,8 +30,8 @@
       <li *ngIf="isUserAuth" class="nav-item">
         <button class="nav-link" (click)="setSmallHeader(true)" routerLink="/questions/list">Questions</button>
       </li>
-      <li *ngIf="isUserAuth" class="nav-item">
-        <a class="nav-link" routerLink="/forum">Forum</a>
+      <li class="nav-item">
+        <a class="nav-link" (click)="setSmallHeader(true)" routerLink="/forum">Forum</a>
       </li>
       <li *ngIf="!isUserAuth && isRelease" class="nav-item">
         <button class="nav-link" (click)="show(ModalTypes.LoginModal)">Login</button>
@@ -59,6 +59,6 @@
   aria-labelledby="myModalLabel"
   aria-hidden="true"
 >
-  <app-login *ngIf="showLoginModal" (onCloseModal)="hide()" (onRegisterOpen)="openRegister()"></app-login>
-  <app-register *ngIf="showRegister" (onCloseModal)="hide()"></app-register>
+  <app-login *ngIf="showLogin" (modalClosed)="hide()" (registerOpened)="show(ModalTypes.RegisterModal)"></app-login>
+  <app-register *ngIf="showRegister" (modalClosed)="hide()"></app-register>
 </div>

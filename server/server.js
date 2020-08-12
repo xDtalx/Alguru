@@ -1,13 +1,16 @@
 const app = require('./app.js');
 const debug = require('debug')('node-angular');
 const http = require('http');
-const port = normalizePort(process.env.PORT || 3000);
+const args = process.argv.slice(2);
+const portArg = args.length === 2 && !isNaN(args[1]) ? parseInt(args[1]) : null;
+const ipAddress = args.length === 2 ? args[0] : null;
+const port = normalizePort(portArg || process.env.PORT || 3000);
 const server = http.createServer(app);
 
 app.set('port', port);
 server.on('error', onError);
 server.on('listening', onListening);
-server.listen(port);
+server.listen(port, ipAddress);
 
 function normalizePort(val) {
   const radix = 10;

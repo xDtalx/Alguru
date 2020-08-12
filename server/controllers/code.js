@@ -18,9 +18,7 @@ exports.executeCode = (req, res, next) => {
       if (result.data.testsFailed === '') {
         const questionId = req.body.questionId;
 
-        await User
-        .findOne({ _id: req.userData.userId })
-        .then(async user => {
+        await User.findOne({ _id: req.userData.userId }).then(async (user) => {
           user.solvedQuestions.set(questionId, 'true');
           await User.updateOne({ _id: req.userData.userId }, user);
         });
