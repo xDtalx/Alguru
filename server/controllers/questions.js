@@ -168,11 +168,11 @@ async function putNewVote(req, res, toPutIn) {
 
 async function updateUserNotifcation(question, newNotifaction, req, res) {
 
-  User.findOne({ _id: question.creator })
-    .then((user) => {
+  await User.findOne({ _id: question.creator })
+    .then(async (user) => {
       user.notifications.push(newNotifaction);
 
-      User.updateOne({_id : question.creator},user)
+      await User.updateOne({_id : question.creator},user)
       .then((result) => {
         const isModified = result.n > 0;
         // if (isModified) {

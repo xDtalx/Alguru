@@ -1,5 +1,4 @@
 const User = require('../models/user');
-const Notification = require('../models/notification');
 const TmpToken = require('../models/tmp-token');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');

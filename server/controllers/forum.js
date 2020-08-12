@@ -362,7 +362,7 @@ async function putNewVote(req, res, toPutIn, isComment) {
 async function updateUserNotifcation(entity, newNotifaction, req, res) {
 
 
-  User.findOne({ username: entity.author })
+  await User.findOne({ username: entity.author })
     .then((user) => {
       user.notifications.push(newNotifaction);
 
