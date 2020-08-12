@@ -26,7 +26,13 @@
             </button>
             <span *ngIf="newNotificationsCount !== ''" class="new-notifications">{{ newNotificationsCount }}</span>
           </div>
-          <div [ngStyle]="{ display: showNotifications ? 'flex' : 'none' }" class="notifications-container">
+          <div
+            [ngStyle]="{
+              opacity: showNotifications ? '1' : '0',
+              'pointer-events': showNotifications ? 'auto' : 'none'
+            }"
+            class="notifications-container"
+          >
             <div class="anchor"></div>
             <div class="notifications">
               <app-notifications-center
