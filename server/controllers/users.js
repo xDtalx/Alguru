@@ -69,7 +69,8 @@ exports.createUser = async (req, res, next) => {
         email: req.body.email,
         hashedPassword: hash,
         isAdmin: false,
-        verified: false
+        verified: false,
+        notifications : []
       });
 
       user

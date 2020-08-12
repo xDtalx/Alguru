@@ -1,5 +1,7 @@
 const Question = require('../models/question');
 const Vote = require('../models/vote.js');
+const User = require('../models/user.js');
+const Notification = require('../models/notification.js');
 const { validationResult } = require('express-validator');
 
 exports.createQuestion = (req, res, next) => {
@@ -136,7 +138,53 @@ async function putNewVote(req, res, toPutIn) {
     message: req.body.message
   });
 
+
+
+
+  var  messageToDisplay ;
+  var false1 = "false";
+  var isUp = req.body.isUp;
+
+  if(isUp.localeCompare(false1))
+  {
+    messageToDisplay = "Like! user " + req.userData.username + " liked your question: " + toPutIn.title ;
+  }
+  else
+  {
+    messageToDisplay = "DisLike! user " + req.userData.username + " disliked your question: " + toPutIn.title;
+  }
+
+  const newNotifaction = new Notification(
+  {
+    sender : req.userData.username,
+    message : messageToDisplay,
+    isViewed : false
+  });
+
+
+  await updateUserNotifcation(toPutIn, newNotifaction, req, res);
   await updateQuestionVotes(toPutIn, newVote, req, res);
+}
+
+async function updateUserNotifcation(question, newNotifaction, req, res) {
+
+  await User.findOne({ _id: question.creator })
+    .then(async (user) => {
+      user.notifications.push(newNotifaction);
+
+      await User.updateOne({_id : question.creator},user)
+      .then((result) => {
+        const isModified = result.n > 0;
+        // if (isModified) {
+        //   res.json({ message2: 'Updating notifications was successful' });
+        // } else {
+        //   res.json({ message2: 'Updating notifications was unsuccessful' });
+        // }
+      })
+  })
+    .catch(() => {
+      return res.status(500).json({ message: 'Failed to find user!' });
+    });
 }
 
 async function updateQuestionVotes(question, newVote, req, res) {
