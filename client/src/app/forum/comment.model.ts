@@ -1,6 +1,6 @@
-import { Vote } from './vote.model';
+import { IVote } from './vote.model';
 
-export interface Comment {
+export interface IComment {
   id: string;
   postId: string;
   currentTitle: string;
@@ -10,10 +10,10 @@ export interface Comment {
   contents: string[];
   author: string;
   dates: number[];
-  votes: Map<string, Vote>;
+  votes: Map<string, IVote>;
 }
 
-export interface ClientComment extends Comment {
+export interface IClientComment extends IComment {
   onEditPostMode: boolean;
   showEdits: boolean;
 }

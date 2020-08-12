@@ -3,9 +3,9 @@ import { Injectable } from '@angular/core';
 import { Subject } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
-import { ClientComment, Comment } from './comment.model';
+import { IClientComment, IComment } from './comment.model';
 import { IClientPost, IPost } from './post.model';
-import { Vote } from './vote.model';
+import { IVote } from './vote.model';
 
 const BACKEND_URL = environment.apiUrl + '/forum';
 
@@ -18,7 +18,7 @@ export class ForumService {
 
   constructor(private http: HttpClient) {}
 
-  public vote(commentOrPost: any, isComment: boolean, vote: Vote) {
+  public vote(commentOrPost: any, isComment: boolean, vote: IVote) {
     const url = isComment
       ? `${BACKEND_URL}/${commentOrPost.postId}/${commentOrPost.id}`
       : `${BACKEND_URL}/${commentOrPost.id}`;
@@ -34,7 +34,7 @@ export class ForumService {
     });
   }
 
-  public deleteComment(post: IPost, comment: Comment) {
+  public deleteComment(post: IPost, comment: IComment) {
     this.http.delete<{ message: string }>(`${BACKEND_URL}/${comment.postId}/${comment.id}`).subscribe(() => {
       const postIndex = this.posts.indexOf(post);
       const commentToDeleteIndex = this.posts[postIndex].comments.indexOf(comment);
@@ -43,7 +43,7 @@ export class ForumService {
     });
   }
 
-  public updateComment(updatedComment: Comment) {
+  public updateComment(updatedComment: IComment) {
     this.http
       .put<{ message: string; comment: any }>(
         `${BACKEND_URL}/${updatedComment.postId}/${updatedComment.id}`,
@@ -56,11 +56,11 @@ export class ForumService {
       });
   }
 
-  public addComment(selectedPost: IPost, commentToAdd: Comment) {
+  public addComment(selectedPost: IPost, commentToAdd: IComment) {
     this.http
       .post<{ message: string; comment: any }>(BACKEND_URL + '/' + selectedPost.id, commentToAdd)
       .subscribe((response) => {
-        const comment: ClientComment = {
+        const comment: IClientComment = {
           id: response.comment._id,
           currentTitle: response.comment.titles[response.comment.titles.length - 1],
           currentContent: response.comment.contents[response.comment.contents.length - 1],
@@ -72,7 +72,7 @@ export class ForumService {
           dates: response.comment.dates,
           onEditPostMode: false,
           showEdits: false,
-          votes: new Map<string, Vote>()
+          votes: new Map<string, IVote>()
         };
 
         selectedPost.comments.push(comment);
@@ -92,7 +92,7 @@ export class ForumService {
           contents: comment.contents,
           author: comment.author,
           dates: comment.dates,
-          votes: new Map<string, Vote>(Object.keys(comment.votes).map((key) => this.mapVotes(key, comment)))
+          votes: new Map<string, IVote>(Object.keys(comment.votes).map((key) => this.mapVotes(key, comment)))
         };
       });
       oldPost.contents = responseData.post.contents;
@@ -153,15 +153,15 @@ export class ForumService {
           contents: comment.contents,
           author: comment.author,
           dates: comment.dates,
-          votes: new Map<string, Vote>(Object.keys(comment.votes).map((key) => this.mapVotes(key, comment)))
+          votes: new Map<string, IVote>(Object.keys(comment.votes).map((key) => this.mapVotes(key, comment)))
         };
       }),
       dates: post.dates,
-      votes: new Map<string, Vote>(Object.keys(post.votes).map((key) => this.mapVotes(key, post)))
+      votes: new Map<string, IVote>(Object.keys(post.votes).map((key) => this.mapVotes(key, post)))
     };
   }
 
-  public mapVotes(voteKey, postOrComment): [string, Vote] {
+  private mapVotes(voteKey, postOrComment): [string, IVote] {
     return [
       voteKey,
       {

@@ -1,5 +1,5 @@
-import { ClientComment, Comment } from './comment.model';
-import { Vote } from './vote.model';
+import { IClientComment, IComment } from './comment.model';
+import { IVote } from './vote.model';
 
 export interface IPost {
   id: string;
@@ -9,13 +9,13 @@ export interface IPost {
   contents: string[];
   titles: string[];
   author: string;
-  comments: Comment[];
+  comments: IComment[];
   dates: number[];
-  votes: Map<string, Vote>;
+  votes: Map<string, IVote>;
 }
 
 export interface IClientPost extends IPost {
   onEditPostMode: boolean;
-  comments: ClientComment[];
+  comments: IClientComment[];
   showEdits: boolean;
 }

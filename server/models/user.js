@@ -1,7 +1,6 @@
 const mongoose = require('mongoose');
 const Notification = require('./notification');
 const uniqueValidator = require('mongoose-unique-validator');
-const Question = require('./question');
 
  
 const userSchema = mongoose.Schema({

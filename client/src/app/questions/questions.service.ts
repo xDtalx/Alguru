@@ -1,19 +1,37 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
-import { Subject } from 'rxjs';
+import { Observable, Subject } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
-import { Question } from './question.model';
+import { IVote } from '../forum/vote.model';
+import { IQuestion } from './question.model';
 
 const BACKEND_URL = environment.apiUrl + '/questions';
 
 @Injectable({ providedIn: 'root' })
 export class QuestionsService {
-  private questions: Question[] = [];
-  private questionsUpdated = new Subject<Question[]>();
+  private questions: IQuestion[] = [];
+  private question: IQuestion;
+  private questionsUpdated = new Subject<IQuestion[]>();
+  private questionUpdated = new Subject<IQuestion>();
 
   constructor(private http: HttpClient, private router: Router) {}
+
+  public vote(id: string, username: string, isUp: boolean, message: string) {
+    this.http
+      .patch<{ votes }>(BACKEND_URL + '/' + id, { username, isUp, message })
+      .subscribe((response) => {
+        if (this.question) {
+          this.question.votes.set(username, { id: response.votes[username]._id, username, isUp, message });
+          this.questionUpdated.next(this.question);
+        }
+      });
+  }
+
+  public getQuestionUpdatedListener(): Observable<IQuestion> {
+    return this.questionUpdated.asObservable();
+  }
 
   public getQuestions() {
     this.http
@@ -22,13 +40,18 @@ export class QuestionsService {
         map((questionsData) => {
           return questionsData.map((question) => {
             return {
-              id: question._id,
-              title: question.title,
               content: question.content,
-              solution: question.solution,
+              creator: question.creator,
               hints: question.hints,
+              id: question._id,
               level: question.level,
-              creator: question.creator
+              solution: question.solution,
+              title: question.title,
+              tests: question.tests,
+              solutionTemplate: question.solutionTemplate,
+              votes: new Map<string, IVote>(
+                Object.keys(question.votes).map((key) => this.mapVotes(key, question.votes))
+              )
             };
           });
         })
@@ -39,22 +62,57 @@ export class QuestionsService {
       });
   }
 
-  public getQuestionUpdatedListener() {
+  public mapVotes(voteKey, votes): [string, IVote] {
+    console.log(votes[voteKey].message);
+    return [
+      voteKey,
+      {
+        id: votes[voteKey]._id,
+        isUp: votes[voteKey].isUp,
+        message: votes[voteKey].message,
+        username: votes[voteKey].username
+      }
+    ];
+  }
+
+  public getQuestionsUpdatedListener() {
     return this.questionsUpdated.asObservable();
   }
 
   public getQuestion(id: string) {
-    return this.http.get<{
-      _id: string;
-      title: string;
-      content: string;
-      solutionTemplate: string[];
-      solution: string[];
-      tests: string[];
-      hints: string;
-      level: number;
-      creator: string;
-    }>(BACKEND_URL + '/' + id);
+    this.http
+      .get<{
+        _id: string;
+        title: string;
+        content: string;
+        solutionTemplate: string[];
+        solution: string[];
+        tests: string[];
+        hints: string;
+        level: number;
+        creator: string;
+        votes: Map<string, IVote>;
+      }>(BACKEND_URL + '/' + id)
+      .pipe(
+        map((question) => {
+          return {
+            content: question.content,
+            creator: question.creator,
+            hints: question.hints,
+            id: question._id,
+            level: question.level,
+            solution: question.solution,
+            solutionTemplate: question.solutionTemplate,
+            tests: question.tests,
+            title: question.title,
+            votes: new Map<string, IVote>(Object.keys(question.votes).map((key) => this.mapVotes(key, question.votes)))
+          };
+        })
+      )
+      .subscribe((question) => {
+        this.question = question;
+        this.questionUpdated.next(this.question);
+      });
   }
 
   public createQuestion(
@@ -66,7 +124,7 @@ export class QuestionsService {
     hints: string,
     level: number
   ) {
-    const question: Question = {
+    const question: IQuestion = {
       id: null,
       title,
       content,
@@ -75,13 +133,14 @@ export class QuestionsService {
       tests,
       hints,
       level,
-      creator: null
+      creator: null,
+      votes: new Map<string, IVote>()
     };
 
     this.addQuestion(question);
   }
 
-  public addQuestion(question: Question) {
+  public addQuestion(question: IQuestion) {
     this.http.post<{ message: string; questionId: string }>(BACKEND_URL, question).subscribe((responseData) => {
       question.id = responseData.questionId;
       this.questions.push(question);
@@ -97,8 +156,8 @@ export class QuestionsService {
     });
   }
 
-  public updateQuestion(id: string, question: Question) {
-    const questionToUpdate: Question = {
+  public updateQuestion(id: string, question: IQuestion) {
+    const questionToUpdate: IQuestion = {
       id,
       title: question.title,
       content: question.content,
@@ -107,7 +166,8 @@ export class QuestionsService {
       tests: question.tests,
       hints: question.hints,
       level: question.level,
-      creator: null
+      creator: null,
+      votes: question.votes
     };
 
     this.http.put(BACKEND_URL + '/' + id, questionToUpdate).subscribe(() => {

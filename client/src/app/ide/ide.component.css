@@ -5,6 +5,62 @@
   box-sizing: border-box;
 }
 
+#vote-message-pop-up {
+  position: absolute;
+  display: flex;
+  justify-content: center;
+  width: 100vw;
+  height: 100%;
+  z-index: 999;
+  top: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+}
+
+angular-editor {
+  color: white;
+}
+
+#vote-message-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  width: 100rem;
+  background-color: rgba(53, 58, 66, 0.9);
+  height: fit-content;
+  margin: auto;
+  padding: 2rem;
+  border-radius: 0.8rem;
+}
+
+#vote-message-container button {
+  font-size: 1.8rem;
+  padding: 0.5rem 2rem 0.5rem 2rem;
+  width: fit-content;
+}
+
+#vote-message-container button:not(:last-child) {
+  margin-right: 1rem;
+}
+
+#pop-up-message {
+  font-size: 1.6rem;
+  color: white;
+  margin-bottom: 2rem;
+  display: flex;
+  flex-direction: column;
+}
+
+#pop-up-message span {
+  margin-bottom: 0.5rem;
+}
+
+#buttons {
+  margin: 2rem auto 0 auto;
+  display: flex;
+  justify-content: center;
+  flex-direction: row;
+}
+
 :host {
   overflow: hidden;
 }

@@ -1,3 +1,28 @@
+<div id="vote-message-pop-up" (click)="hideVoteMessagePopup()" [ngStyle]="{ display: hidePopUp ? 'none' : 'flex' }">
+  <div id="vote-message-container" (click)="$event.stopPropagation()">
+    <div id="pop-up-message">
+      <span>
+        If you voted down please provide an explaination for this question's author to see.
+      </span>
+      <span>
+        It will sure help the author to improve the question and the community to solve only high-quality questions.
+      </span>
+    </div>
+    <angular-editor
+      id="vote-message-editor"
+      [config]="getEditorConfig()"
+      [(ngModel)]="messageDefaultValue"
+    ></angular-editor>
+    <div id="buttons">
+      <button class="alguru-primary-btn" (click)="onSubmitMessage(messageDefaultValue)">
+        Submit
+      </button>
+      <button class="alguru-primary-btn" (click)="hideVoteMessagePopup()">
+        Cancel
+      </button>
+    </div>
+  </div>
+</div>
 <div id="ide">
   <div id="first-col">
     <div class="container editable-editor" id="solution-container">
@@ -52,8 +77,8 @@
         <span class="title">Question</span>
         <div class="voting">
           <div class="vote vote-up" (click)="voteUp()"></div>
-          <div class="votes" [ngClass]="{ votes: true, positive: getVotes() > 0, negative: getVotes() < 0 }">
-            {{ getVotes() }}
+          <div class="votes" [ngClass]="{ votes: true, positive: votes > 0, negative: votes < 0 }">
+            {{ votes }}
           </div>
           <div class="vote vote-down" (click)="voteDown()"></div>
         </div>

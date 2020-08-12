@@ -10,8 +10,9 @@ exports.getImage = (req, res) => {
     .catch(() => res.status(404).json({ message: 'Image not found' }));
 };
 
-exports.uploadImage = (req, res) => {
-  const filePath = path.join(__dirname, '..', 'public', 'uploads', req.file.filename);
+exports.uploadImage = async (req, res) => {
+  const folderPath = path.join(__dirname, '..', 'public', 'uploads');
+  const filePath = path.join(folderPath, req.file.filename);
   const image = new Image({
     name: req.userData.username,
     img: {
@@ -19,8 +20,7 @@ exports.uploadImage = (req, res) => {
       contentType: req.file.mimetype
     }
   });
-
-  Image.exists({ name: image.name }).then(async (isExists) => {
+  await Image.exists({ name: image.name }).then(async (isExists) => {
     if (isExists) {
       await updateImage(res, image);
     } else {

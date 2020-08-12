@@ -1,11 +1,10 @@
-import { compileNgModule } from '@angular/compiler';
-import { AfterViewInit, Component, HostListener, OnDestroy, OnInit, Renderer2 } from '@angular/core';
+import { AfterViewInit, Component, OnDestroy, OnInit, Renderer2 } from '@angular/core';
 import { ActivatedRoute, ParamMap } from '@angular/router';
 import { AngularEditorConfig } from '@kolkov/angular-editor';
 import { Subscription } from 'rxjs';
 import { AuthService } from '../auth/auth.service';
 import { ThemeService } from '../theme/theme.service';
-import { ClientComment } from './comment.model';
+import { IClientComment } from './comment.model';
 import { ForumService } from './forum.service';
 import { IClientPost, IPost } from './post.model';
 
@@ -168,7 +167,7 @@ export class ForumComponent implements OnInit, OnDestroy, AfterViewInit {
   public hideEditsPopup() {
     this.posts.forEach((post: IClientPost) => {
       post.showEdits = false;
-      post.comments.forEach((comment: ClientComment) => {
+      post.comments.forEach((comment: IClientComment) => {
         comment.showEdits = false;
       });
     });
@@ -430,7 +429,7 @@ export class ForumComponent implements OnInit, OnDestroy, AfterViewInit {
       comment.onEditPostMode = false;
       this.forumService.updateComment(comment);
     } else {
-      const comment: ClientComment = {
+      const comment: IClientComment = {
         author: this.authService.getUsername(),
         contents: [content],
         currentContent: content || '',
@@ -493,7 +492,7 @@ export class ForumComponent implements OnInit, OnDestroy, AfterViewInit {
     this.reset(true);
   }
 
-  public onDeleteCommentClick(comment: ClientComment) {
+  public onDeleteCommentClick(comment: IClientComment) {
     const index: number = this.selectedPost.comments.indexOf(comment);
 
     if (index >= -1) {
@@ -515,7 +514,7 @@ export class ForumComponent implements OnInit, OnDestroy, AfterViewInit {
     }
   }
 
-  public onEditCommentClick(comment: ClientComment) {
+  public onEditCommentClick(comment: IClientComment) {
     if (comment) {
       const commentIndex: number = this.selectedPost.comments.indexOf(comment);
       const postIndex: number = this.posts.indexOf(this.selectedPost);
