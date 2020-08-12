@@ -7,6 +7,7 @@
 }
 
 div.header {
+  z-index: 11;
   position: relative;
   display: flex;
   max-height: 100vh;
@@ -73,7 +74,6 @@ div.header {
 .notifications {
   top: 8.5rem;
   position: absolute;
-  z-index: 10;
   width: 40rem;
   max-height: 90vh;
   border-radius: 0.5rem;
@@ -94,10 +94,6 @@ div.header {
 .notifications::-webkit-scrollbar-track,
 .notifications::-webkit-scrollbar-thumb {
   border-radius: 0.5rem;
-}
-
-app-notifications-center {
-  z-index: 10;
 }
 
 div.header * {
