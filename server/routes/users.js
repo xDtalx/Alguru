@@ -46,4 +46,8 @@ router.get('/verify/:verifyToken', UserController.verifyUser);
 
 router.post('/verify/resend', checkAuth, UserController.resendVarificationEmail);
 
+router.get('/notifications', checkAuth, UserController.getNotifications);
+
+router.put('/notifications', checkAuth, UserController.markNotificationsAsSeen);
+
 module.exports = router;

@@ -132,63 +132,41 @@ async function putNewVote(req, res, toPutIn) {
     return res.status(400).json({ message: 'User voted already' });
   }
 
+  await updateUserNotification(toPutIn, req, res);
+  await updateQuestionVotes(toPutIn, req, res);
+}
+
+async function updateUserNotification(question, req) {
+  console.log('question', question);
+  await User.findOne({ _id: question.creator }).then(async (user) => {
+    console.log('user', user);
+    const messageToDisplay = `${req.userData.username} ${req.body.isUp ? 'upvote' : 'downvote'} your question: ${
+      question.title
+    }`;
+
+    user.notifications.push(
+      new Notification({
+        sender: req.userData.username,
+        title: 'Someone voted on your question',
+        content: messageToDisplay,
+        seen: false,
+        url: `/questions/solve/${req.params.id}`
+      })
+    );
+
+    await User.updateOne({ _id: question.creator }, user);
+  });
+}
+
+async function updateQuestionVotes(question, req, res) {
   const newVote = new Vote({
     username: req.userData.username,
     isUp: req.body.isUp,
     message: req.body.message
   });
 
-
-
-
-  var  messageToDisplay ;
-  var false1 = "false";
-  var isUp = req.body.isUp;
-
-  if(isUp.localeCompare(false1))
-  {
-    messageToDisplay = "Like! user " + req.userData.username + " liked your question: " + toPutIn.title ;
-  }
-  else
-  {
-    messageToDisplay = "DisLike! user " + req.userData.username + " disliked your question: " + toPutIn.title;
-  }
-
-  const newNotifaction = new Notification(
-  {
-    sender : req.userData.username,
-    message : messageToDisplay,
-    isViewed : false
-  });
-
-
-  await updateUserNotifcation(toPutIn, newNotifaction, req, res);
-  await updateQuestionVotes(toPutIn, newVote, req, res);
-}
-
-async function updateUserNotifcation(question, newNotifaction, req, res) {
-
-  await User.findOne({ _id: question.creator })
-    .then(async (user) => {
-      user.notifications.push(newNotifaction);
-
-      await User.updateOne({_id : question.creator},user)
-      .then((result) => {
-        const isModified = result.n > 0;
-        // if (isModified) {
-        //   res.json({ message2: 'Updating notifications was successful' });
-        // } else {
-        //   res.json({ message2: 'Updating notifications was unsuccessful' });
-        // }
-      })
-  })
-    .catch(() => {
-      return res.status(500).json({ message: 'Failed to find user!' });
-    });
-}
-
-async function updateQuestionVotes(question, newVote, req, res) {
   question.votes.set(newVote.username, newVote);
+
   Question.updateOne({ _id: req.params.id }, question)
     .then(async (result) => {
       const isModified = result.n > 0;

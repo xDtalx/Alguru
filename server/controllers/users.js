@@ -6,6 +6,45 @@ const { validationResult } = require('express-validator');
 const nodemailer = require('nodemailer');
 let mailer;
 
+exports.markNotificationsAsSeen = async (req, res, next) => {
+  await User.findOne({ _id: req.userData.userId })
+    .then(async (user) => {
+      user.notifications.forEach((notification) => {
+        notification.seen = true;
+        notification.isViewed = true;
+      });
+      await User.updateOne({ _id: req.userData.userId }, user)
+        .then((result) => {
+          const isModified = result.n > 0;
+
+          if (isModified) {
+            return res.status(200).json({ message: 'Notifications updated successfully' });
+          } else {
+            return res.status(500).json({ message: 'Unknown error! Notifications cannot be updated' });
+          }
+        })
+        .catch((err) => {
+          console.log(err);
+          return res.status(400).json({ message: 'User cannot be found' });
+        });
+    })
+    .catch((err) => {
+      console.log(err);
+      return res.status(500).json({ message: 'Unknown error' });
+    });
+};
+
+exports.getNotifications = async (req, res, next) => {
+  await User.findOne({ _id: req.userData.userId })
+    .then((user) => {
+      return res.status(200).json(user.notifications);
+    })
+    .catch((err) => {
+      console.log(err);
+      return res.status(500).json({ message: 'Unknown error' });
+    });
+};
+
 exports.resendVarificationEmail = async (req, res, next) => {
   if (req.userData.verified) {
     res.status(400).json({ message: 'User is already verified' });
@@ -70,7 +109,7 @@ exports.createUser = async (req, res, next) => {
         hashedPassword: hash,
         isAdmin: false,
         verified: false,
-        notifications : []
+        notifications: []
       });
 
       user

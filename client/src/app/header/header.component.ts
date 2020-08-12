@@ -52,6 +52,8 @@ export class HeaderComponent implements OnInit, OnDestroy {
 
   // Notifications
   private newNotificationsSubs: Subscription;
+  private checkNotificationsIntervalHandle: any;
+  private numOfSecondsToCheckNotifications = 10;
   public showNotifications = false;
   public newNotificationsCount = '';
   public notificationsSeen = false;
@@ -85,13 +87,18 @@ export class HeaderComponent implements OnInit, OnDestroy {
     this.isUserAuth = this.authService.getIsAuth();
     this.isAdmin = this.authService.getIsAdmin();
     this.username = this.authService.getUsername();
-    this.notificationService.updateNotifications();
 
-    if (this.username) {
+    if (this.profileURL === '/users/profile/') {
       this.profileURL += this.username;
     }
 
-    setInterval(() => this.notificationService.updateNotifications(), 1000);
+    if (this.isUserAuth) {
+      this.checkNotificationsIntervalHandle = setInterval(
+        () => this.notificationService.updateNotifications(),
+        this.numOfSecondsToCheckNotifications * 1000
+      );
+      this.notificationService.updateNotifications();
+    }
   }
 
   public ngOnDestroy() {
@@ -101,6 +108,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
     this.smallHeaderSubs.unsubscribe();
     this.smallHeaderOnLogoutSubs.unsubscribe();
     this.navigateUrlOnLogoutSubs.unsubscribe();
+    clearInterval(this.checkNotificationsIntervalHandle);
   }
 
   public setSmallHeader(isShow: boolean) {
@@ -143,6 +151,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
 
     this.setSmallHeader(this.showSmallHeaderOnLogout);
     this.authService.logout(this.navigateUrlOnLogout);
+    clearInterval(this.checkNotificationsIntervalHandle);
   }
 
   public closeNotificationsCenter(event) {
@@ -248,7 +257,18 @@ export class HeaderComponent implements OnInit, OnDestroy {
 
     if (!this.username) {
       this.username = this.authService.getUsername();
+    }
+
+    if (this.profileURL === '/users/profile/') {
       this.profileURL += this.username;
+    }
+
+    if (isAuth && !this.checkNotificationsIntervalHandle) {
+      this.checkNotificationsIntervalHandle = setInterval(
+        () => this.notificationService.updateNotifications(),
+        this.numOfSecondsToCheckNotifications * 1000
+      );
+      this.notificationService.updateNotifications();
     }
   }
 }

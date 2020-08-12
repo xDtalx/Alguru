@@ -1,18 +1,18 @@
-<div
-  *ngIf="notifications.length === 0"
-  [ngStyle]="{ backgroundColor: notificationColor }"
-  class="no-notifications-message"
->
-  <span>There's no new notification at this moment.</span>
-</div>
 <div class="notifications-title" [ngStyle]="{ backgroundColor: notificationColor, color: fontColor }">
   <span>Notifications</span>
 </div>
 <div
+  *ngIf="!notifications || notifications.length === 0"
+  [ngStyle]="{ backgroundColor: notificationColor, color: fontColor }"
+  class="no-notifications-message"
+>
+  <span>There's no new notification at this moment.</span>
+</div>
+<div
   class="notification-container"
   [ngStyle]="{ backgroundColor: notificationColor, color: fontColor }"
-  [routerLink]="notification.url"
-  *ngFor="let notification of notifications"
+  [routerLink]="[notification.url]"
+  *ngFor="let notification of notifications?.slice().reverse()"
 >
   <div class="notification-details">
     <div class="title">
@@ -27,7 +27,7 @@
     </div>
     <div class="date">
       <span>
-        {{ notification.date }}
+        {{ notification.createdAt }}
       </span>
     </div>
   </div>

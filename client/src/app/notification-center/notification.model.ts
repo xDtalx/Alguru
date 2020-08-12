@@ -1,7 +1,9 @@
 export interface INotification {
+  id: string;
   content: string;
-  date: Date;
+  createdAt: Date;
   seen: boolean;
+  sender: string;
   title: string;
-  url?: string;
+  url: string;
 }

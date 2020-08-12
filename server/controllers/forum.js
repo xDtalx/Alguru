@@ -222,7 +222,7 @@ exports.voteOnComment = (req, res, next) => {
   }
 
   Comment.findById(req.params.commentId)
-    .then((comment) => putNewVote(req, res, comment,true))
+    .then((comment) => putNewVote(req, res, comment, true))
     .catch(() => res.status(401).json({ message: 'Unauthorized!' }));
 };
 
@@ -303,85 +303,49 @@ async function updateCommentInPost(req, res, updatedComment) {
 }
 
 async function putNewVote(req, res, toPutIn, isComment) {
-
-
   if (toPutIn.author === req.userData.username) {
     return res.status(403).json({ message: 'User cannot vote on his own post or comment' });
   } else if (toPutIn.votes.has(req.userData.username)) {
     return res.status(403).json({ message: 'User voted already' });
   }
 
+  await updateUserNotifcation(toPutIn, isComment, req, res);
+
+  if (isComment) {
+    await updateCommentVotes(toPutIn, req, res);
+  } else {
+    await updatePostVotes(toPutIn, req, res);
+  }
+}
+
+async function updateUserNotifcation(entity, isComment, req) {
+  const messageToDisplay = `${req.userData.username} ${req.body.isUp ? 'upvote' : 'downvote'} your ${
+    isComment ? 'comment in a post' : `post: ${entity.title}`
+  }.`;
+
+  const newNotifaction = new Notification({
+    sender: req.userData.username,
+    title: `Someone voted on your ${isComment ? 'comment' : 'post'}`,
+    content: messageToDisplay,
+    seen: false,
+    url: `/forum/post/${isComment ? entity.postId : entity._id}`
+  });
+
+  await User.findOne({ username: entity.author })
+    .then(async (user) => {
+      user.notifications.push(newNotifaction);
+      await User.updateOne({ username: entity.author }, user);
+    })
+    .catch((err) => console.log(err));
+}
+
+async function updatePostVotes(post, req, res) {
   const newVote = new Vote({
     username: req.userData.username,
     isUp: req.body.isUp,
     message: req.body.message
   });
 
-  
-  var firstMessageContent;
-  var  messageToDisplay ;
-  var falseMessage = "false";
-  var isUp = req.body.isUp;
-
-
-  if(isUp.localeCompare(falseMessage))
-  {
-    firstMessageContent = "Like! user " + req.userData.username + " liked ";
-  }
-  else
-  {
-    firstMessageContent = "DisLike! user " + req.userData.username + " disliked ";
-  }
-
-  if(isComment)
-  {
-    messageToDisplay = firstMessageContent + "your comment titled as " + toPutIn.currentTitle + " in forum";
-  }
-  else
-  {
-    messageToDisplay = firstMessageContent + "your post titled as " + toPutIn.currentTitle + " in forum";
-  }
-
-
-  const newNotifaction = new Notification(
-  {
-    sender : req.userData.username,
-    message : messageToDisplay,
-    isViewed : false
-  });
-  
-  await updateUserNotifcation(toPutIn, newNotifaction, req, res);
-
-  if (isComment) {
-    await updateCommentVotes(toPutIn, newVote, req, res);
-  } else {
-    await updatePostVotes(toPutIn, newVote, req, res);
-  }
-}
-
-async function updateUserNotifcation(entity, newNotifaction, req, res) {
-
-
-  await User.findOne({ username: entity.author })
-    .then((user) => {
-      user.notifications.push(newNotifaction);
-
-      User.updateOne({username : entity.author},user)
-      .then((result) => {
-        const isModified = result.n > 0;
-        // if (isModified) {
-        //   res.json({ message2: 'Updating notifications was successful' });
-        // } else {
-        //   res.json({ message2: 'Updating notifications was unsuccessful' });
-        // }
-      })
-  })
-    .catch(() => {
-      return res.status(500).json({ message: 'Failed to find user!' });
-    });
-}
-
-async function updatePostVotes(post, newVote, req, res) {
   post.votes.set(newVote.username, newVote);
   Post.updateOne({ _id: req.params.postId }, post)
     .then(async (result) => {
@@ -396,7 +360,13 @@ async function updatePostVotes(post, newVote, req, res) {
     .catch(() => res.status(500).json({ message: 'Something went wrong. Post was not updated.' }));
 }
 
-async function updateCommentVotes(comment, newVote, req, res) {
+async function updateCommentVotes(comment, req, res) {
+  const newVote = new Vote({
+    username: req.userData.username,
+    isUp: req.body.isUp,
+    message: req.body.message
+  });
+
   comment.votes.set(newVote.username, newVote);
   Comment.updateOne({ _id: req.params.commentId }, comment)
     .then(async (result) => updateCommentVoteInPost(req, res, result, comment, newVote))
