@@ -30,8 +30,7 @@
             <div class="anchor"></div>
             <div class="notifications">
               <app-notifications-center
-                [seen]="notificationsSeen"
-                (newNotificationsCountUpdate)="setNewNotificationsCount($event)"
+                [notifications]="notifications"
                 fontColor="white"
                 notificationColor="#4a4e55"
               ></app-notifications-center>

@@ -4,6 +4,8 @@ import * as $ from 'jquery';
 import { Subscription } from 'rxjs';
 import { environment } from '../../environments/environment';
 import { AuthService } from '../auth/auth.service';
+import { INotification } from '../notification-center/notification.model';
+import { NotificationService } from '../notification-center/notification.service';
 import { SettingsService } from '../settings.service';
 
 enum ModalTypes {
@@ -17,34 +19,50 @@ enum ModalTypes {
   templateUrl: './header.component.html'
 })
 export class HeaderComponent implements OnInit, OnDestroy {
+  // Hamburger menu
   @ViewChild('toggleNavCheckbox', { read: ElementRef })
   public toggleNavCheckbox: ElementRef;
 
+  public isOpenMenu = false;
+  public openNav: boolean;
+
+  // auth
   private authListenerSubs: Subscription;
   private adminListenerSubs: Subscription;
-  private smallHeaderSubs: Subscription;
-  private smallHeaderOnLogoutSubs: Subscription;
-  private navigateUrlOnLogoutSubs: Subscription;
-  private showSmallHeaderAfterHamburgerClicked = true;
   private username: string;
-  private navigateUrlOnLogout: string;
-  private showSmallHeaderOnLogout: boolean;
   public showLogin: boolean;
   public showRegister: boolean;
   public showModal: boolean;
   public ModalTypes = ModalTypes;
+  public isAdmin: boolean;
   public isUserAuth: boolean;
   public isRelease: boolean;
-  public showSmallHeader: boolean;
-  public isAdmin: boolean;
+
+  // Navigation
+  private navigateUrlOnLogoutSubs: Subscription;
+  private navigateUrlOnLogout: string;
   public profileURL = '/users/profile/';
-  public isOpenMenu = false;
-  public openNav: boolean;
+
+  // Small header handlers
+  private showSmallHeaderAfterHamburgerClicked = true;
+  private showSmallHeaderOnLogout: boolean;
+  private smallHeaderSubs: Subscription;
+  private smallHeaderOnLogoutSubs: Subscription;
+  public showSmallHeader: boolean;
+
+  // Notifications
+  private newNotificationsSubs: Subscription;
   public showNotifications = false;
   public newNotificationsCount = '';
-  public notificationsSeen = 'false';
+  public notificationsSeen = false;
+  public notifications: INotification[];
 
-  constructor(private authService: AuthService, private settingsService: SettingsService, private route: Router) {
+  constructor(
+    private authService: AuthService,
+    private settingsService: SettingsService,
+    private route: Router,
+    private notificationService: NotificationService
+  ) {
     this.smallHeaderSubs = this.settingsService
       .getSmallHeaderObservable()
       .subscribe((isShow) => this.setSmallHeader(isShow));
@@ -54,39 +72,30 @@ export class HeaderComponent implements OnInit, OnDestroy {
     this.smallHeaderOnLogoutSubs = this.settingsService
       .getSmallHeaderOnLogoutObservable()
       .subscribe((isShow) => (this.showSmallHeaderOnLogout = isShow));
+    this.newNotificationsSubs = this.notificationService
+      .getNotificationsUpdatedListener()
+      .subscribe(this.onNotificationsUpdated.bind(this));
+    this.authListenerSubs = this.authService.getAuthStatusListener().subscribe(this.onAuthStatusChanged.bind(this));
+    this.adminListenerSubs = this.authService.getAdminListener().subscribe((isAdmin) => (this.isAdmin = isAdmin));
+    window.addEventListener('click', this.closeNotificationsCenter.bind(this));
   }
 
   public ngOnInit() {
-    window.addEventListener('click', this.closeNotificationsCenter.bind(this));
     this.isRelease = environment.isRelease;
     this.isUserAuth = this.authService.getIsAuth();
     this.isAdmin = this.authService.getIsAdmin();
-
-    this.authListenerSubs = this.authService.getAuthStatusListener().subscribe((isAuth) => {
-      this.isUserAuth = isAuth;
-
-      if (isAuth) {
-        this.hide();
-      }
-    });
-
-    this.adminListenerSubs = this.authService.getAdminListener().subscribe((isAdmin) => {
-      this.isAdmin = isAdmin;
-
-      if (!this.username) {
-        this.username = this.authService.getUsername();
-        this.profileURL += this.username;
-      }
-    });
-
     this.username = this.authService.getUsername();
+    this.notificationService.updateNotifications();
 
     if (this.username) {
       this.profileURL += this.username;
     }
+
+    setInterval(() => this.notificationService.updateNotifications(), 1000);
   }
 
   public ngOnDestroy() {
+    this.newNotificationsSubs.unsubscribe();
     this.authListenerSubs.unsubscribe();
     this.adminListenerSubs.unsubscribe();
     this.smallHeaderSubs.unsubscribe();
@@ -97,7 +106,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
   public setSmallHeader(isShow: boolean) {
     const length = 300;
     this.showSmallHeader = isShow;
-    this.closeAll();
+    this.setNotificationsDisplay(false);
 
     if (this.showSmallHeader) {
       const header = $('div.header');
@@ -151,7 +160,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
       !target ||
       (!target.classList.contains('notification-btn') && !target.classList.contains('notification-container'))
     ) {
-      this.closeAll();
+      this.setNotificationsDisplay(false);
     }
   }
 
@@ -174,18 +183,27 @@ export class HeaderComponent implements OnInit, OnDestroy {
   }
 
   public toggleShowNotifications() {
-    this.showNotifications = !this.showNotifications;
-    this.notificationsSeen = this.notificationsSeen === 'false' ? 'true' : 'false';
+    this.setNotificationsDisplay(!this.showNotifications, true);
   }
 
-  public closeAll() {
-    this.showNotifications = false;
+  public setNotificationsDisplay(show: boolean, notificationsSeen?: boolean) {
+    if (this.notificationsSeen) {
+      this.notificationService.setNotificationsSeen();
+      this.newNotificationsCount = '';
+    }
+
+    if (notificationsSeen) {
+      this.notificationsSeen = !this.notificationsSeen;
+    }
+
+    this.showNotifications = show;
   }
 
   public setNewNotificationsCount(count: number): void {
     const newCount = count === 0 ? '' : String(count);
 
     if (newCount !== this.newNotificationsCount) {
+      this.notificationsSeen = false;
       this.newNotificationsCount = newCount;
     }
   }
@@ -205,6 +223,32 @@ export class HeaderComponent implements OnInit, OnDestroy {
       header.animate({ height: '100vh' }, length);
     } else if (this.route.url !== '/') {
       this.setSmallHeader(this.showSmallHeaderAfterHamburgerClicked);
+    }
+  }
+
+  private onNotificationsUpdated(notifications: INotification[]) {
+    this.notifications = notifications;
+    let count = 0;
+
+    this.notifications.forEach((notification) => {
+      if (!notification.seen) {
+        count++;
+      }
+    });
+
+    this.setNewNotificationsCount(count);
+  }
+
+  private onAuthStatusChanged(isAuth: boolean) {
+    this.isUserAuth = isAuth;
+
+    if (isAuth) {
+      this.hide();
+    }
+
+    if (!this.username) {
+      this.username = this.authService.getUsername();
+      this.profileURL += this.username;
     }
   }
 }

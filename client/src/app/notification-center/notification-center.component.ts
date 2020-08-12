@@ -18,7 +18,7 @@ import { NotificationService } from './notification.service';
   styleUrls: ['./notification-center.component.css'],
   templateUrl: './notification-center.component.html'
 })
-export class NotificationCenterComponent implements OnInit, OnDestroy, OnChanges {
+export class NotificationCenterComponent {
   @Output()
   public newNotificationsCountUpdate = new EventEmitter<number>();
 
@@ -36,43 +36,4 @@ export class NotificationCenterComponent implements OnInit, OnDestroy, OnChanges
 
   @Input()
   public notifications: INotification[] = [];
-
-  private notificationsUpdatedSub: Subscription;
-
-  constructor(private notificationsService: NotificationService) {}
-
-  public ngOnDestroy(): void {
-    this.notificationsUpdatedSub.unsubscribe();
-  }
-
-  public ngOnInit(): void {
-    this.notificationsUpdatedSub = this.notificationsService
-      .getNotificationsUpdatedListener()
-      .subscribe((notifications) => {
-        this.notifications = notifications;
-        this.updateNewNotificationsCount();
-      });
-    this.notificationsService.updateNotifications();
-  }
-
-  public ngOnChanges(changes: SimpleChanges): void {
-    if (changes.seen) {
-      if (changes.seen.currentValue === 'true') {
-        this.notificationsService.setNotificationsSeen();
-        this.newNotificationsCountUpdate.emit(0);
-      }
-    }
-  }
-
-  private updateNewNotificationsCount(): void {
-    let count = 0;
-
-    this.notifications.forEach((notification) => {
-      if (!notification.seen) {
-        count++;
-      }
-    });
-
-    this.newNotificationsCountUpdate.emit(count);
-  }
 }

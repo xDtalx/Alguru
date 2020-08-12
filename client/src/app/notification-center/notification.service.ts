@@ -10,67 +10,67 @@ export class NotificationService {
   private notifications: INotification[] = [
     {
       content: 'test',
-      date: 'test',
+      date: new Date(),
       seen: false,
       title: 'test'
     },
     {
       content: 'test',
-      date: 'test',
+      date: new Date(),
       seen: false,
       title: 'test'
     },
     {
       content: 'test',
-      date: 'test',
+      date: new Date(),
       seen: false,
       title: 'test'
     },
     {
       content: 'test',
-      date: 'test',
+      date: new Date(),
       seen: false,
       title: 'test'
     },
     {
       content: 'test',
-      date: 'test',
+      date: new Date(),
       seen: false,
       title: 'test'
     },
     {
       content: 'test',
-      date: 'test',
+      date: new Date(),
       seen: false,
       title: 'test'
     },
     {
       content: 'test',
-      date: 'test',
+      date: new Date(),
       seen: false,
       title: 'test'
     },
     {
       content: 'test',
-      date: 'test',
+      date: new Date(),
       seen: false,
       title: 'test'
     },
     {
       content: 'test',
-      date: 'test',
+      date: new Date(),
       seen: false,
       title: 'test'
     },
     {
       content: 'test',
-      date: 'test',
+      date: new Date(),
       seen: false,
       title: 'test'
     },
     {
       content: 'test',
-      date: 'test',
+      date: new Date(),
       seen: false,
       title: 'test'
     }
@@ -88,7 +88,7 @@ export class NotificationService {
     this.notifications.forEach((notification) => {
       notification.seen = true;
     });
-    this.notificationsUpdated.next(this.notifications);
+    this.notificationsUpdated.next([...this.notifications]);
   }
 
   public updateNotifications(): void {
@@ -96,6 +96,6 @@ export class NotificationService {
       this.notificationsUpdated = new Subject<INotification[]>();
     }
 
-    this.notificationsUpdated.next(this.notifications);
+    this.notificationsUpdated.next([...this.notifications]);
   }
 }
