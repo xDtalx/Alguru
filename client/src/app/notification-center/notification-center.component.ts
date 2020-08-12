@@ -1,4 +1,14 @@
-import { Component, Input, OnChanges, OnDestroy, OnInit, SimpleChanges } from '@angular/core';
+import {
+  AfterViewInit,
+  Component,
+  EventEmitter,
+  Input,
+  OnChanges,
+  OnDestroy,
+  OnInit,
+  Output,
+  SimpleChanges
+} from '@angular/core';
 import { Subscription } from 'rxjs';
 import { INotification } from './notification.model';
 import { NotificationService } from './notification.service';
@@ -9,8 +19,11 @@ import { NotificationService } from './notification.service';
   templateUrl: './notification-center.component.html'
 })
 export class NotificationCenterComponent implements OnInit, OnDestroy, OnChanges {
+  @Output()
+  public newNotificationsCountUpdate = new EventEmitter<number>();
+
   @Input()
-  public seen: string;
+  public seen = 'false';
 
   @Input()
   public notSeenColor = 'rgb(102, 181, 255)';
@@ -22,74 +35,7 @@ export class NotificationCenterComponent implements OnInit, OnDestroy, OnChanges
   public fontColor = 'black';
 
   @Input()
-  public notifications: INotification[] = [
-    {
-      content: 'test',
-      date: 'test',
-      seen: false,
-      title: 'test'
-    },
-    {
-      content: 'test',
-      date: 'test',
-      seen: false,
-      title: 'test'
-    },
-    {
-      content: 'test',
-      date: 'test',
-      seen: false,
-      title: 'test'
-    },
-    {
-      content: 'test',
-      date: 'test',
-      seen: false,
-      title: 'test'
-    },
-    {
-      content: 'test',
-      date: 'test',
-      seen: false,
-      title: 'test'
-    },
-    {
-      content: 'test',
-      date: 'test',
-      seen: false,
-      title: 'test'
-    },
-    {
-      content: 'test',
-      date: 'test',
-      seen: false,
-      title: 'test'
-    },
-    {
-      content: 'test',
-      date: 'test',
-      seen: false,
-      title: 'test'
-    },
-    {
-      content: 'test',
-      date: 'test',
-      seen: false,
-      title: 'test'
-    },
-    {
-      content: 'test',
-      date: 'test',
-      seen: false,
-      title: 'test'
-    },
-    {
-      content: 'test',
-      date: 'test',
-      seen: false,
-      title: 'test'
-    }
-  ];
+  public notifications: INotification[] = [];
 
   private notificationsUpdatedSub: Subscription;
 
@@ -104,15 +50,29 @@ export class NotificationCenterComponent implements OnInit, OnDestroy, OnChanges
       .getNotificationsUpdatedListener()
       .subscribe((notifications) => {
         this.notifications = notifications;
+        this.updateNewNotificationsCount();
       });
     this.notificationsService.updateNotifications();
   }
 
   public ngOnChanges(changes: SimpleChanges): void {
     if (changes.seen) {
-      this.notifications.forEach((notification) => {
-        notification.seen = changes.seen.currentValue === 'true';
-      });
+      if (changes.seen.currentValue === 'true') {
+        this.notificationsService.setNotificationsSeen();
+        this.newNotificationsCountUpdate.emit(0);
+      }
     }
+  }
+
+  private updateNewNotificationsCount(): void {
+    let count = 0;
+
+    this.notifications.forEach((notification) => {
+      if (!notification.seen) {
+        count++;
+      }
+    });
+
+    this.newNotificationsCountUpdate.emit(count);
   }
 }

@@ -14,6 +14,25 @@ div.header {
   flex-direction: row;
 }
 
+.notifications-icon {
+  position: relative;
+}
+
+.new-notifications {
+  background-color: rgba(248, 46, 46, 0.9);
+  color: white;
+  border-radius: 100%;
+  position: absolute;
+  width: 1.8rem;
+  height: 1.8rem;
+  font-size: 1.1rem !important;
+  text-align: center;
+  align-items: center;
+  top: 50%;
+  left: 55%;
+  pointer-events: none;
+}
+
 .notification-btn {
   background-color: transparent;
   border: none;
@@ -32,7 +51,6 @@ div.header {
 }
 
 .notifications-container {
-  display: flex;
   justify-content: center;
   align-items: center;
   flex-direction: column;
