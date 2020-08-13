@@ -1,17 +1,21 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Subject } from 'rxjs';
+import { Observable, Subject } from 'rxjs';
 import { environment } from 'src/environments/environment';
-
-const BACKEND_URL = environment.apiUrl + '/image';
+import { IUserStats } from './user-stats.model';
 
 @Injectable({ providedIn: 'root' })
 export class ProfileService {
   private urlUpdated = new Subject<string>();
+  private statsUpdated = new Subject<IUserStats>();
 
   constructor(private http: HttpClient) {}
 
-  public getURLUpdatedListener() {
+  public getStatsUpdatedListener(): Observable<IUserStats> {
+    return this.statsUpdated.asObservable();
+  }
+
+  public getURLUpdatedListener(): Observable<string> {
     return this.urlUpdated.asObservable();
   }
 
@@ -23,9 +27,13 @@ export class ProfileService {
       .post<{
         message: string;
         url: string;
-      }>(`${BACKEND_URL}/upload`, formData)
+      }>(`${environment.apiUrl}/image/upload`, formData)
       .subscribe((res) => {
         this.urlUpdated.next(res.url);
       });
+  }
+
+  public updateSolvedQuestions(): void {
+    this.http.get<IUserStats>(environment.apiUrl + '/users/stats').subscribe((stats) => this.statsUpdated.next(stats));
   }
 }

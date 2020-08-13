@@ -2,11 +2,11 @@ const mongoose = require('mongoose');
 
 const notifactionSchema = mongoose.Schema(
   {
-    content: { type: String, require: true },
-    seen: { type: Boolean, require: true },
-    sender: { type: String, require: true },
-    title: { type: String, require: true },
-    url: { type: String, require: true }
+    content: { type: String, required: true },
+    seen: { type: Boolean, required: true },
+    sender: { type: String, required: true },
+    title: { type: String, required: true },
+    url: { type: String, required: true }
   },
   {
     timestamps: { createdAt: true, updatedAt: false }

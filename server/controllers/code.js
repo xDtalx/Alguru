@@ -18,14 +18,16 @@ exports.executeCode = (req, res, next) => {
       if (result.data.testsFailed === '') {
         const questionId = req.body.questionId;
 
-        await User.findOne({ _id: req.userData.userId }).then(async (user) => {
-          user.solvedQuestions.set(questionId, 'true');
-          await User.updateOne({ _id: req.userData.userId }, user);
-        });
+        await User.findOne({ _id: req.userData.userId })
+          .then(async (user) => {
+            user.stats.solvedQuestions.set(questionId, true);
+            await User.updateOne({ _id: req.userData.userId }, user);
+          })
+          .catch((err) => console.log(err));
       }
 
       res.setHeader('Content-Type', 'application/json');
       res.status(result.status).send(result.data);
     })
-    .catch((err) => res.status(500).json({ message: err }));
+    .catch((err) => res.status(500).json({ message: err, stacktrace: req.userData.isAdmin ? err : '😊' }));
 };

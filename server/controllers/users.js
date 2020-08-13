@@ -1,10 +1,33 @@
 const User = require('../models/user');
+const Stats = require('../models/stats');
 const TmpToken = require('../models/tmp-token');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const { validationResult } = require('express-validator');
 const nodemailer = require('nodemailer');
 let mailer;
+
+exports.getStats = async (req, res, next) => {
+  await User.findOne({ _id: req.userData.userId }).then((user) => {
+    const stats = {
+      solvedQuestions: user.stats.solvedQuestions,
+      contribPoints: user.stats.contribPoints,
+      contribProblems: user.stats.contribProblems,
+      contribComments: user.stats.contribComments
+    };
+    res.status(200).json(stats);
+  });
+};
+
+exports.getSolvedQuestions = async (req, res, next) => {
+  const errors = validationResult(req);
+
+  if (!errors.isEmpty()) {
+    return res.status(422).json({ errors: errors.array({ onlyFirstError: true }) });
+  }
+
+  await User.findOne({ _id: req.userData.userId }).then((user) => res.status(200).json(user.stats.solvedQuestions));
+};
 
 exports.markNotificationsAsSeen = async (req, res, next) => {
   await User.findOne({ _id: req.userData.userId })
@@ -25,12 +48,14 @@ exports.markNotificationsAsSeen = async (req, res, next) => {
         })
         .catch((err) => {
           console.log(err);
-          return res.status(400).json({ message: 'User cannot be found' });
+          return res
+            .status(400)
+            .json({ message: 'User cannot be found', stacktrace: req.userData.isAdmin ? err : '😊' });
         });
     })
     .catch((err) => {
       console.log(err);
-      return res.status(500).json({ message: 'Unknown error' });
+      return res.status(500).json({ message: 'Unknown error', stacktrace: req.userData.isAdmin ? err : '😊' });
     });
 };
 
@@ -41,7 +66,7 @@ exports.getNotifications = async (req, res, next) => {
     })
     .catch((err) => {
       console.log(err);
-      return res.status(500).json({ message: 'Unknown error' });
+      return res.status(500).json({ message: 'Unknown error', stacktrace: req.userData.isAdmin ? err : '😊' });
     });
 };
 
@@ -62,6 +87,7 @@ exports.resendVarificationEmail = async (req, res, next) => {
 
 exports.verifyUser = async (req, res, next) => {
   const verifyToken = req.params.verifyToken;
+
   try {
     const decodedToken = jwt.verify(verifyToken, process.env.JWT_KEY);
 
@@ -109,7 +135,8 @@ exports.createUser = async (req, res, next) => {
         hashedPassword: hash,
         isAdmin: false,
         verified: false,
-        notifications: []
+        notifications: [],
+        stats: new Stats()
       });
 
       user
@@ -117,7 +144,7 @@ exports.createUser = async (req, res, next) => {
         .then((result) => handleSuccessfulSave(result, res))
         .catch((err) => handleRegisterError(err, res));
     })
-    .catch((err) => console.log(err));
+    .catch((err) => res.status(500).json({ message: 'Unknown error', stacktrace: req.userData.isAdmin ? err : '😊' }));
 };
 
 exports.deleteUser = (req, res, next) => {
@@ -131,7 +158,9 @@ exports.deleteUser = (req, res, next) => {
         res.status(401).json({ message: 'Not authorized!' });
       }
     })
-    .catch(() => res.status(500).json({ message: 'Deleting user was unsuccessful' }));
+    .catch((err) =>
+      res.status(500).json({ message: 'Deleting user was unsuccessful', stacktrace: req.userData.isAdmin ? err : '😊' })
+    );
 };
 
 exports.updateUser = (req, res, next) => {
@@ -166,7 +195,11 @@ exports.updateUser = (req, res, next) => {
           res.status(401).json({ message: 'Not authorized!' });
         }
       })
-      .catch(() => res.status(500).json({ message: 'Updating user was unsuccessful' }));
+      .catch((err) =>
+        res
+          .status(500)
+          .json({ message: 'Updating user was unsuccessful', stacktrace: req.userData.isAdmin ? err : '😊' })
+      );
   });
 };
 
@@ -208,7 +241,12 @@ exports.resetPassword = async (req, res, next) => {
           })
           .catch((err) => console.log(err));
       })
-      .catch(() => res.status(500).json({ message: 'Unknown error when trying to use the reset token' }));
+      .catch((err) =>
+        res.status(500).json({
+          message: 'Unknown error when trying to use the reset token',
+          stacktrace: req.userData.isAdmin ? err : '😊'
+        })
+      );
   } catch {
     res.status(400).json({ message: 'Reset token is invalid' });
   }
@@ -235,8 +273,11 @@ exports.sendResetPasswordEmail = (req, res, next) => {
 
       res.status(200).json({ message: 'Reset password email sent' });
     })
-    .catch(() => {
-      res.status(400).json({ message: 'User with the given email address not exists' });
+    .catch((err) => {
+      res.status(400).json({
+        message: 'User with the given email address not exists',
+        stacktrace: req.userData.isAdmin ? err : '😊'
+      });
     });
 };
 
@@ -251,19 +292,21 @@ exports.userLogin = (req, res, next) => {
     return res.status(401).json({ message: 'Coming soon! Be patient :)' });
   }
 
-  User.findOne({ username: req.body.username })
+  User.findOne({ username_lower: req.body.username.toLowerCase() })
     .then((user) => handleFoundUser(user, req, res))
-    .catch(() => handleUnknownErrorInLogin(res));
+    .catch((err) => handleUnknownErrorInLogin(req, err, res));
 };
 
-function handleUnknownErrorInLogin(res) {
-  res.status(401).json({ message: ['Username or password are incorrect'] });
+function handleUnknownErrorInLogin(req, err, res) {
+  res
+    .status(401)
+    .json({ message: ['Username or password are incorrect'], stacktrace: req.userData.isAdmin ? err : '😊' });
 }
 
 function handleAuthenticationAndResponse(fetchedUser, res) {
   const token = jwt.sign(
     {
-      username: fetchedUser.username,
+      username: fetchedUser.username_lower,
       email: fetchedUser.email,
       userId: fetchedUser._id,
       isAdmin: fetchedUser.isAdmin,

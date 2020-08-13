@@ -3,13 +3,13 @@ const Vote = require('./vote');
 
 const commentSchema = mongoose.Schema({
   currentTitle: { type: String },
-  currentContent: { type: String, require: true },
-  currentDate: { type: Number, require: true },
-  titles: [{ type: String, require: true }],
-  contents: [{ type: String, require: true }],
-  postId: { type: String, require: true },
-  dates: [{ type: Number, require: true }],
-  author: { type: String, require: true },
+  currentContent: { type: String, required: true },
+  currentDate: { type: Number, required: true },
+  titles: [{ type: String }],
+  contents: [{ type: String, required: true }],
+  postId: { type: String, required: true },
+  dates: [{ type: Number, required: true }],
+  author: { type: String, required: true },
   votes: { type: Map, of: Vote.schema }
 });
 

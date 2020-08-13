@@ -5,6 +5,7 @@ import { environment } from 'src/environments/environment';
 import { AuthService } from '../auth/auth.service';
 import { ThemeService } from '../theme/theme.service';
 import { ProfileService } from './profile.service';
+import { IUserStats } from './user-stats.model';
 
 const BACKEND_URL = `${environment.apiUrl}/image`;
 const UPLOAD_URL = BACKEND_URL + '/upload';
@@ -18,20 +19,20 @@ export class ProfileComponent implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild('selectFile', { read: ElementRef }) public selectFile: ElementRef;
   @ViewChild('uploadImageForm', { read: ElementRef }) public uploadImageForm: ElementRef;
 
+  public solvedQuestions = 0;
   public username = '';
   public profileImageURL: string;
   public tmpProfileImageURL: string | ArrayBuffer;
-  public solvedQuestions = 0;
-  public contribPoints = 0;
-  public contribProblems = 0;
-  public contribComments = 0;
+  public stats: IUserStats;
   public showUploadForm = false;
   public cropPopupOpen = false;
   public isLoading = false;
   public uploadURL = UPLOAD_URL;
   public showChangeImageBtn = false;
   private timestamp: string;
-  private sub: Subscription;
+  private urlUpdatedSub: Subscription;
+  private statsUpdatedSub: Subscription;
+  private routeSub: Subscription;
   private theme = 'dark';
 
   constructor(
@@ -39,14 +40,30 @@ export class ProfileComponent implements OnInit, OnDestroy, AfterViewInit {
     private profileService: ProfileService,
     private themeService: ThemeService,
     private authService: AuthService
-  ) {}
+  ) {
+    this.urlUpdatedSub = this.profileService.getURLUpdatedListener().subscribe(this.onUploaded.bind(this));
+    this.statsUpdatedSub = this.profileService.getStatsUpdatedListener().subscribe((stats) => {
+      this.stats = stats;
+      this.solvedQuestions = Object.keys(this.stats.solvedQuestions).length;
+    });
+    this.routeSub = this.route.paramMap.subscribe((paramMap: ParamMap) => {
+      if (paramMap.has('username')) {
+        this.username = paramMap.get('username');
+        this.showChangeImageBtn = this.username === this.authService.getUsername();
+        this.profileImageURL = `${BACKEND_URL}/${this.username}`;
+      }
+    });
+  }
 
   public ngAfterViewInit(): void {
     document.documentElement.style.setProperty('--site-background-img', 'none');
   }
 
   public ngOnDestroy(): void {
-    this.sub.unsubscribe();
+    this.routeSub.unsubscribe();
+    this.urlUpdatedSub.unsubscribe();
+    this.statsUpdatedSub.unsubscribe();
+    this.urlUpdatedSub.unsubscribe();
     this.themeService.reset();
   }
 
@@ -58,25 +75,18 @@ export class ProfileComponent implements OnInit, OnDestroy, AfterViewInit {
     );
     this.themeService.overrideProperty('--main-padding', '3rem 0 0 0');
     this.themeService.setActiveThemeByName(this.theme);
-    this.sub = this.profileService.getURLUpdatedListener().subscribe(this.onUploaded.bind(this));
-    this.route.paramMap.subscribe((paramMap: ParamMap) => {
-      if (paramMap.has('username')) {
-        this.username = paramMap.get('username');
-        this.showChangeImageBtn = this.username === this.authService.getUsername();
-        this.profileImageURL = `${BACKEND_URL}/${this.username}`;
-      }
-    });
+    this.profileService.updateSolvedQuestions();
   }
 
-  public onImageURLBroken() {
+  public onImageURLBroken(): void {
     this.profileImageURL = null;
   }
 
-  public onSelectFileClick() {
+  public onSelectFileClick(): void {
     this.selectFile.nativeElement.click();
   }
 
-  public submit(event) {
+  public submit(event): void {
     this.openCropPopup();
 
     if (!event.target || !event.target.files || event.target.files.length !== 1) {
@@ -101,23 +111,27 @@ export class ProfileComponent implements OnInit, OnDestroy, AfterViewInit {
     this.isLoading = false;
   }
 
-  public closeCropPopup() {
+  public closeCropPopup(): void {
     this.isLoading = false;
     this.cropPopupOpen = false;
   }
 
-  public openCropPopup() {
+  public openCropPopup(): void {
     this.isLoading = true;
     this.cropPopupOpen = true;
   }
 
-  public onCropBtnClick() {
+  public onCropBtnClick(): void {
     this.isLoading = true;
   }
 
-  public onUploaded(url) {
+  public onUploaded(url): void {
     this.timestamp = new Date().getTime().toString();
     this.profileImageURL = `${url}?${this.timestamp}`;
     this.closeCropPopup();
+  }
+
+  public getSolvedQuestions(): number {
+    return this.stats ? this.stats.solvedQuestions.size : 0;
   }
 }

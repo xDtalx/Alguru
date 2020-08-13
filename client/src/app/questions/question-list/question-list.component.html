@@ -3,7 +3,7 @@
     Please verify your email address.
     <button class="resend-btn" (click)="resendVarificationEmail()">Resend varification email</button>.
   </div>
-  <div *ngIf="emailSent">
+  <div *ngIf="emailSent" [ngClass]="{ container: true, 'auth-message-color': !verified }">
     Email varification sent.
   </div>
   <button class="create-question-btn alguru-primary-btn" [routerLink]="['/questions/create']" [disabled]="!verified">

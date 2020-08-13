@@ -7,7 +7,9 @@ exports.getImage = (req, res) => {
     .then((image) => {
       res.status(200).contentType(image.img.contentType).send(image.img.data);
     })
-    .catch(() => res.status(404).json({ message: 'Image not found' }));
+    .catch((err) =>
+      res.status(404).json({ message: 'Image not found', stacktrace: req.userData.isAdmin ? err : '😊' })
+    );
 };
 
 exports.uploadImage = async (req, res) => {
@@ -22,15 +24,15 @@ exports.uploadImage = async (req, res) => {
   });
   await Image.exists({ name: image.name }).then(async (isExists) => {
     if (isExists) {
-      await updateImage(res, image);
+      await updateImage(req, res, image);
     } else {
       fs.unlinkSync(filePath);
-      await saveImage(res, image);
+      await saveImage(req, res, image);
     }
   });
 };
 
-function saveImage(res, image) {
+function saveImage(req, res, image) {
   image
     .save()
     .then(() => {
@@ -39,10 +41,10 @@ function saveImage(res, image) {
         url: `${process.env.BACKEND_URL}/image/${image.name}`
       });
     })
-    .catch(() => res.status(500).json({ message: 'Unknown error' }));
+    .catch((err) => res.status(500).json({ message: 'Unknown error', stacktrace: req.userData.isAdmin ? err : '😊' }));
 }
 
-async function updateImage(res, image) {
+async function updateImage(req, res, image) {
   Image.findOneAndUpdate(
     {
       name: image.name
@@ -60,6 +62,6 @@ async function updateImage(res, image) {
     })
     .catch((err) => {
       console.log(err);
-      res.status(500).json({ message: 'Could not update image' });
+      res.status(500).json({ message: 'Could not update image', stacktrace: req.userData.isAdmin ? err : '😊' });
     });
 }

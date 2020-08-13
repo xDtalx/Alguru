@@ -4,7 +4,7 @@ const User = require('../models/user.js');
 const Notification = require('../models/notification.js');
 const { validationResult } = require('express-validator');
 
-exports.createQuestion = (req, res, next) => {
+exports.createQuestion = async (req, res, next) => {
   const errors = validationResult(req);
 
   if (!errors.isEmpty()) {
@@ -23,7 +23,13 @@ exports.createQuestion = (req, res, next) => {
     creator: req.userData.userId
   });
 
-  question.save().then((createdQuestion) => {
+  await question.save().then(async (createdQuestion) => {
+    await User.findOne({ _id: req.userData.userId }).then(async (user) => {
+      user.stats.contribProblems++;
+      user.stats.contribPoints += 100;
+      await User.updateOne({ _id: req.userData.userId }, user);
+    });
+
     res.status(201).json({
       message: 'Question created successfully',
       questionId: createdQuestion._id
@@ -31,7 +37,7 @@ exports.createQuestion = (req, res, next) => {
   });
 };
 
-exports.deleteQuestion = (req, res, next) => {
+exports.deleteQuestion = async (req, res, next) => {
   let searchOptions;
 
   if (req.userData.isAdmin) {
@@ -40,18 +46,32 @@ exports.deleteQuestion = (req, res, next) => {
     searchOptions = { _id: req.params.id, creator: req.userData.userId };
   }
 
-  // we need to delete from the comments array of that post
-  Question.deleteOne(searchOptions)
-    .then(async (deleteResult) => {
-      const isDeleted = deleteResult.n > 0;
+  await Question.findById(req.params.id)
+    .then(async (question) => {
+      // we need to delete from the comments array of that post
+      await Question.deleteOne(searchOptions)
+        .then(async (deleteResult) => {
+          const isDeleted = deleteResult.n > 0;
 
-      if (isDeleted) {
-        res.status(200).json({ message: 'Question deleted' });
-      } else {
-        res.status(500).json({ message: 'Deleting the Question was unsuccessful' });
-      }
+          if (isDeleted) {
+            await User.findOne({ username: question.creator }).then(async (user) => {
+              user.stats.contribProblems--;
+              user.stats.contribPoints -= 100;
+              await User.updateOne({ username: question.creator }, user);
+            });
+
+            res.status(200).json({ message: 'Question deleted' });
+          } else {
+            res.status(500).json({ message: 'Deleting the Question was unsuccessful' });
+          }
+        })
+        .catch((err) =>
+          res.status(401).json({ message: 'Not authorized!', stacktrace: req.userData.isAdmin ? err : '😊' })
+        );
     })
-    .catch(() => res.status(401).json({ message: 'Not authorized!' }));
+    .catch((err) =>
+      res.status(404).json({ message: 'Question not found', stacktrace: req.userData.isAdmin ? err : '😊' })
+    );
 };
 
 exports.getQuestions = (req, res, next) => {
@@ -94,9 +114,13 @@ exports.updateQuestion = (req, res, next) => {
             res.status(500).json({ message: 'Something went wrong. Question is not updated.' });
           }
         })
-        .catch(() => res.status(401).json({ message: 'Not authorized!' }));
+        .catch((err) =>
+          res.status(401).json({ message: 'Not authorized!', stacktrace: req.userData.isAdmin ? err : '😊' })
+        );
     })
-    .catch(() => res.status(401).json({ message: 'Not authorized!' }));
+    .catch((err) =>
+      res.status(401).json({ message: 'Not authorized!', stacktrace: req.userData.isAdmin ? err : '😊' })
+    );
 };
 
 exports.getQuestion = (req, res, next) => {
@@ -177,5 +201,10 @@ async function updateQuestionVotes(question, req, res) {
         return res.status(500).json({ message: 'Something went wrong. Question was not updated.' });
       }
     })
-    .catch(() => res.status(500).json({ message: 'Something went wrong. Question was not updated.' }));
+    .catch((err) =>
+      res.status(500).json({
+        message: 'Something went wrong. Question was not updated.',
+        stacktrace: req.userData.isAdmin ? err : '😊'
+      })
+    );
 }

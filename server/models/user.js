@@ -1,16 +1,17 @@
 const mongoose = require('mongoose');
 const Notification = require('./notification');
+const Stats = require('./stats');
 const uniqueValidator = require('mongoose-unique-validator');
 
 const userSchema = mongoose.Schema({
-  username: { type: String, require: true, unique: true },
-  username_lower: { type: String, unique: true },
-  email: { type: String, require: true, unique: true },
-  hashedPassword: { type: String, require: true },
-  solvedQuestions: { type: Map, of: String },
-  isAdmin: { type: Boolean, require: true },
+  username: { type: String, required: true, unique: true },
+  username_lower: { type: String, required: true, unique: true },
+  email: { type: String, reqrequireduire: true, unique: true },
+  hashedPassword: { type: String, required: true },
+  isAdmin: { type: Boolean, required: true },
   notifications: [Notification.schema],
-  verified: { type: Boolean, require: true }
+  verified: { type: Boolean, required: true },
+  stats: { type: Stats.schema, required: true }
 });
 
 // to decide which type will be the set

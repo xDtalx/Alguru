@@ -1,6 +1,6 @@
 export const environment = {
-  production: true,
   apiUrl: 'https://api.alguru.xyz',
-  runCodeApi: 'https://api.alguru.xyz/code',
-  isRelease: true
+  isRelease: true,
+  production: true,
+  runCodeApi: 'https://api.alguru.xyz/code'
 };

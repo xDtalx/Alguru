@@ -36,9 +36,8 @@ export class ForumService {
 
   public deleteComment(post: IPost, comment: IComment) {
     this.http.delete<{ message: string }>(`${BACKEND_URL}/${comment.postId}/${comment.id}`).subscribe(() => {
-      const postIndex = this.posts.indexOf(post);
-      const commentToDeleteIndex = this.posts[postIndex].comments.indexOf(comment);
-      this.posts[postIndex].comments.splice(commentToDeleteIndex, 1);
+      const commentToDeleteIndex = post.comments.indexOf(comment);
+      post.comments.splice(commentToDeleteIndex, 1);
       this.postsUpdated.next([...this.posts]);
     });
   }

@@ -3,7 +3,7 @@ const uniqueValidator = require('mongoose-unique-validator');
 
 const tmpTokenSchema = mongoose.Schema(
   {
-    token: { type: String, require: true, unique: true }
+    token: { type: String, required: true, unique: true }
   },
   {
     timestamps: true

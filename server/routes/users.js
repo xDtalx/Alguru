@@ -50,4 +50,8 @@ router.get('/notifications', checkAuth, UserController.getNotifications);
 
 router.put('/notifications', checkAuth, UserController.markNotificationsAsSeen);
 
+router.get('/solvedQuestions', checkAuth, UserController.getSolvedQuestions);
+
+router.get('/stats', checkAuth, UserController.getStats);
+
 module.exports = router;

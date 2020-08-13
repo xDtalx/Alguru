@@ -36,7 +36,7 @@ exports.createPost = (req, res, next) => {
 };
 
 // method to create a comment for a post on forum - have to get the post id from req
-exports.createComment = (req, res, next) => {
+exports.createComment = async (req, res, next) => {
   const errors = validationResult(req);
 
   if (!errors.isEmpty()) {
@@ -44,10 +44,9 @@ exports.createComment = (req, res, next) => {
   }
 
   // need to load the specific post from db by it's ID
-  Post.findById(req.params.postId)
-    .then((post) => {
+  await Post.findById(req.params.postId)
+    .then(async (post) => {
       const date = new Date().getTime();
-
       const comment = new Comment({
         currentTitle: req.body.currentTitle,
         currentContent: req.body.currentContent,
@@ -62,13 +61,21 @@ exports.createComment = (req, res, next) => {
 
       post.comments.push(comment);
 
-      Post.updateOne({ _id: req.params.postId }, post)
-        .then((result) => {
+      await Post.updateOne({ _id: req.params.postId }, post)
+        .then(async (result) => {
           const isModified = result.n > 0;
 
           if (isModified) {
             // then save it on the comments scheme and return success
-            comment.save().then((createdComment) => {
+            await comment.save().then(async (createdComment) => {
+              if (createdComment.author !== req.userData.username) {
+                await User.findOne({ _id: req.userData.userId }).then(async (user) => {
+                  user.stats.contribComments++;
+                  user.stats.contribPoints += 50;
+                  await User.updateOne({ _id: req.userData.userId }, user);
+                });
+              }
+
               res.status(201).json({
                 message: 'Comment created',
                 comment: createdComment
@@ -78,9 +85,17 @@ exports.createComment = (req, res, next) => {
             res.status(500).json({ message: 'Updating post was unsuccessful' });
           }
         })
-        .catch(() => res.status(500).json({ message: 'Updating the post was unsuccessful' }));
+        .catch((err) =>
+          res
+            .status(500)
+            .json({ message: 'Updating the post was unsuccessful', stacktrace: req.userData.isAdmin ? err : '😊' })
+        );
     })
-    .catch(() => res.status(400).json({ message: 'Finding the requested post was unsuccessful' }));
+    .catch((err) =>
+      res
+        .status(400)
+        .json({ message: 'Finding the requested post was unsuccessful', stacktrace: req.userData.isAdmin ? err : '😊' })
+    );
 };
 
 exports.deletePost = (req, res, next) => {
@@ -99,9 +114,15 @@ exports.deletePost = (req, res, next) => {
       // no need to handle error - the post might be without comments
       Comment.deleteMany({ postId: req.params.postId })
         .then(() => res.status(200).json({ message: 'Post deleted' }))
-        .catch(() => res.status(500).json({ message: 'Not all posts comments deleted.' }));
+        .catch((err) =>
+          res
+            .status(500)
+            .json({ message: 'Not all posts comments deleted.', stacktrace: req.userData.isAdmin ? err : '😊' })
+        );
     })
-    .catch(() => res.status(401).json({ message: 'Not authorized!' }));
+    .catch((err) =>
+      res.status(401).json({ message: 'Not authorized!', stacktrace: req.userData.isAdmin ? err : '😊' })
+    );
 };
 
 exports.deleteComment = (req, res, next) => {
@@ -113,18 +134,28 @@ exports.deleteComment = (req, res, next) => {
     searchOptions = { _id: req.params.commentId, author: req.userData.username };
   }
 
-  // we need to delete from the comments array of that post
-  Comment.deleteOne(searchOptions)
-    .then(async (deleteResult) => {
-      const isDeleted = deleteResult.n > 0;
+  Comment.findById(req.params.commentId).then(async (comment) => {
+    // we need to delete from the comments array of that post
+    await Comment.deleteOne(searchOptions)
+      .then(async (deleteResult) => {
+        const isDeleted = deleteResult.n > 0;
 
-      if (isDeleted) {
-        await deleteCommentFromPost(req, res);
-      } else {
-        res.status(500).json({ message: 'Deleting the comment was unsuccessful' });
-      }
-    })
-    .catch(() => res.status(401).json({ message: 'Not authorized!' }));
+        if (isDeleted) {
+          await User.findOne({ username: comment.author }).then(async (user) => {
+            user.stats.contribComments--;
+            user.stats.contribPoints -= 50;
+            await User.updateOne({ username: comment.author }, user);
+          });
+
+          await deleteCommentFromPost(req, res);
+        } else {
+          res.status(500).json({ message: 'Deleting the comment was unsuccessful' });
+        }
+      })
+      .catch((err) =>
+        res.status(401).json({ message: 'Not authorized!', stacktrace: req.userData.isAdmin ? err : '😊' })
+      );
+  });
 };
 
 exports.getPosts = (req, res, next) => {
@@ -134,7 +165,9 @@ exports.getPosts = (req, res, next) => {
 exports.getPost = (req, res, next) => {
   Post.findById(req.params.postId)
     .then((post) => res.status(200).json(post))
-    .catch(() => res.status(404).json({ message: 'Post not found!' }));
+    .catch((err) =>
+      res.status(404).json({ message: 'Post not found!', stacktrace: req.userData.isAdmin ? err : '😊' })
+    );
 };
 
 exports.updatePost = (req, res, next) => {
@@ -172,9 +205,13 @@ exports.updatePost = (req, res, next) => {
             res.status(500).json({ message: 'Something went wrong. Post is not updated.' });
           }
         })
-        .catch(() => res.status(401).json({ message: 'Not authorized!' }));
+        .catch((err) =>
+          res.status(401).json({ message: 'Not authorized!', stacktrace: req.userData.isAdmin ? err : '😊' })
+        );
     })
-    .catch(() => res.status(401).json({ message: 'Not authorized!' }));
+    .catch((err) =>
+      res.status(401).json({ message: 'Not authorized!', stacktrace: req.userData.isAdmin ? err : '😊' })
+    );
 };
 
 exports.updateComment = (req, res, next) => {
@@ -211,7 +248,11 @@ exports.updateComment = (req, res, next) => {
         }
       });
     })
-    .catch((err) => console.log(err) && res.status(401).json({ message: 'Unauthorized!' }));
+    .catch(
+      (err) =>
+        console.log(err) &&
+        res.status(401).json({ message: 'Unauthorized!', stacktrace: req.userData.isAdmin ? err : '😊' })
+    );
 };
 
 exports.voteOnComment = (req, res, next) => {
@@ -223,7 +264,7 @@ exports.voteOnComment = (req, res, next) => {
 
   Comment.findById(req.params.commentId)
     .then((comment) => putNewVote(req, res, comment, true))
-    .catch(() => res.status(401).json({ message: 'Unauthorized!' }));
+    .catch((err) => res.status(401).json({ message: 'Unauthorized!', stacktrace: req.userData.isAdmin ? err : '😊' }));
 };
 
 exports.voteOnPost = (req, res, next) => {
@@ -235,7 +276,7 @@ exports.voteOnPost = (req, res, next) => {
 
   Post.findById(req.params.postId)
     .then((post) => putNewVote(req, res, post, false))
-    .catch(() => res.status(401).json({ message: 'Unauthorized!' }));
+    .catch((err) => res.status(401).json({ message: 'Unauthorized!', stacktrace: req.userData.isAdmin ? err : '😊' }));
 };
 
 /* Utilities Functions */
@@ -264,7 +305,9 @@ async function deleteCommentFromPost(req, res) {
         }
       });
     })
-    .catch(() => res.status(401).json({ message: 'Not authorized!' }));
+    .catch((err) =>
+      res.status(401).json({ message: 'Not authorized!', stacktrace: req.userData.isAdmin ? err : '😊' })
+    );
 }
 
 async function updateCommentInPost(req, res, updatedComment) {
@@ -297,9 +340,18 @@ async function updateCommentInPost(req, res, updatedComment) {
             res.status(500).json({ message: 'Something went wrong. Comment updated in DB but not inside post.' });
           }
         })
-        .catch(() => res.status(500).json({ message: 'Comment updated but post not.' }));
+        .catch((err) =>
+          res
+            .status(500)
+            .json({ message: 'Comment updated but post not.', stacktrace: req.userData.isAdmin ? err : '😊' })
+        );
     })
-    .catch(() => res.status(400).json({ message: 'Comment found but the linked post is missing' }));
+    .catch((err) =>
+      res.status(400).json({
+        message: 'Comment found but the linked post is missing',
+        stacktrace: req.userData.isAdmin ? err : '😊'
+      })
+    );
 }
 
 async function putNewVote(req, res, toPutIn, isComment) {
@@ -357,7 +409,11 @@ async function updatePostVotes(post, req, res) {
         return res.status(500).json({ message: 'Something went wrong. Post was not updated.' });
       }
     })
-    .catch(() => res.status(500).json({ message: 'Something went wrong. Post was not updated.' }));
+    .catch((err) =>
+      res
+        .status(500)
+        .json({ message: 'Something went wrong. Post was not updated.', stacktrace: req.userData.isAdmin ? err : '😊' })
+    );
 }
 
 async function updateCommentVotes(comment, req, res) {
@@ -370,7 +426,12 @@ async function updateCommentVotes(comment, req, res) {
   comment.votes.set(newVote.username, newVote);
   Comment.updateOne({ _id: req.params.commentId }, comment)
     .then(async (result) => updateCommentVoteInPost(req, res, result, comment, newVote))
-    .catch(() => res.status(500).json({ message: 'Something went wrong. Comment was not updated.' }));
+    .catch((err) =>
+      res.status(500).json({
+        message: 'Something went wrong. Comment was not updated.',
+        stacktrace: req.userData.isAdmin ? err : '😊'
+      })
+    );
 }
 
 async function updateCommentVoteInPost(req, res, updateResult, commentToUpdate, newVote) {
@@ -401,9 +462,18 @@ async function updateCommentVoteInPost(req, res, updateResult, commentToUpdate, 
               res.status(500).json({ message: 'Something went wrong. Comment updated in DB but not inside post.' });
             }
           })
-          .catch(() => res.status(500).json({ message: 'Comment updated but post not.' }));
+          .catch((err) =>
+            res
+              .status(500)
+              .json({ message: 'Comment updated but post not.', stacktrace: req.userData.isAdmin ? err : '😊' })
+          );
       })
-      .catch(() => res.status(400).json({ message: 'Comment found but the linked post is missing' }));
+      .catch((err) =>
+        res.status(400).json({
+          message: 'Comment found but the linked post is missing',
+          stacktrace: req.userData.isAdmin ? err : '😊'
+        })
+      );
   } else {
     res.status(500).json({ message: 'Something went wrong. Comment was not updated.' });
   }

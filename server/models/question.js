@@ -2,15 +2,15 @@ const mongoose = require('mongoose');
 const Vote = require('./vote');
 
 const questionSchema = mongoose.Schema({
-  title: { type: String, require: true },
-  content: { type: String, require: true },
+  title: { type: String, required: true },
+  content: { type: String, required: true },
   solutionTemplate: [String],
   solution: [String],
   tests: [String],
   hints: { type: String },
-  level: { type: Number, require: true },
-  creator: { type: mongoose.Schema.Types.ObjectId, ref: 'User', require: true },
-  votes: { type: Map, of: Vote.schema }
+  level: { type: Number, required: true },
+  creator: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+  votes: { type: Map, of: Vote.schema, required: true }
 });
 
 module.exports = mongoose.model('Question', questionSchema);

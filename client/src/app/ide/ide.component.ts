@@ -127,7 +127,7 @@ export class IDEComponent implements OnInit, OnDestroy {
         this.solutionCode = this.questionToSolve.solutionTemplate[0];
       }
 
-      this.codeService.runCode(this.lang, this.solutionCode, this.testsCode);
+      this.codeService.runCode(this.questionToSolve.id, this.lang, this.solutionCode, this.testsCode);
     }
   }
 
