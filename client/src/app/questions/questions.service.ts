@@ -63,7 +63,6 @@ export class QuestionsService {
   }
 
   public mapVotes(voteKey, votes): [string, IVote] {
-    console.log(votes[voteKey].message);
     return [
       voteKey,
       {

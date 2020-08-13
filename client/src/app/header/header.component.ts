@@ -87,10 +87,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
     this.isUserAuth = this.authService.getIsAuth();
     this.isAdmin = this.authService.getIsAdmin();
     this.username = this.authService.getUsername();
-
-    if (this.profileURL === '/users/profile/') {
-      this.profileURL += this.username;
-    }
+    this.setProfileUrl();
 
     if (this.isUserAuth) {
       this.checkNotificationsIntervalHandle = setInterval(
@@ -101,6 +98,12 @@ export class HeaderComponent implements OnInit, OnDestroy {
     }
   }
 
+  private setProfileUrl(): void {
+    if (this.profileURL === '/users/profile/' && this.username) {
+      this.profileURL += this.username;
+    }
+  }
+
   public ngOnDestroy() {
     this.newNotificationsSubs.unsubscribe();
     this.authListenerSubs.unsubscribe();
@@ -108,7 +111,11 @@ export class HeaderComponent implements OnInit, OnDestroy {
     this.smallHeaderSubs.unsubscribe();
     this.smallHeaderOnLogoutSubs.unsubscribe();
     this.navigateUrlOnLogoutSubs.unsubscribe();
-    clearInterval(this.checkNotificationsIntervalHandle);
+
+    if (this.checkNotificationsIntervalHandle) {
+      clearInterval(this.checkNotificationsIntervalHandle);
+      this.checkNotificationsIntervalHandle = null;
+    }
   }
 
   public setSmallHeader(isShow: boolean) {
@@ -148,10 +155,13 @@ export class HeaderComponent implements OnInit, OnDestroy {
     this.username = null;
     this.isAdmin = false;
     this.profileURL = '/users/profile/';
-
     this.setSmallHeader(this.showSmallHeaderOnLogout);
     this.authService.logout(this.navigateUrlOnLogout);
-    clearInterval(this.checkNotificationsIntervalHandle);
+
+    if (this.checkNotificationsIntervalHandle) {
+      clearInterval(this.checkNotificationsIntervalHandle);
+      this.checkNotificationsIntervalHandle = null;
+    }
   }
 
   public closeNotificationsCenter(event) {
@@ -259,9 +269,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
       this.username = this.authService.getUsername();
     }
 
-    if (this.profileURL === '/users/profile/') {
-      this.profileURL += this.username;
-    }
+    this.setProfileUrl();
 
     if (isAuth && !this.checkNotificationsIntervalHandle) {
       this.checkNotificationsIntervalHandle = setInterval(
@@ -269,6 +277,9 @@ export class HeaderComponent implements OnInit, OnDestroy {
         this.numOfSecondsToCheckNotifications * 1000
       );
       this.notificationService.updateNotifications();
+    } else {
+      clearInterval(this.checkNotificationsIntervalHandle);
+      this.checkNotificationsIntervalHandle = null;
     }
   }
 }

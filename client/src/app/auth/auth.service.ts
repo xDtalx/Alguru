@@ -241,11 +241,10 @@ export class AuthService {
   public logout(url?: string) {
     this.errors = [];
     this.isAuth = false;
-    this.authStatusListener.next(false);
-    this.adminListener.next(false);
     this.clearAuthData();
     clearTimeout(this.tokenTimer);
-
+    this.authStatusListener.next(false);
+    this.adminListener.next(false);
     if (url) {
       this.router.navigate([url]);
     }
