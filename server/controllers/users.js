@@ -74,14 +74,16 @@ exports.resendVarificationEmail = async (req, res, next) => {
   if (req.userData.verified) {
     res.status(400).json({ message: 'User is already verified' });
   } else {
-    await User.findOne({ _id: req.userData.userId }).then((user) => {
-      if (user.verified) {
-        res.status(400).json({ message: 'User is already verified' });
-      } else {
-        sendVarificationEmail(req.userData);
-        res.status(200).json({ message: 'Varification email sent' });
-      }
-    });
+    await User.findOne({ _id: req.userData.userId })
+      .then(async (user) => {
+        if (user.verified) {
+          res.status(400).json({ message: 'User is already verified' });
+        } else {
+          await sendVarificationEmail(req.userData);
+          res.status(200).json({ message: 'Varification email sent' });
+        }
+      })
+      .catch((err) => console.log(err));
   }
 };
 

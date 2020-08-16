@@ -7,9 +7,7 @@ exports.getImage = (req, res) => {
     .then((image) => {
       res.status(200).contentType(image.img.contentType).send(image.img.data);
     })
-    .catch((err) =>
-      res.status(404).json({ message: 'Image not found', stacktrace: req.userData.isAdmin ? err : '😊' })
-    );
+    .catch(() => res.status(404).json({ message: 'Image not found' }));
 };
 
 exports.uploadImage = async (req, res) => {
