@@ -371,8 +371,8 @@ async function putNewVote(req, res, toPutIn, isComment) {
 }
 
 async function updateUserNotifcation(entity, isComment, req) {
-  const messageToDisplay = `${req.userData.username} ${req.body.isUp ? 'upvote' : 'downvote'} your ${
-    isComment ? 'comment in a post' : `post: ${entity.title}`
+  const messageToDisplay = `${req.userData.username} ${req.body.isUp ? 'upvoted' : 'downvoted'} your ${
+    isComment ? 'comment in a post' : `post: ${entity.currentTitle}`
   }.`;
 
   const newNotifaction = new Notification({
