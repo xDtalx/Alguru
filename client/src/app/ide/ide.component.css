@@ -333,3 +333,49 @@ div.container {
     border-color: rgb(230, 83, 78);
   }
 }
+
+/* Reset Select */
+select {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  -ms-appearance: none;
+  appearance: none;
+  outline: 0;
+  box-shadow: none;
+  border: 0 !important;
+  background: rgb(62, 67, 82);
+  background-image: none;
+  transition: all 0.2s ease;
+}
+
+select:hover {
+  filter: brightness(0.9);
+}
+
+/* Remove IE arrow */
+select::-ms-expand {
+  display: none;
+}
+
+/* Custom Select */
+.select {
+  position: relative;
+  display: flex;
+  line-height: 3;
+  background: #2c3e50;
+  overflow: hidden;
+  min-width: 10.5rem;
+  margin-right: 1rem;
+}
+
+select {
+  flex: 1;
+  padding: 0 1rem;
+  color: #fff;
+  cursor: pointer;
+}
+
+/* Transition */
+.select:hover::after {
+  color: rgb(230, 83, 78);
+}

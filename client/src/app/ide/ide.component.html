@@ -8,11 +8,8 @@
         It will sure help the author to improve the question and the community to solve only high-quality questions.
       </span>
     </div>
-    <angular-editor
-      id="vote-message-editor"
-      [config]="getEditorConfig()"
-      [(ngModel)]="messageDefaultValue"
-    ></angular-editor>
+    <angular-editor id="vote-message-editor" [config]="getEditorConfig()" [(ngModel)]="messageDefaultValue">
+    </angular-editor>
     <div id="buttons">
       <button class="alguru-primary-btn" (click)="onSubmitMessage(messageDefaultValue)">
         Submit
@@ -28,6 +25,11 @@
     <div class="container editable-editor" id="solution-container">
       <div class="head top">
         <span class="title">Your Solution</span>
+        <div class="select">
+          <select (change)="setLang($event.target.value)" name="slct" id="slct">
+            <option [value]="lang" *ngFor="let lang of questionLangs">{{ lang }}</option>
+          </select>
+        </div>
         <span class="spacer"></span>
         <span id="stopwatch">
           <svg
@@ -47,9 +49,11 @@
           <span id="time" [textContent]="timeStr"></span>
         </span>
         <button *ngIf="!loading" (click)="onRunCode()" class="run-code btn">
-          {{ executeResponse && executeResponse.errors === '' ? 'Reset' : 'Run Code' }}
+          Run Code
         </button>
-        <div *ngIf="loading" class="loading-btn"><div class="loader"></div></div>
+        <div *ngIf="loading" class="loading-btn">
+          <div class="loader"></div>
+        </div>
       </div>
       <nt-editor
         fontSize="1.6rem"

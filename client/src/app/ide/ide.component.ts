@@ -20,12 +20,13 @@ export class IDEComponent implements OnInit, OnDestroy {
   private questionUpdatedSubs: Subscription;
   private time: number;
   private stopwatchInterval;
+  private langs = ['Java', 'Javascript', 'C#', 'C++', 'C', 'Python'];
+  private currentLang = 0;
   public timeStr = '00:00:00';
   public executeResponse: ExecuteResponse;
   public currentOutput: string;
   public solutionCode: string;
   public testsCode: string;
-  public lang = 'java';
   public questionId: string;
   public questionToSolve: IQuestion;
   public theme = 'dark';
@@ -38,6 +39,7 @@ export class IDEComponent implements OnInit, OnDestroy {
   public messageDefaultValue: string;
   public hidePopUp = true;
   public voteType: string;
+  public questionLangs: string[];
 
   constructor(
     private route: ActivatedRoute,
@@ -54,9 +56,10 @@ export class IDEComponent implements OnInit, OnDestroy {
     this.themeService.setDarkTheme();
     this.questionUpdatedSubs = this.questionsService.getQuestionUpdatedListener().subscribe((question: IQuestion) => {
       this.questionToSolve = question;
-      this.solutionCode = this.questionToSolve.solutionTemplate[0];
-      this.testsValue = this.questionToSolve.tests[0];
+      this.solutionCode = this.questionToSolve.solutionTemplate[this.currentLang];
+      this.testsValue = this.questionToSolve.tests[this.currentLang];
       this.updateVotes();
+      this.updateLangsOptions();
     });
     this.route.paramMap.subscribe((paramMap: ParamMap) => {
       if (paramMap.has('questionId')) {
@@ -106,29 +109,29 @@ export class IDEComponent implements OnInit, OnDestroy {
   }
 
   public onSolutionChanged(value): void {
-    this.solutionCode = value;
+    if (this.solutionCode !== value) {
+      this.solutionCode = value;
+    }
   }
 
   public onTestsChanged(value): void {
-    this.testsCode = value;
+    if (this.testsCode !== value) {
+      this.testsCode = value;
+    }
   }
 
   public onRunCode(): void {
-    if (this.executeResponse && this.executeResponse.errors === '') {
-      this.resetQuestion();
-    } else {
-      this.loading = true;
+    this.loading = true;
 
-      if (!this.testsCode || this.testsCode.trim() === '') {
-        this.testsCode = this.questionToSolve.tests[0];
-      }
-
-      if (!this.solutionCode || this.solutionCode.trim() === '') {
-        this.solutionCode = this.questionToSolve.solutionTemplate[0];
-      }
-
-      this.codeService.runCode(this.questionToSolve.id, this.lang, this.solutionCode, this.testsCode);
+    if (!this.testsCode || this.testsCode.trim() === '') {
+      this.testsCode = this.questionToSolve.tests[this.currentLang];
     }
+
+    if (!this.solutionCode || this.solutionCode.trim() === '') {
+      this.solutionCode = this.questionToSolve.solutionTemplate[this.currentLang];
+    }
+
+    this.codeService.runCode(this.questionToSolve.id, this.langs[this.currentLang], this.solutionCode, this.testsCode);
   }
 
   public onCustomClick(): void {
@@ -204,12 +207,6 @@ export class IDEComponent implements OnInit, OnDestroy {
     }, 1000);
   }
 
-  private resetQuestion(): void {
-    this.executeResponse = null;
-    this.currentOutput = 'Custom> ';
-    this.getQuestion();
-  }
-
   public getEditorConfig(): AngularEditorConfig {
     return editorConfig;
   }
@@ -227,6 +224,29 @@ export class IDEComponent implements OnInit, OnDestroy {
   public hideVoteMessagePopup(): void {
     this.hidePopUp = true;
     this.voteType = null;
+  }
+
+  public setLang(lang: string): void {
+    for (let i = 0; i < this.langs.length; i++) {
+      if (this.langs[i] === lang) {
+        this.currentLang = i;
+        console.log(this.currentLang);
+        break;
+      }
+    }
+
+    this.testsCode = null;
+    this.solutionCode = this.questionToSolve.solutionTemplate[this.currentLang];
+    this.testsValue = this.questionToSolve.tests[this.currentLang];
+  }
+
+  private updateLangsOptions(): void {
+    const langsCount = this.questionToSolve.solutionTemplate.length;
+    this.questionLangs = [];
+
+    for (let i = 0; i < langsCount; i++) {
+      this.questionLangs.push(this.langs[i]);
+    }
   }
 }
 
