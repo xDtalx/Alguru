@@ -58,7 +58,7 @@
       <nt-editor
         fontSize="1.6rem"
         class="editable-editor"
-        codeType="java"
+        [codeType]="getCurrentLang()"
         [value]="solutionCode"
         (valueChanged)="onSolutionChanged($event)"
         showLineNumber
@@ -97,9 +97,9 @@
       </div>
       <nt-editor
         fontSize="1.6rem"
-        codeType="java"
+        [codeType]="getCurrentLang()"
         class="editable-editor"
-        [value]="testsValue"
+        [value]="testsCode"
         (valueChanged)="onTestsChanged($event)"
         editable
         showLineNumber

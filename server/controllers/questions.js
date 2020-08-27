@@ -4,6 +4,18 @@ const User = require('../models/user.js');
 const Notification = require('../models/notification.js');
 const { validationResult } = require('express-validator');
 
+function fixQuestionArrays(array) {
+  const length = array.length;
+
+  for (let i = 0; i < length; i++) {
+    if (array[i].trim() === '') {
+      array[i] = null;
+    }
+  }
+
+  return array;
+}
+
 exports.createQuestion = async (req, res, next) => {
   const errors = validationResult(req);
 
@@ -14,9 +26,9 @@ exports.createQuestion = async (req, res, next) => {
   const question = new Question({
     title: req.body.title,
     content: req.body.content,
-    solutionTemplate: req.body.solutionTemplate,
-    solution: req.body.solution,
-    tests: req.body.tests,
+    solutionTemplate: fixQuestionArrays(req.body.solutionTemplate),
+    solution: fixQuestionArrays(req.body.solution),
+    tests: fixQuestionArrays(req.body.tests),
     hints: req.body.hints,
     level: req.body.level,
     votes: {},
@@ -97,11 +109,12 @@ exports.updateQuestion = (req, res, next) => {
     .then(async (question) => {
       question.title = req.body.title;
       question.content = req.body.content;
-      question.tests = req.body.tests;
       question.hints = req.body.hints;
       question.level = req.body.level;
-      question.solution = req.body.solution;
-      question.solutionTemplate = req.body.solutionTemplate;
+      question.tests = fixQuestionArrays(req.body.tests);
+      question.solution = fixQuestionArrays(req.body.solution);
+      question.solutionTemplate = fixQuestionArrays(req.body.solutionTemplate);
+      console.log(req.body.solutionTemplate);
 
       await Question.updateOne(searchOptions, question)
         .then(async function (result) {

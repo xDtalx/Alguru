@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit, Renderer2 } from '@angular/core';
+import { Component, OnDestroy, OnInit, Renderer2, AfterViewChecked, OnChanges, SimpleChanges } from '@angular/core';
 import { ActivatedRoute, ParamMap } from '@angular/router';
 import { AngularEditorConfig } from '@kolkov/angular-editor';
 import * as $ from 'jquery';
@@ -32,7 +32,6 @@ export class IDEComponent implements OnInit, OnDestroy {
   public theme = 'dark';
   public solutionTemplate: string;
   public code: string;
-  public testsValue: string;
   public loading = false;
   public showHint = false;
   public votes = 0;
@@ -50,14 +49,10 @@ export class IDEComponent implements OnInit, OnDestroy {
     private authService: AuthService
   ) {
     $(document).ready(this.onPageLoaded.bind(this));
-  }
-
-  public ngOnInit(): void {
-    this.themeService.setDarkTheme();
     this.questionUpdatedSubs = this.questionsService.getQuestionUpdatedListener().subscribe((question: IQuestion) => {
       this.questionToSolve = question;
       this.solutionCode = this.questionToSolve.solutionTemplate[this.currentLang];
-      this.testsValue = this.questionToSolve.tests[this.currentLang];
+      this.testsCode = this.questionToSolve.tests[this.currentLang];
       this.updateVotes();
       this.updateLangsOptions();
     });
@@ -67,8 +62,6 @@ export class IDEComponent implements OnInit, OnDestroy {
         this.getQuestion();
       }
     });
-
-    this.currentOutput = '';
     this.executeListenerSubs = this.codeService.getExecuteResponseListener().subscribe((response) => {
       this.executeResponse = response;
       this.loading = false;
@@ -81,6 +74,11 @@ export class IDEComponent implements OnInit, OnDestroy {
         }
       }
     });
+  }
+
+  public ngOnInit(): void {
+    this.themeService.setDarkTheme();
+    this.currentOutput = '';
   }
 
   public ngOnDestroy(): void {
@@ -230,14 +228,12 @@ export class IDEComponent implements OnInit, OnDestroy {
     for (let i = 0; i < this.langs.length; i++) {
       if (this.langs[i] === lang) {
         this.currentLang = i;
-        console.log(this.currentLang);
         break;
       }
     }
 
-    this.testsCode = null;
     this.solutionCode = this.questionToSolve.solutionTemplate[this.currentLang];
-    this.testsValue = this.questionToSolve.tests[this.currentLang];
+    this.testsCode = this.questionToSolve.tests[this.currentLang];
   }
 
   private updateLangsOptions(): void {
@@ -247,6 +243,10 @@ export class IDEComponent implements OnInit, OnDestroy {
     for (let i = 0; i < langsCount; i++) {
       this.questionLangs.push(this.langs[i]);
     }
+  }
+
+  public getCurrentLang(): string {
+    return this.langs[this.currentLang];
   }
 }
 
