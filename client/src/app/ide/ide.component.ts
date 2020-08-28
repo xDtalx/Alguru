@@ -51,10 +51,9 @@ export class IDEComponent implements OnInit, OnDestroy {
     $(document).ready(this.onPageLoaded.bind(this));
     this.questionUpdatedSubs = this.questionsService.getQuestionUpdatedListener().subscribe((question: IQuestion) => {
       this.questionToSolve = question;
-      this.solutionCode = this.questionToSolve.solutionTemplate[this.currentLang];
-      this.testsCode = this.questionToSolve.tests[this.currentLang];
-      this.updateVotes();
       this.updateLangsOptions();
+      this.updateVotes();
+      this.updateCode();
     });
     this.route.paramMap.subscribe((paramMap: ParamMap) => {
       if (paramMap.has('questionId')) {
@@ -74,6 +73,18 @@ export class IDEComponent implements OnInit, OnDestroy {
         }
       }
     });
+  }
+
+  private updateCode(): void {
+    for (let i = 0; i < this.questionToSolve.solutionTemplate.length; i++) {
+      if (this.questionToSolve.solutionTemplate[i]) {
+        this.currentLang = i;
+        break;
+      }
+    }
+
+    this.solutionCode = this.questionToSolve.solutionTemplate[this.currentLang];
+    this.testsCode = this.questionToSolve.tests[this.currentLang];
   }
 
   public ngOnInit(): void {
@@ -241,12 +252,14 @@ export class IDEComponent implements OnInit, OnDestroy {
     this.questionLangs = [];
 
     for (let i = 0; i < langsCount; i++) {
-      this.questionLangs.push(this.langs[i]);
+      if (this.questionToSolve.solutionTemplate[i] !== null && this.questionToSolve.solutionTemplate[i] !== '') {
+        this.questionLangs.push(this.langs[i]);
+      }
     }
   }
 
   public getCurrentLang(): string {
-    return this.langs[this.currentLang];
+    return this.currentLang !== null && this.currentLang !== undefined ? this.langs[this.currentLang] : '';
   }
 }
 

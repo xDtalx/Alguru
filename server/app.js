@@ -31,7 +31,7 @@ mongoose
   });
 
 app.use(helmet());
-app.use(morgan('tiny'));
+// app.use(morgan('tiny'));
 app.use(limiter);
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
