@@ -8,6 +8,7 @@
     "test": "ng test",
     "lint": "ng lint",
     "start:server": "npm install && cd client && nodemon ../server/server.js 192.168.1.13 3000",
+    "debug:server": "npm install && cd client && nodemon --inspect ../server/server.js 192.168.1.13 3000",
     "start:client": "npm install && cd client && ng serve --host 192.168.1.13",
     "lint:eslint": "eslint **/*.{js,ts} --quiet",
     "lint:prettier": "prettier \"**/*.{json,yml,html,css}\" --check",
