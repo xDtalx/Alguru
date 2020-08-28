@@ -1,7 +1,6 @@
-import { Component, OnDestroy, OnInit, Renderer2, AfterViewChecked, OnChanges, SimpleChanges } from '@angular/core';
+import { Component, OnDestroy, OnInit, Renderer2 } from '@angular/core';
 import { ActivatedRoute, ParamMap } from '@angular/router';
 import { AngularEditorConfig } from '@kolkov/angular-editor';
-import * as $ from 'jquery';
 import { Subscription } from 'rxjs';
 import { AuthService } from '../auth/auth.service';
 import { IQuestion } from '../questions/question.model';
@@ -48,7 +47,6 @@ export class IDEComponent implements OnInit, OnDestroy {
     private themeService: ThemeService,
     private authService: AuthService
   ) {
-    $(document).ready(this.onPageLoaded.bind(this));
     this.questionUpdatedSubs = this.questionsService.getQuestionUpdatedListener().subscribe((question: IQuestion) => {
       this.questionToSolve = question;
       this.updateLangsOptions();
@@ -96,25 +94,6 @@ export class IDEComponent implements OnInit, OnDestroy {
     this.themeService.reset();
     this.questionUpdatedSubs.unsubscribe();
     this.executeListenerSubs.unsubscribe();
-  }
-
-  public onPageLoaded(): void {
-    $('.container').each((index, container) => {
-      const style: CSSStyleDeclaration = getComputedStyle(container);
-      this.makeContainerWithFixHeight(container, style);
-    });
-  }
-
-  public makeContainerWithFixHeight(container: HTMLElement, style: CSSStyleDeclaration): void {
-    setTimeout(() => {
-      if (!$(container).hasClass('static-size')) {
-        const editor: HTMLElement = $(container).find('nt-editor')[0];
-        const editorStyle: CSSStyleDeclaration = getComputedStyle(editor);
-
-        this.renderer.setStyle(container, 'height', style.height);
-        this.renderer.setStyle(editor, 'height', editorStyle.height);
-      }
-    }, 500);
   }
 
   public onSolutionChanged(value): void {

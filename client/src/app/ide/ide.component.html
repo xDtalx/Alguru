@@ -21,101 +21,106 @@
   </div>
 </div>
 <div id="ide">
-  <div id="first-col">
-    <div class="container editable-editor" id="solution-container">
-      <div class="head top">
-        <span class="title">Your Solution</span>
-        <div class="select">
-          <select (change)="setLang($event.target.value)" name="slct" id="slct">
-            <option [value]="lang" *ngFor="let lang of questionLangs">{{ lang }}</option>
-          </select>
-        </div>
-        <span class="spacer"></span>
-        <span id="stopwatch">
-          <svg
-            aria-hidden="true"
-            focusable="false"
-            data-icon="stopwatch"
-            role="img"
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 448 512"
-          >
-            <path
-              fill="currentColor"
-              d="M393.9 184l22.6-22.6c4.7-4.7 4.7-12.3 0-17l-17-17c-4.7-4.7-12.3-4.7-17 0l-20.7 20.7c-31.1-27.5-70.4-45.9-113.8-50.8V48h28c6.6 0 12-5.4 12-12V12c0-6.6-5.4-12-12-12H172c-6.6 0-12 5.4-12 12v24c0 6.6 5.4 12 12 12h28v49.4C96.4 109.3 16 197.2 16 304c0 114.9 93.1 208 208 208s208-93.1 208-208c0-44.7-14.1-86.1-38.1-120zM224 464c-88.4 0-160-71.6-160-160s71.6-160 160-160 160 71.6 160 160-71.6 160-160 160zm12-112h-24c-6.6 0-12-5.4-12-12V204c0-6.6 5.4-12 12-12h24c6.6 0 12 5.4 12 12v136c0 6.6-5.4 12-12 12z"
-              class=""
-            ></path>
-          </svg>
-          <span id="time" [textContent]="timeStr"></span>
-        </span>
-        <button *ngIf="!loading" (click)="onRunCode()" class="run-code btn">
-          Run Code
-        </button>
-        <div *ngIf="loading" class="loading-btn">
-          <div class="loader"></div>
-        </div>
-      </div>
-      <nt-editor
-        fontSize="1.6rem"
-        class="editable-editor"
-        [codeType]="getCurrentLang()"
-        [value]="solutionCode"
-        (valueChanged)="onSolutionChanged($event)"
-        showLineNumber
-        editable
-      ></nt-editor>
+  <div id="tool-bar">
+    <div class="select">
+      <select (change)="setLang($event.target.value)" name="slct" id="slct">
+        <option [value]="lang" *ngFor="let lang of questionLangs">{{ lang }}</option>
+      </select>
     </div>
-    <div class="container static-size" id="output-container">
-      <div class="head">
-        <span class="title">Output</span>
-        <span class="spacer"></span>
-        <button (click)="onCustomClick()" class="btn">Custom</button>
-        <button (click)="onRawOutputClick()" class="btn">Raw Output</button>
-      </div>
-      <nt-editor class="editable-editor" fontSize="1.6rem" initialValue="Custom>" [value]="currentOutput"></nt-editor>
-    </div>
+    <div class="spacer"></div>
+    <span id="stopwatch">
+      <svg
+        aria-hidden="true"
+        focusable="false"
+        data-icon="stopwatch"
+        role="img"
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 448 512"
+      >
+        <path
+          fill="currentColor"
+          d="M393.9 184l22.6-22.6c4.7-4.7 4.7-12.3 0-17l-17-17c-4.7-4.7-12.3-4.7-17 0l-20.7 20.7c-31.1-27.5-70.4-45.9-113.8-50.8V48h28c6.6 0 12-5.4 12-12V12c0-6.6-5.4-12-12-12H172c-6.6 0-12 5.4-12 12v24c0 6.6 5.4 12 12 12h28v49.4C96.4 109.3 16 197.2 16 304c0 114.9 93.1 208 208 208s208-93.1 208-208c0-44.7-14.1-86.1-38.1-120zM224 464c-88.4 0-160-71.6-160-160s71.6-160 160-160 160 71.6 160 160-71.6 160-160 160zm12-112h-24c-6.6 0-12-5.4-12-12V204c0-6.6 5.4-12 12-12h24c6.6 0 12 5.4 12 12v136c0 6.6-5.4 12-12 12z"
+          class=""
+        ></path>
+      </svg>
+      <span id="time" [textContent]="timeStr"></span>
+    </span>
   </div>
-  <div id="second-col">
-    <div class="container">
-      <div class="head top">
-        <span class="title">Question</span>
-        <div class="voting">
-          <div class="vote vote-up" (click)="voteUp()"></div>
-          <div class="votes" [ngClass]="{ votes: true, positive: votes > 0, negative: votes < 0 }">
-            {{ votes }}
+  <div id="columns">
+    <div id="first-col">
+      <div class="container editable-editor" id="solution-container">
+        <div class="head top">
+          <span class="title">Your Solution</span>
+          <span class="spacer"></span>
+          <button *ngIf="!loading" (click)="onRunCode()" class="run-code btn">
+            Run Code
+          </button>
+          <div *ngIf="loading" class="loading-btn">
+            <div class="loader"></div>
           </div>
-          <div class="vote vote-down" (click)="voteDown()"></div>
         </div>
-        <span class="spacer"></span>
+        <nt-editor
+          fontSize="1.6rem"
+          class="editable-editor"
+          [codeType]="getCurrentLang()"
+          [value]="solutionCode"
+          (valueChanged)="onSolutionChanged($event)"
+          showLineNumber
+          editable
+        ></nt-editor>
       </div>
-      <nt-editor class="editable-editor" fontSize="1.6rem" [value]="questionToSolve?.content"></nt-editor>
+      <div class="container static-size" id="output-container">
+        <div class="head">
+          <span class="title">Output</span>
+          <span class="spacer"></span>
+          <button (click)="onCustomClick()" class="btn">Custom</button>
+          <button (click)="onRawOutputClick()" class="btn">Raw Output</button>
+        </div>
+        <nt-editor class="editable-editor" fontSize="1.6rem" initialValue="Custom>" [value]="currentOutput"></nt-editor>
+      </div>
     </div>
-    <div class="container editable-editor" id="tests-container">
-      <div class="head">
-        <span class="title">Tests</span>
-        <span class="spacer"></span>
+    <div id="second-col">
+      <div class="container">
+        <div class="head top">
+          <span class="title">Question</span>
+          <div class="voting">
+            <div class="vote vote-up" (click)="voteUp()"></div>
+            <div class="votes" [ngClass]="{ votes: true, positive: votes > 0, negative: votes < 0 }">
+              {{ votes }}
+            </div>
+            <div class="vote vote-down" (click)="voteDown()"></div>
+          </div>
+          <span class="spacer"></span>
+        </div>
+        <nt-editor class="editable-editor" fontSize="1.6rem" [value]="questionToSolve?.content"></nt-editor>
       </div>
-      <nt-editor
-        fontSize="1.6rem"
-        [codeType]="getCurrentLang()"
-        class="editable-editor"
-        [value]="testsCode"
-        (valueChanged)="onTestsChanged($event)"
-        editable
-        showLineNumber
-      ></nt-editor>
-    </div>
-    <div class="container">
-      <div class="head">
-        <span class="title">Hints</span>
-        <span class="spacer"></span>
-        <button (click)="setShowHint(!showHint)" class="btn">{{ showHint ? 'Hide Hint' : 'Show Hint' }}</button>
+      <div class="container editable-editor" id="tests-container">
+        <div class="head">
+          <span class="title">Tests</span>
+          <span class="spacer"></span>
+        </div>
+        <nt-editor
+          fontSize="1.6rem"
+          [codeType]="getCurrentLang()"
+          class="editable-editor"
+          [value]="testsCode"
+          (valueChanged)="onTestsChanged($event)"
+          editable
+          showLineNumber
+        ></nt-editor>
       </div>
-      <nt-editor
-        [ngClass]="{ 'editable-editor': true, hint: true, 'show-hint': showHint }"
-        fontSize="1.6rem"
-        [value]="questionToSolve?.hints"
-      ></nt-editor>
+      <div class="container">
+        <div class="head">
+          <span class="title">Hints</span>
+          <span class="spacer"></span>
+          <button (click)="setShowHint(!showHint)" class="btn">{{ showHint ? 'Hide Hint' : 'Show Hint' }}</button>
+        </div>
+        <nt-editor
+          [ngClass]="{ 'editable-editor': true, hint: true, 'show-hint': showHint }"
+          fontSize="1.6rem"
+          [value]="questionToSolve?.hints"
+        ></nt-editor>
+      </div>
     </div>
   </div>
 </div>

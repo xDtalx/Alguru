@@ -63,6 +63,8 @@ angular-editor {
 
 :host {
   overflow: hidden;
+  display: flex;
+  flex: 1;
 }
 
 .hint {
@@ -94,6 +96,7 @@ angular-editor {
   justify-content: center;
   align-items: center;
   text-align: center;
+  padding: 1rem 0;
 }
 
 #stopwatch svg {
@@ -111,18 +114,38 @@ angular-editor {
 }
 
 #ide {
-  position: relative;
   display: flex;
-  position: relative;
-  flex-direction: row;
-  width: 100vw;
-  height: 100%;
+  flex-direction: column;
+  flex: 1;
   background-color: rgb(53, 58, 66);
 }
 
+#columns {
+  display: flex;
+  flex-direction: row;
+  flex: 1;
+}
+
+#tool-bar {
+  display: flex;
+  flex-direction: row;
+  color: white;
+  background-color: rgb(48, 53, 66);
+  border-radius: 1rem;
+  margin: 0 0.5rem 1rem 0.5rem;
+}
+
+#tool-bar * {
+  font-size: 1.6rem !important;
+}
+
 @media only screen and (max-width: 800px) {
-  #ide {
+  #columns {
     flex-direction: column;
+  }
+
+  nt-editor {
+    max-width: calc(100vw - 1rem) !important;
   }
 }
 
@@ -134,12 +157,6 @@ nt-editor {
   padding-bottom: 1rem;
 }
 
-@media only screen and (max-width: 800px) {
-  nt-editor {
-    max-width: calc(100vw - 1rem);
-  }
-}
-
 .editable-editor {
   flex: 1 !important;
 }
@@ -148,9 +165,7 @@ nt-editor {
   position: relative;
   display: flex;
   flex-direction: column;
-  flex-grow: 1;
-  height: 100%;
-  width: 100%;
+  flex: 1;
   min-width: 50vw;
   padding: 0.5rem;
   padding-top: 0;
@@ -160,9 +175,7 @@ nt-editor {
   position: relative;
   display: flex;
   flex-direction: column;
-  flex-grow: 1;
-  height: 100%;
-  width: 100%;
+  flex: 1;
   padding: 0.5rem;
   padding-top: 0;
 }
@@ -262,11 +275,11 @@ div.container {
 }
 
 #solution-container {
-  min-height: 50vh;
+  height: 50vh;
 }
 
 #tests-container {
-  min-height: 30vh;
+  height: 30vh;
 }
 
 .detail {
@@ -359,12 +372,14 @@ select::-ms-expand {
 
 /* Custom Select */
 .select {
+  border-top-left-radius: 1rem;
+  border-bottom-left-radius: 1rem;
   position: relative;
   display: flex;
   line-height: 3;
   background: #2c3e50;
   overflow: hidden;
-  min-width: 10.5rem;
+  min-width: 9.5rem;
   margin-right: 1rem;
 }
 
