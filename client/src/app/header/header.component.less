@@ -129,23 +129,40 @@ div.small-header {
 #description {
   display: flex;
   justify-content: center;
-  flex-direction: column;
+  flex-direction: row;
   height: 100vh;
   position: absolute;
   pointer-events: none;
-  top: 0;
-  left: 0;
-  margin-left: 5vw;
-  width: 60vw;
+  width: 50%;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+#description div {
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+}
+
+#description #ide-example img {
+  margin: 0;
+  height: 68rem;
+  width: 50rem;
+}
+
+#description #text {
+  min-width: fit-content;
+  color: white;
+}
+
+#description #text *:not(.title-text) {
+  font-size: 2rem;
+  margin-bottom: 1rem;
 }
 
 .title-text {
+  font-size: 4rem !important;
   margin-bottom: 3rem;
-}
-
-h1, h2, h3, h4, h5 {
-  color: white;
-  margin: 0;
 }
 
 .nav {
@@ -175,6 +192,7 @@ img {
 }
 
 .nav-link {
+  outline: none;
   padding: 0.7rem;
   border-radius: 4rem;
   padding: 1rem 2rem 1rem 2rem;
@@ -182,31 +200,14 @@ img {
   font-size: 1rem;
   color: white;
   cursor: pointer;
-  background-color: rgba(255, 97, 97, 0);
+  background-color: rgba(59, 151, 236, 0);
+  transition: all 0.2s ease;
 }
 
 .nav-link:hover {
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.25);
+  background-color: rgb(57, 141, 219);
   color: white;
-  animation: shadow 0.15s linear forwards, nav-link-bg-color 0.15s linear forwards;
-}
-
-@keyframes shadow {
-  from{box-shadow: 0 0 5px rgba(0, 0, 0, 0);}
-  to{box-shadow: 0 0 5px rgba(0, 0, 0, 0.25);}
-}
-
-@keyframes nav-link-bg-color {
-  from{background-color: rgba(0, 0, 0, 0);}
-  to{background-color: rgb(224, 73, 73);}
-}
-
-.nav-link:active {
-  outline: none;
-  box-shadow: 0 1px 5px rgb(168, 74, 74) inset;
-}
-
-.nav-link:focus {
-  outline: none;
 }
 
 .spacer {
@@ -228,6 +229,17 @@ img {
   bottom: 15px;
   color:white;
   cursor: pointer;
+}
+
+.ellipse {
+  z-index: 0;
+  position: absolute;
+  max-width: 100%;
+  width: 100vw;
+  height: 70vh;
+  top: 0;
+  background: linear-gradient(to bottom, rgb(59, 151, 236), rgba(0, 98, 245, 0.527));
+  clip-path: ellipse(125% 90% at 30% 0%);
 }
 
 .register-button {
@@ -274,7 +286,7 @@ img {
   width: 31px;
   height: 4px;
   position: relative;
-  background: #cdcdcd;
+  background: white;
   border-radius: 3px;
   z-index: 2;
   transition: transform 0.5s cubic-bezier(0.77,0.2,0.05,1.0),
@@ -330,7 +342,48 @@ img {
   transition: background-color 0.2s linear;
 }
 
+@media only screen and (max-width: 1000px) {
+  #description {
+    width: 95%;
+    flex-direction: column-reverse;  
+  }
+
+  #description #text {
+    align-items: center;
+    text-align: center;
+  }
+
+  #description #text *:not(.title-text) {
+    font-size: 1.8rem;
+    margin-bottom: 0;
+  }
+
+  .title-text {
+    font-size: 3.5rem !important;
+    margin-bottom: 1.5rem;
+  }
+
+  #description .spacer {
+    display: none;
+  }
+
+  #description #ide-example {
+    align-items: center;
+  }
+
+  #description #ide-example img {
+    width: 45rem;
+    max-width: 95vw;
+    height: calc(45rem * 1.36);
+    max-height: calc(95vw * 1.36);
+  }
+}
+
 @media only screen and (max-width: 800px) {
+  .ellipse {
+    clip-path: ellipse(200% 90% at 30% 0%);
+  }
+  
   #hamburger {
     display: block;
     margin-right: 2.5rem;

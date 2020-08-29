@@ -30,6 +30,10 @@ exports.getSolvedQuestions = async (req, res, next) => {
 };
 
 exports.markNotificationsAsSeen = async (req, res, next) => {
+  if (req.userData) {
+    return res.json(401).json({ message: 'User information missing' });
+  }
+
   await User.findOne({ _id: req.userData.userId })
     .then(async (user) => {
       user.notifications.forEach((notification) => {
@@ -46,28 +50,17 @@ exports.markNotificationsAsSeen = async (req, res, next) => {
             return res.status(500).json({ message: 'Unknown error! Notifications cannot be updated' });
           }
         })
-        .catch((err) => {
-          console.log(err);
-          return res
-            .status(400)
-            .json({ message: 'User cannot be found', stacktrace: req.userData.isAdmin ? err : '😊' });
-        });
+        .catch((err) =>
+          res.status(400).json({ message: 'User cannot be found', stacktrace: req.userData.isAdmin ? err : '😊' })
+        );
     })
-    .catch((err) => {
-      console.log(err);
-      return res.status(500).json({ message: 'Unknown error', stacktrace: req.userData.isAdmin ? err : '😊' });
-    });
+    .catch((err) => res.status(500).json({ message: 'Unknown error', stacktrace: req.userData.isAdmin ? err : '😊' }));
 };
 
 exports.getNotifications = async (req, res, next) => {
   await User.findOne({ _id: req.userData.userId })
-    .then((user) => {
-      return res.status(200).json(user.notifications);
-    })
-    .catch((err) => {
-      console.log(err);
-      return res.status(500).json({ message: 'Unknown error', stacktrace: req.userData.isAdmin ? err : '😊' });
-    });
+    .then((user) => res.status(200).json(user.notifications))
+    .catch((err) => res.status(500).json({ message: 'Unknown error', stacktrace: req.userData.isAdmin ? err : '😊' }));
 };
 
 exports.resendVarificationEmail = async (req, res, next) => {
@@ -127,9 +120,9 @@ exports.createUser = async (req, res, next) => {
     return res.status(422).json({ errors: errors.array({ onlyFirstError: true }) });
   }
 
-  bcrypt
+  await bcrypt
     .hash(req.body.password, 10)
-    .then((hash) => {
+    .then(async (hash) => {
       const user = new User({
         username: req.body.username,
         username_lower: req.body.username.toLowerCase(),
@@ -141,16 +134,16 @@ exports.createUser = async (req, res, next) => {
         stats: new Stats()
       });
 
-      user
+      await user
         .save()
-        .then((result) => handleSuccessfulSave(result, res))
+        .then(async (result) => await handleSuccessfulSave(result, res))
         .catch((err) => handleRegisterError(err, res));
     })
     .catch((err) => res.status(500).json({ message: 'Unknown error', stacktrace: req.userData.isAdmin ? err : '😊' }));
 };
 
-exports.deleteUser = (req, res, next) => {
-  User.deleteOne({ _id: req.userData.userId })
+exports.deleteUser = async (req, res, next) => {
+  await User.deleteOne({ _id: req.userData.userId })
     .then((result) => {
       const isDeleted = result.n > 0;
 
@@ -165,44 +158,72 @@ exports.deleteUser = (req, res, next) => {
     );
 };
 
-exports.updateUser = (req, res, next) => {
+exports.updateUser = async (req, res, next) => {
   const errors = validationResult(req);
 
   if (!errors.isEmpty()) {
     return res.status(422).json({ errors: errors.array({ onlyFirstError: true }) });
   }
 
-  bcrypt.hash(req.body.password, 10).then((hash) => {
-    const user = new User({
-      _id: req.userData.userId,
-      username: req.body.username,
-      username_lower: req.body.username.toLowerCase(),
-      email: req.body.email,
-      hashedPassword: hash,
-      isAdmin: false
-    });
-
-    User.updateOne(
-      {
-        _id: req.userData.userId
-      },
-      user
-    )
-      .then((result) => {
-        const isModified = result.n > 0;
-
-        if (isModified) {
-          res.status(200).json({ message: 'User updated' });
-        } else {
-          res.status(401).json({ message: 'Not authorized!' });
+  const isVerified = req.body.email ? req.userData.email === req.body.email : req.userData.isVerified;
+  await User.findOne({ _id: req.userData.userId })
+    .then(async (user) => {
+      await bcrypt.compare(req.body.password, user.hashedPassword).then(async (isEqual) => {
+        if (!isEqual) {
+          return res.status(401).json({ message: ['Password is incorrect'] });
         }
-      })
-      .catch((err) =>
-        res
-          .status(500)
-          .json({ message: 'Updating user was unsuccessful', stacktrace: req.userData.isAdmin ? err : '😊' })
-      );
-  });
+
+        let hashedPassword;
+
+        if (req.body.newPassword) {
+          await bcrypt.hash(req.body.newPassword, 10).then(async (hash) => (hashedPassword = hash));
+        } else {
+          hashedPassword = user.hashedPassword;
+        }
+
+        await User.updateOne(
+          {
+            _id: req.userData.userId
+          },
+          {
+            $set: {
+              username: req.body.username || req.userData.username,
+              username_lower: (req.body.username || req.userData.username).toLowerCase(),
+              email: req.body.email || req.userData.email,
+              hashedPassword: hashedPassword,
+              isAdmin: req.userData.isAdmin,
+              verified: isVerified,
+              socials: req.body.socials || user.socials
+            }
+          }
+        )
+          .then(async (result) => {
+            const isModified = result.n > 0;
+
+            if (isModified) {
+              if (!isVerified) {
+                await sendResetPasswordEmail({
+                  username: req.body.username || req.userData.username,
+                  email: req.body.email || req.userData.email,
+                  id: req.userData.userId,
+                  isAdmin: req.userData.isAdmin,
+                  verified: isVerified
+                });
+              }
+
+              res.status(200).json({ message: 'User updated' });
+            } else {
+              res.status(401).json({ message: 'Not authorized!' });
+            }
+          })
+          .catch((err) =>
+            res
+              .status(500)
+              .json({ message: 'Updating user was unsuccessful', stacktrace: req.userData.isAdmin ? err : '😊' })
+          );
+      });
+    })
+    .catch((err) => res.stats(500).json({ message: 'Unknown error', stacktrace: req.userData.isAdmin ? err : '😊' }));
 };
 
 exports.resetPassword = async (req, res, next) => {
@@ -254,7 +275,7 @@ exports.resetPassword = async (req, res, next) => {
   }
 };
 
-exports.sendResetPasswordEmail = (req, res, next) => {
+exports.sendResetPasswordEmail = async (req, res, next) => {
   const errors = validationResult(req);
 
   if (!errors.isEmpty()) {
@@ -263,9 +284,9 @@ exports.sendResetPasswordEmail = (req, res, next) => {
 
   const email = req.body.email;
 
-  User.findOne({ email: email })
-    .then((user) => {
-      sendResetPasswordEmail({
+  await User.findOne({ email: email })
+    .then(async (user) => {
+      await sendResetPasswordEmail({
         username: user.username,
         email: user.email,
         id: user._id,
@@ -283,7 +304,7 @@ exports.sendResetPasswordEmail = (req, res, next) => {
     });
 };
 
-exports.userLogin = (req, res, next) => {
+exports.userLogin = async (req, res, next) => {
   const errors = validationResult(req);
 
   if (!errors.isEmpty()) {
@@ -294,8 +315,8 @@ exports.userLogin = (req, res, next) => {
     return res.status(401).json({ message: 'Coming soon! Be patient :)' });
   }
 
-  User.findOne({ username_lower: req.body.username.toLowerCase() })
-    .then((user) => handleFoundUser(user, req, res))
+  await User.findOne({ username_lower: req.body.username.toLowerCase() })
+    .then(async (user) => await handleFoundUser(user, req, res))
     .catch((err) => handleUnknownErrorInLogin(req, err, res));
 };
 
@@ -330,8 +351,8 @@ function handleAuthenticationAndResponse(fetchedUser, res) {
   });
 }
 
-function handleFoundUser(user, req, res) {
-  bcrypt.compare(req.body.password, user.hashedPassword).then((isEqual) => {
+async function handleFoundUser(user, req, res) {
+  await bcrypt.compare(req.body.password, user.hashedPassword).then((isEqual) => {
     if (!isEqual) {
       return res.status(401).json({ message: ['Username or password are incorrect'] });
     }
@@ -340,8 +361,8 @@ function handleFoundUser(user, req, res) {
   });
 }
 
-function handleSuccessfulSave(savedUser, res) {
-  sendVarificationEmail({
+async function handleSuccessfulSave(savedUser, res) {
+  await sendVarificationEmail({
     username: savedUser.username,
     email: savedUser.email,
     userId: savedUser._id,

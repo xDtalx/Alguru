@@ -1,4 +1,5 @@
 <div class="header">
+  <div class="ellipse" *ngIf="!showSmallHeader"></div>
   <div id="left">
     <div id="container">
       <ul id="home" class="nav">
@@ -35,11 +36,8 @@
           >
             <div class="anchor"></div>
             <div class="notifications">
-              <app-notifications-center
-                [notifications]="notifications"
-                fontColor="white"
-                notificationColor="#4a4e55"
-              ></app-notifications-center>
+              <app-notifications-center [notifications]="notifications" fontColor="white" notificationColor="#4a4e55">
+              </app-notifications-center>
             </div>
           </div>
         </li>
@@ -79,9 +77,15 @@
     </ul>
   </div>
   <div id="description" *ngIf="!showSmallHeader">
-    <h1 class="title-text">Alguru.</h1>
-    <h4 class="content-text">The #1 place to practice your coding skills,</h4>
-    <h4 class="content-text">share interviews question and their solutions.</h4>
+    <div id="text">
+      <span class="title-text">Alguru.</span>
+      <span class="content-text">The #1 place to practice your coding skills,</span>
+      <span class="content-text">share algorithmic problems and their solutions.</span>
+    </div>
+    <div class="spacer"></div>
+    <div id="ide-example">
+      <img src="../../assets/home-page/IDE.example.png" alt="ide example" />
+    </div>
   </div>
 </div>
 <div

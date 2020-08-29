@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const Notification = require('./notification');
 const Stats = require('./stats');
+const Social = require('./social');
 const uniqueValidator = require('mongoose-unique-validator');
 
 const userSchema = mongoose.Schema({
@@ -11,7 +12,8 @@ const userSchema = mongoose.Schema({
   isAdmin: { type: Boolean, required: true },
   notifications: [Notification.schema],
   verified: { type: Boolean, required: true },
-  stats: { type: Stats.schema, required: true }
+  stats: { type: Stats.schema, required: true },
+  socials: [Social.schema]
 });
 
 // to decide which type will be the set

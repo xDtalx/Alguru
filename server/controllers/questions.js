@@ -55,10 +55,10 @@ exports.deleteQuestion = async (req, res, next) => {
           const isDeleted = deleteResult.n > 0;
 
           if (isDeleted) {
-            await User.findOne({ username: question.creator }).then(async (user) => {
+            await User.findOne({ _id: question.creator }).then(async (user) => {
               user.stats.contribProblems--;
               user.stats.contribPoints -= 100;
-              await User.updateOne({ username: question.creator }, user);
+              await User.updateOne({ _id: question.creator }, user);
             });
 
             res.status(200).json({ message: 'Question deleted' });
@@ -79,7 +79,7 @@ exports.getQuestions = (req, res, next) => {
   Question.find().then((documents) => res.status(200).json(documents));
 };
 
-exports.updateQuestion = (req, res, next) => {
+exports.updateQuestion = async (req, res, next) => {
   const errors = validationResult(req);
   const errorsArray = [...errors.array({ onlyFirstError: true }), ...checkQuestionArrays(req)];
 
@@ -95,7 +95,7 @@ exports.updateQuestion = (req, res, next) => {
     searchOptions = { _id: req.params.id, creator: req.userData.userId };
   }
 
-  Question.findOne(searchOptions)
+  await Question.findOne(searchOptions)
     .then(async (question) => {
       question.title = req.body.title;
       question.content = req.body.content;
@@ -156,7 +156,7 @@ function fixQuestionArrays(array) {
   const length = array.length;
 
   for (let i = 0; i < length; i++) {
-    if (array[i].trim() === '') {
+    if (array[i] && array[i].trim() === '') {
       array[i] = null;
     }
   }
@@ -217,7 +217,6 @@ async function putNewVote(req, res, toPutIn) {
 }
 
 async function updateUserNotification(question, req) {
-  console.log('question', question);
   await User.findOne({ _id: question.creator }).then(async (user) => {
     console.log('user', user);
     const messageToDisplay = `${req.userData.username} ${req.body.isUp ? 'upvote' : 'downvote'} your question: ${

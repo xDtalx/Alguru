@@ -248,11 +248,7 @@ exports.updateComment = (req, res, next) => {
         }
       });
     })
-    .catch(
-      (err) =>
-        console.log(err) &&
-        res.status(401).json({ message: 'Unauthorized!', stacktrace: req.userData.isAdmin ? err : '😊' })
-    );
+    .catch((err) => res.status(401).json({ message: 'Unauthorized!', stacktrace: req.userData.isAdmin ? err : '😊' }));
 };
 
 exports.voteOnComment = (req, res, next) => {
