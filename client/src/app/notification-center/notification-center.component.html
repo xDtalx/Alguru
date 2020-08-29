@@ -16,19 +16,19 @@
 >
   <div class="notification-details">
     <div class="title">
-      <span>
+      <h4>
         {{ notification.title }}
-      </span>
+      </h4>
     </div>
     <div class="content">
-      <span>
+      <h5>
         {{ notification.content }}
-      </span>
+      </h5>
     </div>
     <div class="date">
-      <span>
-        {{ notification.createdAt }}
-      </span>
+      <h5>
+        {{ notification.createdAt | date:'medium'}}
+      </h5>
     </div>
   </div>
   <div class="not-seen-circle" *ngIf="!notification.seen" [ngStyle]="{ backgroundColor: notSeenColor }"></div>

@@ -88,7 +88,6 @@ export class QuestionListComponent implements OnInit, OnDestroy {
   }
 
   public applyFilter(event: Event) {
-    this.dataSource.filterPredicate = (data: IQuestion, filter: string) => this.getLevelNumber(filter) === data.level;
     const filterValue = (event.target as HTMLInputElement).value;
     this.dataSource.filter = filterValue.trim().toLowerCase();
 

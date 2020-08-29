@@ -176,3 +176,59 @@ fa-icon:not(:last-child) {
     margin-left: 0;
   }
 }
+
+/*notifications :*/
+
+.notification-container {
+  position: relative;
+  background-color: rgba(235, 235, 235, 0);
+  box-shadow: -1px 3px 3px rgba(0, 0, 0, 0.15);
+  border-radius: 5px;
+  padding: 1rem;
+  margin: 1rem 0;
+  max-width: 100%;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: white;
+  cursor: pointer;
+}
+
+.notification-data-right {
+  color: #aaa;
+  display: flex;
+  flex-direction: column;
+  min-width: fit-content;
+  float: right;
+}
+
+.notification-details {
+  margin-top: -12px;
+}
+
+.edit-btn{
+  position: absolute;
+  margin-top: 13px;
+  padding: 0.5rem;
+}
+
+.edit-lable{
+  margin: 5px;
+}
+
+.submit-btn{
+  float: right;
+  margin: 5px;
+  padding: 0.5rem;
+}
+
+.form-control{
+ font-size: 1.3rem;
+}
+
+.edit-information{
+  margin: 10px 0;
+  text-align: center;
+}
+
+.active-icon{
+    cursor: pointer;
+}

@@ -1,11 +1,19 @@
-import { AfterViewInit, Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { ActivatedRoute, ParamMap } from '@angular/router';
+import {AfterViewInit, Component, ElementRef, Inject, NgModule, OnDestroy, OnInit, ViewChild} from '@angular/core';
+import {
+  ActivatedRoute,
+  ParamMap,
+  Router,
+} from '@angular/router';
 import { Subscription } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import { AuthService } from '../auth/auth.service';
 import { ThemeService } from '../theme/theme.service';
 import { ProfileService } from './profile.service';
 import { IUserStats } from './user-stats.model';
+import {NotificationService} from "../notification-center/notification.service";
+import {INotification} from "../notification-center/notification.model";
+import {DOCUMENT} from "@angular/common";
+
 
 const BACKEND_URL = `${environment.apiUrl}/image`;
 const UPLOAD_URL = BACKEND_URL + '/upload';
@@ -19,6 +27,12 @@ export class ProfileComponent implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild('selectFile', { read: ElementRef }) public selectFile: ElementRef;
   @ViewChild('uploadImageForm', { read: ElementRef }) public uploadImageForm: ElementRef;
 
+   public urlTypes = {
+  Github: 'Github',
+  LinkedIn: 'LinkedIn',
+  Facebook: 'Facebook',
+  Twitter: 'Twitter'
+};
   public solvedQuestions = 0;
   public username = '';
   public profileImageURL: string;
@@ -34,12 +48,23 @@ export class ProfileComponent implements OnInit, OnDestroy, AfterViewInit {
   private statsUpdatedSub: Subscription;
   private routeSub: Subscription;
   private theme = 'dark';
+  public onEditMode = false;
+  editInformationObj = {oldPassword:'', newPassword: '', newMail: '', facebookURL:'', githubURL:'', linkedinURL:'', twitterURL:''};
+
+
+  // Notifications
+  public notifications: INotification[];
+  private newNotificationsSubs: Subscription;
+
 
   constructor(
+    private router: Router,
     private route: ActivatedRoute,
     private profileService: ProfileService,
     private themeService: ThemeService,
-    private authService: AuthService
+    private authService: AuthService,
+    private notificationService: NotificationService,
+    @Inject(DOCUMENT) private document: Document
   ) {
     this.urlUpdatedSub = this.profileService.getURLUpdatedListener().subscribe(this.onUploaded.bind(this));
     this.statsUpdatedSub = this.profileService.getStatsUpdatedListener().subscribe((stats) => {
@@ -53,6 +78,11 @@ export class ProfileComponent implements OnInit, OnDestroy, AfterViewInit {
         this.profileImageURL = `${BACKEND_URL}/${this.username}`;
       }
     });
+    this.newNotificationsSubs = this.notificationService
+      .getNotificationsUpdatedListener()
+      .subscribe(this.onNotificationsUpdated.bind(this));
+    this.notificationService.updateNotifications();
+    // Todo:: set socials information
   }
 
   public ngAfterViewInit(): void {
@@ -133,5 +163,60 @@ export class ProfileComponent implements OnInit, OnDestroy, AfterViewInit {
 
   public getSolvedQuestions(): number {
     return this.stats ? this.stats.solvedQuestions.size : 0;
+  }
+
+  // notifications
+
+  private onNotificationsUpdated(notifications: INotification[]) {
+    this.notifications = notifications;
+    let count = 0;
+
+    this.notifications.forEach((notification) => {
+      if (!notification.seen) {
+        count++;
+      }
+    });
+  }
+
+  onProfileURLsClick(type: string){
+    switch (type) {
+      case this.urlTypes.Facebook:
+        if( this.editInformationObj.facebookURL !== ""){
+          window.open(this.editInformationObj.facebookURL, "_blank");
+        }
+        break;
+      case this.urlTypes.Github:
+        if( this.editInformationObj.githubURL !== ""){
+          window.open(this.editInformationObj.githubURL, "_blank");
+        }
+        break;
+      case this.urlTypes.LinkedIn:
+        if( this.editInformationObj.linkedinURL !== ""){
+          window.open(this.editInformationObj.linkedinURL, "_blank");
+        }
+        break;
+      case this.urlTypes.Twitter:
+        if( this.editInformationObj.twitterURL !== ""){
+          window.open(this.editInformationObj.twitterURL, "_blank");
+        }
+        break;
+
+    }
+  }
+
+  onEditModeClicked() {
+    this.onEditMode = !this.onEditMode;
+    for (let key of Object.keys(this.editInformationObj)) {
+      this.editInformationObj[key] = '';
+    }
+  }
+
+  onCancelEditClicked() {
+    this.onEditMode = !this.onEditMode;
+  }
+
+  onSubmitEditClicked() {
+    // Todo: send the new information (editInformationObj) to the server
+    this.onEditMode = !this.onEditMode;
   }
 }
