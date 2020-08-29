@@ -1,4 +1,5 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
+import { ThemeService } from '../theme/theme.service';
 
 @Component({
   styleUrls: ['./home.component.css'],
@@ -6,6 +7,7 @@ import { Component, OnInit } from '@angular/core';
 })
 export class HomeComponent implements OnInit {
   public ngOnInit(): void {
+    document.documentElement.style.setProperty('--main-background-color', 'rgba(0, 0, 0, 0.05)');
     document.documentElement.style.setProperty('--main-padding', 'none');
   }
 

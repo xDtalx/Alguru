@@ -30,6 +30,10 @@ exports.getSolvedQuestions = async (req, res, next) => {
 };
 
 exports.markNotificationsAsSeen = async (req, res, next) => {
+  if (req.userData) {
+    return res.json(401).json({ message: 'User information missing' });
+  }
+
   await User.findOne({ _id: req.userData.userId })
     .then(async (user) => {
       user.notifications.forEach((notification) => {
@@ -46,28 +50,17 @@ exports.markNotificationsAsSeen = async (req, res, next) => {
             return res.status(500).json({ message: 'Unknown error! Notifications cannot be updated' });
           }
         })
-        .catch((err) => {
-          console.log(err);
-          return res
-            .status(400)
-            .json({ message: 'User cannot be found', stacktrace: req.userData.isAdmin ? err : '😊' });
-        });
+        .catch((err) =>
+          res.status(400).json({ message: 'User cannot be found', stacktrace: req.userData.isAdmin ? err : '😊' })
+        );
     })
-    .catch((err) => {
-      console.log(err);
-      return res.status(500).json({ message: 'Unknown error', stacktrace: req.userData.isAdmin ? err : '😊' });
-    });
+    .catch((err) => res.status(500).json({ message: 'Unknown error', stacktrace: req.userData.isAdmin ? err : '😊' }));
 };
 
 exports.getNotifications = async (req, res, next) => {
   await User.findOne({ _id: req.userData.userId })
-    .then((user) => {
-      return res.status(200).json(user.notifications);
-    })
-    .catch((err) => {
-      console.log(err);
-      return res.status(500).json({ message: 'Unknown error', stacktrace: req.userData.isAdmin ? err : '😊' });
-    });
+    .then((user) => res.status(200).json(user.notifications))
+    .catch((err) => res.status(500).json({ message: 'Unknown error', stacktrace: req.userData.isAdmin ? err : '😊' }));
 };
 
 exports.resendVarificationEmail = async (req, res, next) => {

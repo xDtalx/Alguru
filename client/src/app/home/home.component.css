@@ -3,7 +3,8 @@
   margin-bottom: 5rem;
   text-align: center;
   font-weight: 400;
-  color: #02203c;
+  color: white;
+  text-shadow: -5px 2px 10px rgba(0, 0, 0, 0.678);
 }
 
 .svg-icon {
@@ -32,7 +33,9 @@
   max-width: 400px;
   text-align: center;
   border-radius: 4px;
-  box-shadow: 0 5px 5px rgba(0, 0, 0, 0.103);
+  box-shadow: 0 5px 8px rgba(0, 0, 0, 0.3);
+  background-color: transparent;
+  color: white;
 }
 
 .second {
@@ -60,14 +63,14 @@
 }
 
 .down {
-  top: -15rem;
+  top: -10rem;
 }
 
 .arrow {
   z-index: 11;
   cursor: pointer;
   color: black;
-  filter: drop-shadow(0px 0px 10px black);
+  filter: drop-shadow(0px 0px 10px rgba(0, 0, 0, 0.1));
 }
 
 .arrow:hover {
@@ -91,6 +94,12 @@
   }
   60% {
     transform: translateY(-10px);
+  }
+}
+
+@media only screen and (max-width: 1000px) {
+  .down {
+    top: -8rem;
   }
 }
 

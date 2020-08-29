@@ -59,7 +59,6 @@ async function updateImage(req, res, image) {
       });
     })
     .catch((err) => {
-      console.log(err);
       res.status(500).json({ message: 'Could not update image', stacktrace: req.userData.isAdmin ? err : '😊' });
     });
 }
