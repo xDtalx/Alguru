@@ -6,17 +6,18 @@ const { validationResult } = require('express-validator');
 
 exports.createQuestion = async (req, res, next) => {
   const errors = validationResult(req);
+  const errorsArray = [...errors.array({ onlyFirstError: true }), ...checkQuestionArrays(req)];
 
-  if (!errors.isEmpty()) {
-    return res.status(422).json({ errors: errors.array({ onlyFirstError: true }) });
+  if (errorsArray.length > 0) {
+    return res.status(422).json({ errors: errorsArray });
   }
 
   const question = new Question({
     title: req.body.title,
     content: req.body.content,
-    solutionTemplate: req.body.solutionTemplate,
-    solution: req.body.solution,
-    tests: req.body.tests,
+    solutionTemplate: fixQuestionArrays(req.body.solutionTemplate),
+    solution: fixQuestionArrays(req.body.solution),
+    tests: fixQuestionArrays(req.body.tests),
     hints: req.body.hints,
     level: req.body.level,
     votes: {},
@@ -80,9 +81,10 @@ exports.getQuestions = (req, res, next) => {
 
 exports.updateQuestion = (req, res, next) => {
   const errors = validationResult(req);
+  const errorsArray = [...errors.array({ onlyFirstError: true }), ...checkQuestionArrays(req)];
 
-  if (!errors.isEmpty()) {
-    return res.status(422).json({ errors: errors.array({ onlyFirstError: true }) });
+  if (errorsArray.length > 0) {
+    return res.status(422).json({ errors: errorsArray });
   }
 
   let searchOptions;
@@ -97,11 +99,12 @@ exports.updateQuestion = (req, res, next) => {
     .then(async (question) => {
       question.title = req.body.title;
       question.content = req.body.content;
-      question.tests = req.body.tests;
       question.hints = req.body.hints;
       question.level = req.body.level;
-      question.solution = req.body.solution;
-      question.solutionTemplate = req.body.solutionTemplate;
+      question.tests = fixQuestionArrays(req.body.tests);
+      question.solution = fixQuestionArrays(req.body.solution);
+      question.solutionTemplate = fixQuestionArrays(req.body.solutionTemplate);
+      console.log(req.body.solutionTemplate);
 
       await Question.updateOne(searchOptions, question)
         .then(async function (result) {
@@ -148,6 +151,59 @@ exports.voteOnQuestion = (req, res, next) => {
     }
   });
 };
+
+function fixQuestionArrays(array) {
+  const length = array.length;
+
+  for (let i = 0; i < length; i++) {
+    if (array[i].trim() === '') {
+      array[i] = null;
+    }
+  }
+
+  return array;
+}
+
+function checkQuestionArray(array, paramName) {
+  let empty = true;
+
+  array.forEach((questionVersion) => {
+    if (questionVersion !== null && questionVersion !== '') {
+      empty = false;
+    }
+  });
+
+  return empty
+    ? {
+        value: array,
+        msg: `${paramName} values should not be empty`,
+        param: paramName,
+        location: 'body'
+      }
+    : null;
+}
+
+function checkQuestionArrays(req) {
+  const errors = [];
+
+  const solutionArray = checkQuestionArray(req.body.solution, 'solution');
+  const solutionTemplateArray = checkQuestionArray(req.body.solutionTemplate, 'solutionTemplate');
+  const testsArray = checkQuestionArray(req.body.tests, 'tests');
+
+  if (solutionArray) {
+    errors.push(solutionArray);
+  }
+
+  if (solutionTemplateArray) {
+    errors.push(solutionTemplateArray);
+  }
+
+  if (testsArray) {
+    errors.push(testsArray);
+  }
+
+  return errors;
+}
 
 async function putNewVote(req, res, toPutIn) {
   if (toPutIn.creator === req.userData.userId) {

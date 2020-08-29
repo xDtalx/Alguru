@@ -13,13 +13,18 @@ import { QuestionsService } from '../questions.service';
   templateUrl: './question-create.component.html'
 })
 export class QuestionCreateComponent implements OnInit, OnDestroy, AfterViewInit {
-  @ViewChildren('checkbox') public checkboxes: QueryList<ElementRef>;
+  @ViewChildren('levelCheckbox') public lvlCheckboxes: QueryList<ElementRef>;
+  @ViewChildren('solutionTabCheckboxes') public solutionTabCheckboxes: QueryList<ElementRef>;
+  @ViewChildren('solutionTemplateTabCheckboxes') public solutionTemplateTabCheckboxes: QueryList<ElementRef>;
+  @ViewChildren('testsTabCheckboxes') public testsTabCheckboxes: QueryList<ElementRef>;
 
-  public retrievedQuestionData: IQuestion;
-  public newQuestionData: IQuestion;
+  public question: IQuestion;
   public isLoading = false;
   public theme = 'dark';
-  private mode = 'create';
+  public solutionCurrentLang = 0;
+  public solutionTemplateCurrentLang = 0;
+  public testsCurrentLang = 0;
+  public mode = 'Create';
   private questionId: string;
   private questionsUpdatedSubs: Subscription;
   private errorsSub: Subscription;
@@ -48,18 +53,18 @@ export class QuestionCreateComponent implements OnInit, OnDestroy, AfterViewInit
 
   public ngOnInit() {
     this.questionUpdatedSubs = this.questionService.getQuestionUpdatedListener().subscribe((question: IQuestion) => {
-      this.retrievedQuestionData = question;
+      this.question = question;
     });
-    this.newQuestionData = {
-      content: null,
-      creator: null,
-      hints: null,
+    this.question = {
+      content: '',
+      creator: '',
+      hints: '',
       id: null,
-      level: null,
-      solution: [],
-      solutionTemplate: [],
-      tests: [],
-      title: null,
+      level: 0,
+      solution: ['', ''],
+      solutionTemplate: ['', ''],
+      tests: ['', ''],
+      title: '',
       votes: new Map<string, IVote>()
     };
 
@@ -78,10 +83,55 @@ export class QuestionCreateComponent implements OnInit, OnDestroy, AfterViewInit
     this.errorsSub = this.authService.getAuthErrorListener().subscribe(() => (this.isLoading = false));
   }
 
-  public uncheckOther(event: MouseEvent) {
+  public uncheckOtherTabs(event: MouseEvent, inputType: string): void {
+    const target: HTMLInputElement = event.target as HTMLInputElement;
+    let checkboxes;
+
+    switch (inputType) {
+      case 'solution':
+        checkboxes = this.solutionTabCheckboxes;
+        this.solutionCurrentLang = this.getLangIndex(target.classList[0]);
+        break;
+      case 'solutionTemplate':
+        checkboxes = this.solutionTemplateTabCheckboxes;
+        this.solutionTemplateCurrentLang = this.getLangIndex(target.classList[0]);
+        break;
+      case 'tests':
+        checkboxes = this.testsTabCheckboxes;
+        this.testsCurrentLang = this.getLangIndex(target.classList[0]);
+        break;
+    }
+
+    checkboxes.forEach((checkbox) => {
+      if (target.classList[0] !== checkbox.nativeElement.classList[0]) {
+        checkbox.nativeElement.checked = false;
+      }
+    });
+
+    if (!target.checked) {
+      target.checked = true;
+    }
+  }
+
+  private getLangIndex(lang: string): number {
+    let num;
+
+    switch (lang) {
+      case 'java':
+        num = 0;
+        break;
+      case 'javascript':
+        num = 1;
+        break;
+    }
+
+    return num;
+  }
+
+  public uncheckOther(event: MouseEvent): void {
     const target: HTMLInputElement = event.target as HTMLInputElement;
 
-    this.checkboxes.forEach((checkbox) => {
+    this.lvlCheckboxes.forEach((checkbox) => {
       if (target.id !== checkbox.nativeElement.id) {
         checkbox.nativeElement.checked = false;
       }
@@ -98,63 +148,58 @@ export class QuestionCreateComponent implements OnInit, OnDestroy, AfterViewInit
         this.setLevel(2);
         break;
     }
+
+    if (!target.checked) {
+      target.checked = true;
+    }
   }
 
   public setEditMode(paramMap) {
-    this.mode = 'edit';
+    this.mode = 'Update';
     this.questionId = paramMap.get('questionId');
     this.questionService.getQuestion(this.questionId);
   }
 
   public setCreateMode() {
-    this.mode = 'create';
+    this.mode = 'Create';
     this.questionId = null;
   }
 
   public onSaveQuestion() {
     this.isLoading = true;
 
-    if (this.mode === 'create') {
-      this.questionService.addQuestion(this.newQuestionData);
+    if (this.mode === 'Create') {
+      this.questionService.addQuestion(this.question);
     } else {
-      this.fillNotUpdatedFieldsWithOldValues(this.newQuestionData);
-      this.questionService.updateQuestion(this.questionId, this.newQuestionData);
+      this.questionService.updateQuestion(this.questionId, this.question);
     }
   }
 
-  public fillNotUpdatedFieldsWithOldValues(question) {
-    Object.keys(question).forEach((value) => {
-      if (!question[value] || (Array.isArray(question[value]) && !question[value][0])) {
-        question[value] = this.retrievedQuestionData[value];
-      }
-    });
-  }
-
   public onSolTemplateValueChanged(value) {
-    this.newQuestionData.solutionTemplate[0] = value;
+    this.question.solutionTemplate[this.solutionTemplateCurrentLang] = value;
   }
 
   public onTestsValueChanged(value) {
-    this.newQuestionData.tests[0] = value;
+    this.question.tests[this.testsCurrentLang] = value;
   }
 
   public onSolValueChanged(value) {
-    this.newQuestionData.solution[0] = value;
+    this.question.solution[this.solutionCurrentLang] = value;
   }
 
   public onContentValueChanged(value) {
-    this.newQuestionData.content = value;
+    this.question.content = value;
   }
 
   public onTitleValueChanged(value) {
-    this.newQuestionData.title = value;
+    this.question.title = value;
   }
 
   public onHintsValueChanged(value) {
-    this.newQuestionData.hints = value;
+    this.question.hints = value;
   }
 
   public setLevel(level: number) {
-    this.newQuestionData.level = level;
+    this.question.level = level;
   }
 }

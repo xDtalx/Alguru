@@ -4,75 +4,118 @@
     <nt-editor
       fontSize="1.6rem"
       tabSpaces="4"
-      [value]="retrievedQuestionData?.title"
+      [value]="question?.title"
       (valueChanged)="onTitleValueChanged($event)"
       editable
       focus="true"
     ></nt-editor>
   </label>
   <label for="title">
-    <span class="title">Content</span>
+    <span class="title">Problem Description</span>
     <nt-editor
       fontSize="1.6rem"
       tabSpaces="4"
-      [value]="retrievedQuestionData?.content"
+      [value]="question?.content"
       (valueChanged)="onContentValueChanged($event)"
       editable
     ></nt-editor>
   </label>
+  <div class="tabs">
+    <div>
+      <input
+        (click)="uncheckOtherTabs($event, 'solutionTemplate')"
+        class="java"
+        type="checkbox"
+        #solutionTemplateTabCheckboxes
+        checked
+      />
+      <span>Java</span>
+    </div>
+    <div>
+      <input
+        (click)="uncheckOtherTabs($event, 'solutionTemplate')"
+        class="javascript"
+        type="checkbox"
+        #solutionTemplateTabCheckboxes
+      />
+      <span>Javascript</span>
+    </div>
+  </div>
   <label for="title">
     <span class="title">Solution Template</span>
     <nt-editor
       fontSize="1.6rem"
       tabSpaces="4"
-      [value]="(retrievedQuestionData?.solutionTemplate)[0]"
+      [value]="(question?.solutionTemplate)[solutionTemplateCurrentLang]"
       (valueChanged)="onSolTemplateValueChanged($event)"
       editable
     ></nt-editor>
   </label>
+  <div class="tabs">
+    <div>
+      <input
+        (click)="uncheckOtherTabs($event, 'solution')"
+        class="java"
+        type="checkbox"
+        #solutionTabCheckboxes
+        checked
+      />
+      <span>Java</span>
+    </div>
+    <div>
+      <input (click)="uncheckOtherTabs($event, 'solution')" class="javascript" type="checkbox" #solutionTabCheckboxes />
+      <span>Javascript</span>
+    </div>
+  </div>
   <label for="title">
     <span class="title">Solution</span>
     <nt-editor
       fontSize="1.6rem"
       tabSpaces="4"
-      [value]="(retrievedQuestionData?.solution)[0]"
+      [value]="(question?.solution)[solutionCurrentLang]"
       (valueChanged)="onSolValueChanged($event)"
       editable
     ></nt-editor>
   </label>
+  <div class="tabs">
+    <div>
+      <input (click)="uncheckOtherTabs($event, 'tests')" class="java" type="checkbox" #testsTabCheckboxes checked />
+      <span>Java</span>
+    </div>
+    <div>
+      <input (click)="uncheckOtherTabs($event, 'tests')" class="javascript" type="checkbox" #testsTabCheckboxes />
+      <span>Javascript</span>
+    </div>
+  </div>
   <label for="title">
     <span class="title">Tests</span>
     <nt-editor
       fontSize="1.6rem"
       tabSpaces="4"
-      [value]="(retrievedQuestionData?.tests)[0]"
+      [value]="(question?.tests)[testsCurrentLang]"
       (valueChanged)="onTestsValueChanged($event)"
       editable
     ></nt-editor>
   </label>
   <label for="title">
     <span class="title">Hints</span>
-    <nt-editor
-      fontSize="1.6rem"
-      [value]="retrievedQuestionData?.hints"
-      (valueChanged)="onHintsValueChanged($event)"
-      editable
-    ></nt-editor>
+    <nt-editor fontSize="1.6rem" [value]="question?.hints" (valueChanged)="onHintsValueChanged($event)" editable>
+    </nt-editor>
   </label>
   <div class="levels">
     <div class="level">
-      <input (click)="uncheckOther($event)" id="easy-checkbox" type="checkbox" #checkbox />
+      <input (click)="uncheckOther($event)" id="easy-checkbox" type="checkbox" #levelCheckbox checked />
       <button class="level-btn" name="easy" type="button">Easy</button>
     </div>
     <div class="level">
-      <input (click)="uncheckOther($event)" id="medium-checkbox" type="checkbox" #checkbox />
+      <input (click)="uncheckOther($event)" id="medium-checkbox" type="checkbox" #levelCheckbox />
       <button class="level-btn" name="medium" type="button">Medium</button>
     </div>
     <div class="level">
-      <input (click)="uncheckOther($event)" id="hard-checkbox" type="checkbox" #checkbox />
+      <input (click)="uncheckOther($event)" id="hard-checkbox" type="checkbox" #levelCheckbox />
       <button class="level-btn" name="hard" type="button">Hard</button>
     </div>
   </div>
-  <button class="alguru-primary-btn" name="create" type="submit">Create</button>
+  <button class="alguru-primary-btn" name="create" type="submit">{{ mode }}</button>
 </form>
 <div *ngIf="isLoading" class="loader">Loading...</div>

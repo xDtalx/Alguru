@@ -13,6 +13,7 @@ const BACKEND_URL = environment.apiUrl + '/users';
 @Injectable({ providedIn: 'root' })
 export class AuthService {
   private authStatusListener = new Subject<boolean>();
+  private verifiedListener = new Subject<boolean>();
   private adminListener = new Subject<boolean>();
   private authErrorListener = new Subject<string[]>();
   private userSavedListener = new Subject<boolean>();
@@ -35,6 +36,10 @@ export class AuthService {
         this.passwordChangedListener.next(false);
       }
     );
+  }
+
+  public getVerifiedListener(): Observable<boolean> {
+    return this.verifiedListener.asObservable();
   }
 
   public sendResetPasswordEmail(email: string): void {
@@ -69,6 +74,7 @@ export class AuthService {
       this.emailVerifiedListener.next(true);
       this.authData.token = resposne.token;
       this.authData.verified = true;
+      this.verifiedListener.next(true);
       this.setAuthTimer(resposne.expiresIn);
       localStorage.setItem('token', resposne.token);
       localStorage.setItem('verified', 'true');
@@ -212,6 +218,7 @@ export class AuthService {
       this.isAuth = true;
       this.authStatusListener.next(true);
       this.adminListener.next(this.authData.isAdmin);
+      this.verifiedListener.next(this.authData.verified);
     }
   }
 
@@ -235,6 +242,7 @@ export class AuthService {
       this.setAuthTimer(expiresIn / 1000);
       this.authStatusListener.next(true);
       this.adminListener.next(this.authData.isAdmin);
+      this.verifiedListener.next(this.authData.verified);
     }
   }
 

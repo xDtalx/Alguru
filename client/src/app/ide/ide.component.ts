@@ -1,7 +1,6 @@
 import { Component, OnDestroy, OnInit, Renderer2 } from '@angular/core';
 import { ActivatedRoute, ParamMap } from '@angular/router';
 import { AngularEditorConfig } from '@kolkov/angular-editor';
-import * as $ from 'jquery';
 import { Subscription } from 'rxjs';
 import { AuthService } from '../auth/auth.service';
 import { IQuestion } from '../questions/question.model';
@@ -20,24 +19,25 @@ export class IDEComponent implements OnInit, OnDestroy {
   private questionUpdatedSubs: Subscription;
   private time: number;
   private stopwatchInterval;
+  private langs = ['Java', 'Javascript', 'C#', 'C++', 'C', 'Python'];
+  private currentLang = 0;
   public timeStr = '00:00:00';
   public executeResponse: ExecuteResponse;
   public currentOutput: string;
   public solutionCode: string;
   public testsCode: string;
-  public lang = 'java';
   public questionId: string;
   public questionToSolve: IQuestion;
   public theme = 'dark';
   public solutionTemplate: string;
   public code: string;
-  public testsValue: string;
   public loading = false;
   public showHint = false;
   public votes = 0;
   public messageDefaultValue: string;
   public hidePopUp = true;
   public voteType: string;
+  public questionLangs: string[];
 
   constructor(
     private route: ActivatedRoute,
@@ -47,16 +47,11 @@ export class IDEComponent implements OnInit, OnDestroy {
     private themeService: ThemeService,
     private authService: AuthService
   ) {
-    $(document).ready(this.onPageLoaded.bind(this));
-  }
-
-  public ngOnInit(): void {
-    this.themeService.setDarkTheme();
     this.questionUpdatedSubs = this.questionsService.getQuestionUpdatedListener().subscribe((question: IQuestion) => {
       this.questionToSolve = question;
-      this.solutionCode = this.questionToSolve.solutionTemplate[0];
-      this.testsValue = this.questionToSolve.tests[0];
+      this.updateLangsOptions();
       this.updateVotes();
+      this.updateCode();
     });
     this.route.paramMap.subscribe((paramMap: ParamMap) => {
       if (paramMap.has('questionId')) {
@@ -64,8 +59,6 @@ export class IDEComponent implements OnInit, OnDestroy {
         this.getQuestion();
       }
     });
-
-    this.currentOutput = '';
     this.executeListenerSubs = this.codeService.getExecuteResponseListener().subscribe((response) => {
       this.executeResponse = response;
       this.loading = false;
@@ -80,55 +73,53 @@ export class IDEComponent implements OnInit, OnDestroy {
     });
   }
 
+  private updateCode(): void {
+    for (let i = 0; i < this.questionToSolve.solutionTemplate.length; i++) {
+      if (this.questionToSolve.solutionTemplate[i]) {
+        this.currentLang = i;
+        break;
+      }
+    }
+
+    this.solutionCode = this.questionToSolve.solutionTemplate[this.currentLang];
+    this.testsCode = this.questionToSolve.tests[this.currentLang];
+  }
+
+  public ngOnInit(): void {
+    this.themeService.setDarkTheme();
+    this.currentOutput = '';
+  }
+
   public ngOnDestroy(): void {
     this.themeService.reset();
     this.questionUpdatedSubs.unsubscribe();
     this.executeListenerSubs.unsubscribe();
   }
 
-  public onPageLoaded(): void {
-    $('.container').each((index, container) => {
-      const style: CSSStyleDeclaration = getComputedStyle(container);
-      this.makeContainerWithFixHeight(container, style);
-    });
-  }
-
-  public makeContainerWithFixHeight(container: HTMLElement, style: CSSStyleDeclaration): void {
-    setTimeout(() => {
-      if (!$(container).hasClass('static-size')) {
-        const editor: HTMLElement = $(container).find('nt-editor')[0];
-        const editorStyle: CSSStyleDeclaration = getComputedStyle(editor);
-
-        this.renderer.setStyle(container, 'height', style.height);
-        this.renderer.setStyle(editor, 'height', editorStyle.height);
-      }
-    }, 500);
-  }
-
   public onSolutionChanged(value): void {
-    this.solutionCode = value;
+    if (this.solutionCode !== value) {
+      this.solutionCode = value;
+    }
   }
 
   public onTestsChanged(value): void {
-    this.testsCode = value;
+    if (this.testsCode !== value) {
+      this.testsCode = value;
+    }
   }
 
   public onRunCode(): void {
-    if (this.executeResponse && this.executeResponse.errors === '') {
-      this.resetQuestion();
-    } else {
-      this.loading = true;
+    this.loading = true;
 
-      if (!this.testsCode || this.testsCode.trim() === '') {
-        this.testsCode = this.questionToSolve.tests[0];
-      }
-
-      if (!this.solutionCode || this.solutionCode.trim() === '') {
-        this.solutionCode = this.questionToSolve.solutionTemplate[0];
-      }
-
-      this.codeService.runCode(this.questionToSolve.id, this.lang, this.solutionCode, this.testsCode);
+    if (!this.testsCode || this.testsCode.trim() === '') {
+      this.testsCode = this.questionToSolve.tests[this.currentLang];
     }
+
+    if (!this.solutionCode || this.solutionCode.trim() === '') {
+      this.solutionCode = this.questionToSolve.solutionTemplate[this.currentLang];
+    }
+
+    this.codeService.runCode(this.questionToSolve.id, this.langs[this.currentLang], this.solutionCode, this.testsCode);
   }
 
   public onCustomClick(): void {
@@ -204,12 +195,6 @@ export class IDEComponent implements OnInit, OnDestroy {
     }, 1000);
   }
 
-  private resetQuestion(): void {
-    this.executeResponse = null;
-    this.currentOutput = 'Custom> ';
-    this.getQuestion();
-  }
-
   public getEditorConfig(): AngularEditorConfig {
     return editorConfig;
   }
@@ -227,6 +212,33 @@ export class IDEComponent implements OnInit, OnDestroy {
   public hideVoteMessagePopup(): void {
     this.hidePopUp = true;
     this.voteType = null;
+  }
+
+  public setLang(lang: string): void {
+    for (let i = 0; i < this.langs.length; i++) {
+      if (this.langs[i] === lang) {
+        this.currentLang = i;
+        break;
+      }
+    }
+
+    this.solutionCode = this.questionToSolve.solutionTemplate[this.currentLang];
+    this.testsCode = this.questionToSolve.tests[this.currentLang];
+  }
+
+  private updateLangsOptions(): void {
+    const langsCount = this.questionToSolve.solutionTemplate.length;
+    this.questionLangs = [];
+
+    for (let i = 0; i < langsCount; i++) {
+      if (this.questionToSolve.solutionTemplate[i] !== null && this.questionToSolve.solutionTemplate[i] !== '') {
+        this.questionLangs.push(this.langs[i]);
+      }
+    }
+  }
+
+  public getCurrentLang(): string {
+    return this.currentLang !== null && this.currentLang !== undefined ? this.langs[this.currentLang] : '';
   }
 }
 
