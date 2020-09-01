@@ -1,17 +1,5 @@
-import {
-  AfterViewInit,
-  Component,
-  EventEmitter,
-  Input,
-  OnChanges,
-  OnDestroy,
-  OnInit,
-  Output,
-  SimpleChanges
-} from '@angular/core';
-import { Subscription } from 'rxjs';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { INotification } from './notification.model';
-import { NotificationService } from './notification.service';
 
 @Component({
   selector: 'app-notifications-center',

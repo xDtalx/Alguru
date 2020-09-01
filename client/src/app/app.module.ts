@@ -19,7 +19,7 @@ import { ErrorSharedModule } from './error/error-shared.module';
 import { FooterComponent } from './footer/footer.component';
 import { HeaderComponent } from './header/header.component';
 import { HomeComponent } from './home/home.component';
-import { NotificationCenterComponent } from './notification-center/notification-center.component';
+import { SharedModule } from './notifications-shared.module';
 
 @NgModule({
   bootstrap: [AppComponent],
@@ -31,8 +31,7 @@ import { NotificationCenterComponent } from './notification-center/notification-
     RegisterComponent,
     LoginComponent,
     HomeComponent,
-    PasswordResetComponent,
-    NotificationCenterComponent
+    PasswordResetComponent
   ],
   imports: [
     BrowserModule,
@@ -42,7 +41,8 @@ import { NotificationCenterComponent } from './notification-center/notification-
     HttpClientModule,
     BrowserAnimationsModule,
     FontAwesomeModule,
-    ErrorSharedModule
+    ErrorSharedModule,
+    SharedModule
   ],
   providers: [
     { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },

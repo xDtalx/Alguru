@@ -2,20 +2,63 @@
   color: white;
 }
 
+app-notifications-center {
+  width: 100%;
+  border-radius: 1rem;
+  flex: 1;
+}
+
 .account-container {
   max-width: 50vw;
   min-width: 70rem;
   margin: auto;
   display: flex;
   flex-direction: row;
+  min-height: 72rem;
+}
+
+.btns {
+  margin-top: 2rem;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
 }
 
 .side-nav {
   min-width: 30rem;
 }
 
+.auth {
+  padding: 2rem 0;
+}
+
+input,
+input:focus,
+input:active,
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus {
+  border-color: rgb(49, 55, 61);
+  border-radius: 0;
+  box-shadow: 0 0 0 30px rgb(61, 67, 75) inset;
+  -webkit-text-fill-color: white;
+  caret-color: white;
+}
+
+input:focus,
+input:-webkit-autofill:focus {
+  border-color: rgb(64, 94, 156);
+}
+
+.settings {
+  width: 100%;
+  padding: 1rem 1rem 0 1rem;
+}
+
 .content {
+  overflow: auto;
   flex: 1;
+  max-height: 100%;
 }
 
 .frame {
@@ -54,6 +97,9 @@
   border-radius: 1rem;
   border: 1px solid rgb(230, 230, 230);
   margin-left: 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .info {
@@ -204,31 +250,34 @@ fa-icon:not(:last-child) {
   margin-top: -12px;
 }
 
-.edit-btn{
+.edit-btn {
   position: absolute;
   margin-top: 13px;
   padding: 0.5rem;
 }
 
-.edit-lable{
+.edit-lable {
   margin: 5px;
 }
 
-.submit-btn{
+.submit-btn {
   float: right;
   margin: 5px;
-  padding: 0.5rem;
 }
 
-.form-control{
- font-size: 1.3rem;
+.alguru-primary-btn {
+  padding: 0.5rem 1rem;
 }
 
-.edit-information{
+.form-control {
+  font-size: 1.3rem;
+}
+
+.edit-information {
   margin: 10px 0;
   text-align: center;
 }
 
-.active-icon{
-    cursor: pointer;
+.active-icon {
+  cursor: pointer;
 }

@@ -1,19 +1,14 @@
-import {AfterViewInit, Component, ElementRef, Inject, NgModule, OnDestroy, OnInit, ViewChild} from '@angular/core';
-import {
-  ActivatedRoute,
-  ParamMap,
-  Router,
-} from '@angular/router';
+import { AfterViewInit, Component, ElementRef, Inject, NgModule, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { ActivatedRoute, ParamMap, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import { AuthService } from '../auth/auth.service';
 import { ThemeService } from '../theme/theme.service';
 import { ProfileService } from './profile.service';
 import { IUserStats } from './user-stats.model';
-import {NotificationService} from "../notification-center/notification.service";
-import {INotification} from "../notification-center/notification.model";
-import {DOCUMENT} from "@angular/common";
-
+import { NotificationService } from '../notification-center/notification.service';
+import { INotification } from '../notification-center/notification.model';
+import { UserInfoModel } from './user-info.model';
 
 const BACKEND_URL = `${environment.apiUrl}/image`;
 const UPLOAD_URL = BACKEND_URL + '/upload';
@@ -27,12 +22,13 @@ export class ProfileComponent implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild('selectFile', { read: ElementRef }) public selectFile: ElementRef;
   @ViewChild('uploadImageForm', { read: ElementRef }) public uploadImageForm: ElementRef;
 
-   public urlTypes = {
-  Github: 'Github',
-  LinkedIn: 'LinkedIn',
-  Facebook: 'Facebook',
-  Twitter: 'Twitter'
-};
+  public urlTypes = {
+    Github: 'Github',
+    LinkedIn: 'LinkedIn',
+    Facebook: 'Facebook',
+    Twitter: 'Twitter'
+  };
+
   public solvedQuestions = 0;
   public username = '';
   public profileImageURL: string;
@@ -49,23 +45,21 @@ export class ProfileComponent implements OnInit, OnDestroy, AfterViewInit {
   private routeSub: Subscription;
   private theme = 'dark';
   public onEditMode = false;
-  editInformationObj = {oldPassword:'', newPassword: '', newMail: '', facebookURL:'', githubURL:'', linkedinURL:'', twitterURL:''};
-
+  public currentInfo = new UserInfoModel();
+  public updatedInfo = new UserInfoModel();
 
   // Notifications
   public notifications: INotification[];
   private newNotificationsSubs: Subscription;
 
-
   constructor(
-    private router: Router,
     private route: ActivatedRoute,
     private profileService: ProfileService,
     private themeService: ThemeService,
     private authService: AuthService,
-    private notificationService: NotificationService,
-    @Inject(DOCUMENT) private document: Document
+    private notificationService: NotificationService
   ) {
+    this.profileService.getInfoUpdatedListener().subscribe((info) => (this.currentInfo = info));
     this.urlUpdatedSub = this.profileService.getURLUpdatedListener().subscribe(this.onUploaded.bind(this));
     this.statsUpdatedSub = this.profileService.getStatsUpdatedListener().subscribe((stats) => {
       this.stats = stats;
@@ -80,9 +74,8 @@ export class ProfileComponent implements OnInit, OnDestroy, AfterViewInit {
     });
     this.newNotificationsSubs = this.notificationService
       .getNotificationsUpdatedListener()
-      .subscribe(this.onNotificationsUpdated.bind(this));
+      .subscribe((notifications) => (this.notifications = notifications));
     this.notificationService.updateNotifications();
-    // Todo:: set socials information
   }
 
   public ngAfterViewInit(): void {
@@ -95,6 +88,7 @@ export class ProfileComponent implements OnInit, OnDestroy, AfterViewInit {
     this.statsUpdatedSub.unsubscribe();
     this.urlUpdatedSub.unsubscribe();
     this.themeService.reset();
+    this.newNotificationsSubs.unsubscribe();
   }
 
   public ngOnInit(): void {
@@ -106,6 +100,7 @@ export class ProfileComponent implements OnInit, OnDestroy, AfterViewInit {
     this.themeService.overrideProperty('--main-padding', '3rem 0 0 0');
     this.themeService.setActiveThemeByName(this.theme);
     this.profileService.updateSolvedQuestions();
+    this.profileService.getUserInfo(this.authService.getUsername());
   }
 
   public onImageURLBroken(): void {
@@ -165,58 +160,37 @@ export class ProfileComponent implements OnInit, OnDestroy, AfterViewInit {
     return this.stats ? this.stats.solvedQuestions.size : 0;
   }
 
-  // notifications
-
-  private onNotificationsUpdated(notifications: INotification[]) {
-    this.notifications = notifications;
-    let count = 0;
-
-    this.notifications.forEach((notification) => {
-      if (!notification.seen) {
-        count++;
-      }
-    });
-  }
-
-  onProfileURLsClick(type: string){
+  public onProfileURLsClick(type: string): void {
     switch (type) {
       case this.urlTypes.Facebook:
-        if( this.editInformationObj.facebookURL !== ""){
-          window.open(this.editInformationObj.facebookURL, "_blank");
+        if (this.currentInfo.socials[0].url !== '') {
+          window.open(this.currentInfo.socials[0].url, '_blank');
         }
         break;
       case this.urlTypes.Github:
-        if( this.editInformationObj.githubURL !== ""){
-          window.open(this.editInformationObj.githubURL, "_blank");
+        if (this.currentInfo.socials[1].url !== '') {
+          window.open(this.currentInfo.socials[1].url, '_blank');
         }
         break;
       case this.urlTypes.LinkedIn:
-        if( this.editInformationObj.linkedinURL !== ""){
-          window.open(this.editInformationObj.linkedinURL, "_blank");
+        if (this.currentInfo.socials[2].url !== '') {
+          window.open(this.currentInfo.socials[2].url, '_blank');
         }
         break;
       case this.urlTypes.Twitter:
-        if( this.editInformationObj.twitterURL !== ""){
-          window.open(this.editInformationObj.twitterURL, "_blank");
+        if (this.currentInfo.socials[3].url !== '') {
+          window.open(this.currentInfo.socials[3].url, '_blank');
         }
         break;
-
     }
   }
 
-  onEditModeClicked() {
-    this.onEditMode = !this.onEditMode;
-    for (let key of Object.keys(this.editInformationObj)) {
-      this.editInformationObj[key] = '';
-    }
-  }
-
-  onCancelEditClicked() {
+  public toggleEditMode(): void {
     this.onEditMode = !this.onEditMode;
   }
 
-  onSubmitEditClicked() {
-    // Todo: send the new information (editInformationObj) to the server
-    this.onEditMode = !this.onEditMode;
+  public onSubmitEditClicked(): void {
+    this.toggleEditMode();
+    this.profileService.updateUserInfo(this.updatedInfo);
   }
 }

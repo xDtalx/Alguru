@@ -30,7 +30,7 @@ exports.getSolvedQuestions = async (req, res, next) => {
 };
 
 exports.markNotificationsAsSeen = async (req, res, next) => {
-  if (req.userData) {
+  if (!req.userData) {
     return res.json(401).json({ message: 'User information missing' });
   }
 
@@ -58,6 +58,10 @@ exports.markNotificationsAsSeen = async (req, res, next) => {
 };
 
 exports.getNotifications = async (req, res, next) => {
+  if (!req.userData) {
+    return res.status(401).json({ message: 'User infos are missing' });
+  }
+
   await User.findOne({ _id: req.userData.userId })
     .then((user) => res.status(200).json(user.notifications))
     .catch((err) => res.status(500).json({ message: 'Unknown error', stacktrace: req.userData.isAdmin ? err : '😊' }));
@@ -156,6 +160,20 @@ exports.deleteUser = async (req, res, next) => {
     .catch((err) =>
       res.status(500).json({ message: 'Deleting user was unsuccessful', stacktrace: req.userData.isAdmin ? err : '😊' })
     );
+};
+
+exports.getUserInfo = async (req, res, next) => {
+  await User.findOne({ username: req.params.username })
+    .then((user) => {
+      const info = {
+        username: user.username,
+        mail: req.userData.username === req.params.username ? user.mail : '😊',
+        socials: user.socials
+      };
+
+      res.status(200).json(info);
+    })
+    .catch((err) => res.status(404).json({ message: 'User not found', stacktrace: req.userData.isAdmin ? err : '😊' }));
 };
 
 exports.updateUser = async (req, res, next) => {

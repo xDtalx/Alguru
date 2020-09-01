@@ -43,16 +43,18 @@ router.delete('/delete', checkAuth, UserController.deleteUser);
 
 router.put('/update', checkAuth, passwordCheck, confirmPasswordCheck, UserController.updateUser);
 
-router.get('/verify/:verifyToken', UserController.verifyUser);
-
 router.post('/verify/resend', checkAuth, UserController.resendVarificationEmail);
 
-router.get('/notifications', checkAuth, UserController.getNotifications);
+router.get('/verify/:verifyToken', UserController.verifyUser);
 
-router.put('/notifications', checkAuth, UserController.markNotificationsAsSeen);
+router.get('/notifications', checkAuth, UserController.getNotifications);
 
 router.get('/solvedQuestions', checkAuth, UserController.getSolvedQuestions);
 
 router.get('/stats', checkAuth, UserController.getStats);
+
+router.get('/info/:username', checkAuth, UserController.getUserInfo);
+
+router.put('/notifications', checkAuth, UserController.markNotificationsAsSeen);
 
 module.exports = router;

@@ -7,10 +7,11 @@ import { faUser } from '@fortawesome/free-solid-svg-icons';
 import { CropperComponent } from '../image-cropper/image-cropper.component';
 import { ProfileRoutingModule } from './profile-routing.module';
 import { ProfileComponent } from './profile.component';
+import { SharedModule } from '../notifications-shared.module';
 
 @NgModule({
   declarations: [ProfileComponent, CropperComponent],
-  imports: [CommonModule, FormsModule, FontAwesomeModule, ProfileRoutingModule]
+  imports: [CommonModule, FormsModule, FontAwesomeModule, ProfileRoutingModule, SharedModule]
 })
 export class ProfileModule {
   constructor(library: FaIconLibrary) {

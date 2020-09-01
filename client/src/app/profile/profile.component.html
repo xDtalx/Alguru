@@ -21,7 +21,9 @@
               #selectFile
             />
             <button class="btn-select-file" (click)="onSelectFileClick()">Change picture</button>
-            <button class="edit-btn alguru-primary-btn" (click)="onEditModeClicked()" [disabled]="onEditMode"> Edit profile</button>
+            <button class="edit-btn alguru-primary-btn" (click)="toggleEditMode()" [disabled]="onEditMode">
+              Edit profile
+            </button>
           </form>
         </div>
 
@@ -32,16 +34,42 @@
         </div>
         <div class="details">
           <div class="detail">
-            <fa-icon [icon]="['fab', 'github']" (click)="onProfileURLsClick(urlTypes.Github)" size="2x" [ngClass]="editInformationObj.githubURL ? 'github-icon icon active-icon' : 'github-icon icon'" ></fa-icon>
+            <fa-icon
+              [icon]="['fab', 'github']"
+              (click)="onProfileURLsClick(urlTypes.Github)"
+              size="2x"
+              [ngClass]="currentInfo.socials[1].url !== '' ? 'github-icon icon active-icon' : 'github-icon icon'"
+            >
+            </fa-icon>
           </div>
           <div class="detail">
-            <fa-icon [icon]="['fab', 'linkedin']" (click)="onProfileURLsClick(urlTypes.LinkedIn)" size="2x" [ngClass]="editInformationObj.linkedinURL ? 'linkedin-icon icon active-icon' : 'linkedin-icon icon icon'"></fa-icon>
+            <fa-icon
+              [icon]="['fab', 'linkedin']"
+              (click)="onProfileURLsClick(urlTypes.LinkedIn)"
+              size="2x"
+              [ngClass]="
+                currentInfo.socials[2].url !== '' ? 'linkedin-icon icon active-icon' : 'linkedin-icon icon icon'
+              "
+            >
+            </fa-icon>
           </div>
           <div class="detail">
-            <fa-icon [icon]="['fab', 'facebook']" (click)="onProfileURLsClick(urlTypes.Facebook)" size="2x" [ngClass]="editInformationObj.facebookURL ? 'facebook-icon icon active-icon' : 'facebook-icon icon'"></fa-icon>
+            <fa-icon
+              [icon]="['fab', 'facebook']"
+              (click)="onProfileURLsClick(urlTypes.Facebook)"
+              size="2x"
+              [ngClass]="currentInfo.socials[0].url !== '' ? 'facebook-icon icon active-icon' : 'facebook-icon icon'"
+            >
+            </fa-icon>
           </div>
           <div class="detail">
-            <fa-icon [icon]="['fab', 'twitter']" (click)="onProfileURLsClick(urlTypes.Twitter)" size="2x" [ngClass]="editInformationObj.twitterURL ? 'twitter-icon icon active-icon' : 'twitter-icon icon'"></fa-icon>
+            <fa-icon
+              [icon]="['fab', 'twitter']"
+              (click)="onProfileURLsClick(urlTypes.Twitter)"
+              size="2x"
+              [ngClass]="currentInfo.socials[3].url !== '' ? 'twitter-icon icon active-icon' : 'twitter-icon icon'"
+            >
+            </fa-icon>
           </div>
         </div>
       </div>
@@ -69,79 +97,57 @@
       </div>
     </div>
   </div>
-<!--  Notifications-->
-  <div class="frame content" *ngIf="!onEditMode">
-    <div class="title"> Notifications: </div>
-    <div
-      class="notification-container"
-      [routerLink]="[notification.url]"
-      *ngFor="let notification of notifications?.slice().reverse()">
-        <div class="notification-title">
-          <h4>
-            {{ notification.title }}
-          </h4>
+  <div class="frame content">
+    <app-notifications-center
+      *ngIf="!onEditMode"
+      [notifications]="notifications"
+      fontColor="white"
+      notificationColor="#353a42"
+    >
+    </app-notifications-center>
+    <div class="title" *ngIf="onEditMode">Settings</div>
+    <div class="settings" *ngIf="onEditMode">
+      <h5 class="edit-lable">Username:</h5>
+      <input type="text" name="username" class="form-control" [(ngModel)]="updatedInfo.username" />
+      <h5 class="edit-lable">Mail:</h5>
+      <input type="text" name="mail" class="form-control" [(ngModel)]="updatedInfo.mail" />
+      <h5 class="edit-lable">Facebook:</h5>
+      <input type="text" name="facebook-url" class="form-control" [(ngModel)]="updatedInfo.socials[0].url" />
+      <h5 class="edit-lable">Github:</h5>
+      <input type="text" name="github-url" class="form-control" [(ngModel)]="updatedInfo.socials[1].url" />
+      <h5 class="edit-lable">Linkedin:</h5>
+      <input type="text" name="linkedin-url" class="form-control" [(ngModel)]="updatedInfo.socials[2].url" />
+      <h5 class="edit-lable">Twitter:</h5>
+      <input type="text" name="twitter-url" class="form-control" [(ngModel)]="updatedInfo.socials[3].url" />
+      <h5 class="edit-lable">New password:</h5>
+      <input type="password" class="form-control" [(ngModel)]="updatedInfo.newPassword" />
+      <div class="auth">
+        <div class="passwords">
+          <h5 class="edit-lable">Please enter your password to update:</h5>
+          <input
+            type="password"
+            placeholder="Password"
+            class="form-control"
+            [(ngModel)]="updatedInfo.password"
+            minlength="8"
+          />
+          <input
+            type="password"
+            placeholder="Password"
+            class="form-control"
+            [(ngModel)]="updatedInfo.confirmPassword"
+            minlength="8"
+          />
         </div>
-        <div class="notification-content">
-          <h5>
-            {{ notification.content }}
-          </h5>
+        <div class="btns">
+          <button class="submit-btn alguru-primary-btn" (click)="onSubmitEditClicked()">Submit</button>
+          <button class="submit-btn alguru-primary-btn" (click)="toggleEditMode()">Cancel</button>
         </div>
-        <div class="notification-data-right">
-          <div class="notification-details">
-            <h5>
-              {{ notification.createdAt |  date:'medium' }}
-            </h5>
-          </div>
-        </div>
+      </div>
+    </div>
   </div>
 </div>
-  <!--  Edit Profile-->
-  <div class="frame content" *ngIf="onEditMode">
-    <div class="title"> Edit Profile: </div>
-    <div class="edit-information"> Enter details in the appropriate places only in the categories <br>
-                        you want to change. Old password is necessary  </div>
-      <div class="title"> Password: </div>
-      <h5 class="edit-lable">Old Password: </h5>
-      <label>
-        <input type="password" class="form-control" [(ngModel)]="editInformationObj.oldPassword"
-               name="designation" minlength="8" required/>
-      </label>
-        <h5 class="edit-lable">New password: </h5>
-      <label>
-        <input type="text" class="form-control" [(ngModel)]="editInformationObj.newPassword"
-               name="designation" minlength="8"/>
-      </label>
-    <div class="title"> Mail: </div>
-    <h5 class="edit-lable"> New mail:</h5>
-    <label>
-      <input type="text" class="form-control" [(ngModel)]="editInformationObj.newMail"
-             name="designation"/>
-    </label>
-    <div class="title"> Socials media information: </div>
-      <h5 class="edit-lable"> Facebook </h5>
-    <label>
-      <input type="text" class="form-control" [(ngModel)]="editInformationObj.facebookURL"
-             name="designation"/>
-    </label>
-    <h5 class="edit-lable"> Github:</h5>
-    <label>
-      <input type="text" class="form-control" [(ngModel)]="editInformationObj.githubURL"
-             name="designation"/>
-    </label>
-    <h5 class="edit-lable"> Twitter:</h5>
-    <label>
-      <input type="text" class="form-control" [(ngModel)]="editInformationObj.twitterURL"
-             name="designation"/>
-    </label>
-    <h5 class="edit-lable"> Linkedin:</h5>
-    <label>
-      <input type="text" class="form-control" [(ngModel)]="editInformationObj.linkedinURL"
-             name="designation"/>
-    </label>
-
-    <div class="submit-btn alguru-primary-btn" (click)="onSubmitEditClicked()"> Submit </div>
-    <div class="submit-btn alguru-primary-btn" (click)="onCancelEditClicked()"> Cancel </div>
-  </div>
+<!--  Edit Profile-->
 <div *ngIf="cropPopupOpen" id="crop-popup" (click)="closeCropPopup()">
   <app-cropper
     *ngIf="!isLoading"
@@ -152,5 +158,4 @@
   >
   </app-cropper>
   <div *ngIf="isLoading" class="loader"></div>
-</div>
 </div>

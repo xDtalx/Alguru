@@ -18,11 +18,6 @@ const routes: Routes = [
     path: 'users/verify/:verifyToken'
   },
   {
-    component: NotificationCenterComponent,
-    data: { showSmallHeader: true, showSmallHeaderOnLogout: true },
-    path: 'notifications'
-  },
-  {
     component: PasswordResetComponent,
     data: { showSmallHeader: true, showSmallHeaderOnLogout: true },
     path: 'users/login/reset/:resetToken'
