@@ -9,9 +9,9 @@
     "lint": "ng lint",
     "start:server": "npm install && cd client && nodemon ../server/server.js localhost 3000",
     "start:client": "npm install && cd client && ng serve --host localhost",
-    "lint:eslint": "eslint **/*.{js,ts} --quiet",
+    "lint:eslint": "eslint '**/*.{js,ts}' --quiet",
     "lint:prettier": "prettier \"**/*.{json,yml,html,css}\" --check",
-    "eslint:format": "eslint **/*.{js,ts} --quiet --fix",
+    "eslint:format": "eslint '**/*.{js,ts}' --quiet --fix",
     "prettier:format": "prettier \"**/*.{json,yml,html,css}\" --write"
   },
   "private": true,

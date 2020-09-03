@@ -2,7 +2,19 @@
   <div class="side-nav">
     <div class="frame">
       <div class="title">
-        Profile
+        <span>Profile</span>
+        <fa-icon
+          [icon]="['fas', 'cog']"
+          size="2x"
+          (click)="toggleEditMode()"
+          [ngStyle]="{
+            color: onEditMode ? 'rgba(255, 255, 255, 0.5)' : 'white'
+          }"
+          [ngClass]="{
+            'settings-icon-disabled': onEditMode,
+            'settings-icon': !onEditMode
+          }"
+        ></fa-icon>
       </div>
       <div class="info">
         <div class="profile-img">
@@ -21,22 +33,27 @@
               #selectFile
             />
             <button class="btn-select-file" (click)="onSelectFileClick()">Change picture</button>
-            <button class="edit-btn alguru-primary-btn" (click)="toggleEditMode()" [disabled]="onEditMode">
-              Edit profile
-            </button>
           </form>
         </div>
-
         <div class="details">
           <div class="detail">
             <span>{{ username }}</span>
           </div>
         </div>
-        <div class="details">
+        <div
+          class="details"
+          [ngStyle]="{
+            display:
+              currentInfo.socials[0] || currentInfo.socials[1] || currentInfo.socials[2] || currentInfo.socials[3]
+                ? 'flex'
+                : 'none'
+          }"
+        >
           <div class="detail">
             <fa-icon
               [icon]="['fab', 'github']"
               (click)="onProfileURLsClick(urlTypes.Github)"
+              *ngIf="currentInfo.socials[1]"
               size="2x"
               [ngClass]="currentInfo.socials[1].url !== '' ? 'github-icon icon active-icon' : 'github-icon icon'"
             >
@@ -47,6 +64,7 @@
               [icon]="['fab', 'linkedin']"
               (click)="onProfileURLsClick(urlTypes.LinkedIn)"
               size="2x"
+              *ngIf="currentInfo.socials[2]"
               [ngClass]="
                 currentInfo.socials[2].url !== '' ? 'linkedin-icon icon active-icon' : 'linkedin-icon icon icon'
               "
@@ -58,6 +76,7 @@
               [icon]="['fab', 'facebook']"
               (click)="onProfileURLsClick(urlTypes.Facebook)"
               size="2x"
+              *ngIf="currentInfo.socials[0]"
               [ngClass]="currentInfo.socials[0].url !== '' ? 'facebook-icon icon active-icon' : 'facebook-icon icon'"
             >
             </fa-icon>
@@ -67,6 +86,7 @@
               [icon]="['fab', 'twitter']"
               (click)="onProfileURLsClick(urlTypes.Twitter)"
               size="2x"
+              *ngIf="currentInfo.socials[3]"
               [ngClass]="currentInfo.socials[3].url !== '' ? 'twitter-icon icon active-icon' : 'twitter-icon icon'"
             >
             </fa-icon>

@@ -63,6 +63,7 @@ input:-webkit-autofill:focus {
 
 .frame {
   width: 100%;
+  min-height: fit-content;
   border: 1px solid rgb(230, 230, 230);
   border-radius: 1rem;
   box-shadow: -1px 3px 3px rgba(0, 0, 0, 0.3);
@@ -72,7 +73,21 @@ input:-webkit-autofill:focus {
   margin-bottom: 2rem;
 }
 
+.settings-icon,
+.settings-icon-disabled {
+  position: absolute;
+  right: 0;
+  margin-right: 1rem;
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.settings-icon:hover {
+  filter: brightness(0.8);
+}
+
 .title {
+  position: relative;
   width: 100%;
   border-top-left-radius: 1rem;
   border-top-right-radius: 1rem;
@@ -81,6 +96,9 @@ input:-webkit-autofill:focus {
   border-bottom: 1px solid rgb(230, 230, 230);
   background-color: rgb(96, 102, 112);
   color: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .stat {
@@ -248,12 +266,6 @@ fa-icon:not(:last-child) {
 
 .notification-details {
   margin-top: -12px;
-}
-
-.edit-btn {
-  position: absolute;
-  margin-top: 13px;
-  padding: 0.5rem;
 }
 
 .edit-lable {
