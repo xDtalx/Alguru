@@ -82,6 +82,35 @@ input:-webkit-autofill:focus {
   cursor: pointer;
 }
 
+.social-icon {
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.active-facebook,
+.active-github,
+.active-twitter,
+.active-linkedin {
+  color: white;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.active-facebook:hover {
+  color: rgb(20, 127, 248) !important;
+}
+
+.active-github:hover {
+  color: rgb(228, 228, 228) !important;
+}
+
+.active-twitter:hover {
+  color: rgb(54, 154, 201) !important;
+}
+
+.active-linkedin:hover {
+  color: rgb(70, 139, 218) !important;
+}
+
 .settings-icon:hover {
   filter: brightness(0.8);
 }

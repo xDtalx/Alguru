@@ -173,7 +173,7 @@ export class QuestionsService {
       const oldQuestionIndex = this.questions.findIndex((q) => q.id === id);
       this.questions[oldQuestionIndex] = question;
       this.questionsUpdated.next([...this.questions]);
-      this.router.navigate(['/']);
+      this.router.navigate(['/questions/list']);
     });
   }
 }

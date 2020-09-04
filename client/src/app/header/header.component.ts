@@ -125,21 +125,15 @@ export class HeaderComponent implements OnInit, OnDestroy {
 
     if (this.showSmallHeader) {
       const header = $('div.header');
-      const container = $('#container');
-      const target = { height: container.height() };
-      const onHeaderDone = () => header.css('height', 'auto');
-
+      header.css('height', 'auto');
       header.addClass('show-header-color');
       header.removeClass('hide-header-color');
-      header.animate(target, length, onHeaderDone);
-
       this.closeHamburger();
     } else {
       const header = $('div.header');
-
+      header.css('height', '100vh');
       header.addClass('hide-header-color');
       header.removeClass('show-header-color');
-      header.animate({ height: '100vh' }, length);
     }
   }
 

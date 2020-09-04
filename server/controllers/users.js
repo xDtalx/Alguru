@@ -167,7 +167,7 @@ exports.getUserInfo = async (req, res, next) => {
     .then((user) => {
       const info = {
         username: user.username,
-        mail: req.userData.username === req.params.username ? user.mail : '😊',
+        email: req.userData.username === req.params.username ? user.email : '😊',
         socials: user.socials
       };
 

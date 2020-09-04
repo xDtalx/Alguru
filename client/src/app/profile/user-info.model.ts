@@ -1,6 +1,6 @@
 export class UserInfoModel {
   public username = '';
-  public mail = '';
+  public email = '';
   public password = '';
   public confirmPassword = '';
   public newPassword = '';

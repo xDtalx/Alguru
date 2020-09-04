@@ -14,6 +14,7 @@
             'settings-icon-disabled': onEditMode,
             'settings-icon': !onEditMode
           }"
+          *ngIf="showSettings"
         ></fa-icon>
       </div>
       <div class="info">
@@ -40,33 +41,25 @@
             <span>{{ username }}</span>
           </div>
         </div>
-        <div
-          class="details"
-          [ngStyle]="{
-            display:
-              currentInfo.socials[0] || currentInfo.socials[1] || currentInfo.socials[2] || currentInfo.socials[3]
-                ? 'flex'
-                : 'none'
-          }"
-        >
+        <div class="details">
           <div class="detail">
             <fa-icon
               [icon]="['fab', 'github']"
-              (click)="onProfileURLsClick(urlTypes.Github)"
-              *ngIf="currentInfo.socials[1]"
+              (click)="onProfileURLsClick(urlTypes.Github, currentInfo.socials[1].url !== '')"
               size="2x"
-              [ngClass]="currentInfo.socials[1].url !== '' ? 'github-icon icon active-icon' : 'github-icon icon'"
+              [ngClass]="
+                currentInfo.socials[1].url !== '' ? 'github-icon social-icon active-github' : 'github-icon social-icon'
+              "
             >
             </fa-icon>
           </div>
           <div class="detail">
             <fa-icon
               [icon]="['fab', 'linkedin']"
-              (click)="onProfileURLsClick(urlTypes.LinkedIn)"
+              (click)="onProfileURLsClick(urlTypes.LinkedIn, currentInfo.socials[2].url !== '')"
               size="2x"
-              *ngIf="currentInfo.socials[2]"
               [ngClass]="
-                currentInfo.socials[2].url !== '' ? 'linkedin-icon icon active-icon' : 'linkedin-icon icon icon'
+                currentInfo.socials[2].url !== '' ? 'linkedin-icon icon active-linkedin' : 'linkedin-icon social-icon'
               "
             >
             </fa-icon>
@@ -74,20 +67,22 @@
           <div class="detail">
             <fa-icon
               [icon]="['fab', 'facebook']"
-              (click)="onProfileURLsClick(urlTypes.Facebook)"
+              (click)="onProfileURLsClick(urlTypes.Facebook, currentInfo.socials[0].url !== '')"
               size="2x"
-              *ngIf="currentInfo.socials[0]"
-              [ngClass]="currentInfo.socials[0].url !== '' ? 'facebook-icon icon active-icon' : 'facebook-icon icon'"
+              [ngClass]="
+                currentInfo.socials[0].url !== '' ? 'facebook-icon icon active-facebook' : 'facebook-icon social-icon'
+              "
             >
             </fa-icon>
           </div>
           <div class="detail">
             <fa-icon
               [icon]="['fab', 'twitter']"
-              (click)="onProfileURLsClick(urlTypes.Twitter)"
+              (click)="onProfileURLsClick(urlTypes.Twitter, currentInfo.socials[3].url !== '')"
               size="2x"
-              *ngIf="currentInfo.socials[3]"
-              [ngClass]="currentInfo.socials[3].url !== '' ? 'twitter-icon icon active-icon' : 'twitter-icon icon'"
+              [ngClass]="
+                currentInfo.socials[3].url !== '' ? 'twitter-icon icon active-twitter' : 'twitter-icon social-icon'
+              "
             >
             </fa-icon>
           </div>
@@ -128,19 +123,19 @@
     <div class="title" *ngIf="onEditMode">Settings</div>
     <div class="settings" *ngIf="onEditMode">
       <h5 class="edit-lable">Username:</h5>
-      <input type="text" name="username" class="form-control" [(ngModel)]="updatedInfo.username" />
+      <input type="text" name="username" class="form-control" [(ngModel)]="currentInfo.username" />
       <h5 class="edit-lable">Mail:</h5>
-      <input type="text" name="mail" class="form-control" [(ngModel)]="updatedInfo.mail" />
+      <input type="text" name="email" class="form-control" [(ngModel)]="currentInfo.email" />
       <h5 class="edit-lable">Facebook:</h5>
-      <input type="text" name="facebook-url" class="form-control" [(ngModel)]="updatedInfo.socials[0].url" />
+      <input type="text" name="facebook-url" class="form-control" [(ngModel)]="currentInfo.socials[0].url" />
       <h5 class="edit-lable">Github:</h5>
-      <input type="text" name="github-url" class="form-control" [(ngModel)]="updatedInfo.socials[1].url" />
+      <input type="text" name="github-url" class="form-control" [(ngModel)]="currentInfo.socials[1].url" />
       <h5 class="edit-lable">Linkedin:</h5>
-      <input type="text" name="linkedin-url" class="form-control" [(ngModel)]="updatedInfo.socials[2].url" />
+      <input type="text" name="linkedin-url" class="form-control" [(ngModel)]="currentInfo.socials[2].url" />
       <h5 class="edit-lable">Twitter:</h5>
-      <input type="text" name="twitter-url" class="form-control" [(ngModel)]="updatedInfo.socials[3].url" />
+      <input type="text" name="twitter-url" class="form-control" [(ngModel)]="currentInfo.socials[3].url" />
       <h5 class="edit-lable">New password:</h5>
-      <input type="password" class="form-control" [(ngModel)]="updatedInfo.newPassword" />
+      <input type="password" class="form-control" [(ngModel)]="currentInfo.newPassword" />
       <div class="auth">
         <div class="passwords">
           <h5 class="edit-lable">Please enter your password to update:</h5>
@@ -148,14 +143,14 @@
             type="password"
             placeholder="Password"
             class="form-control"
-            [(ngModel)]="updatedInfo.password"
+            [(ngModel)]="currentInfo.password"
             minlength="8"
           />
           <input
             type="password"
             placeholder="Password"
             class="form-control"
-            [(ngModel)]="updatedInfo.confirmPassword"
+            [(ngModel)]="currentInfo.confirmPassword"
             minlength="8"
           />
         </div>

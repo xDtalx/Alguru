@@ -3,12 +3,12 @@ import { ActivatedRoute, ParamMap, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import { AuthService } from '../auth/auth.service';
+import { INotification } from '../notification-center/notification.model';
+import { NotificationService } from '../notification-center/notification.service';
 import { ThemeService } from '../theme/theme.service';
 import { ProfileService } from './profile.service';
-import { IUserStats } from './user-stats.model';
-import { NotificationService } from '../notification-center/notification.service';
-import { INotification } from '../notification-center/notification.model';
 import { UserInfoModel } from './user-info.model';
+import { IUserStats } from './user-stats.model';
 
 const BACKEND_URL = `${environment.apiUrl}/image`;
 const UPLOAD_URL = BACKEND_URL + '/upload';
@@ -23,9 +23,9 @@ export class ProfileComponent implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild('uploadImageForm', { read: ElementRef }) public uploadImageForm: ElementRef;
 
   public urlTypes = {
+    Facebook: 'Facebook',
     Github: 'Github',
     LinkedIn: 'LinkedIn',
-    Facebook: 'Facebook',
     Twitter: 'Twitter'
   };
 
@@ -46,7 +46,7 @@ export class ProfileComponent implements OnInit, OnDestroy, AfterViewInit {
   private theme = 'dark';
   public onEditMode = false;
   public currentInfo = new UserInfoModel();
-  public updatedInfo = new UserInfoModel();
+  public showSettings: boolean;
 
   // Notifications
   public notifications: INotification[];
@@ -70,6 +70,8 @@ export class ProfileComponent implements OnInit, OnDestroy, AfterViewInit {
         this.username = paramMap.get('username');
         this.showChangeImageBtn = this.username === this.authService.getUsername();
         this.profileImageURL = `${BACKEND_URL}/${this.username}`;
+        this.profileService.getUserInfo(this.username);
+        this.showSettings = this.username === this.authService.getUsername();
       }
     });
     this.newNotificationsSubs = this.notificationService
@@ -100,7 +102,6 @@ export class ProfileComponent implements OnInit, OnDestroy, AfterViewInit {
     this.themeService.overrideProperty('--main-padding', '3rem 0 0 0');
     this.themeService.setActiveThemeByName(this.theme);
     this.profileService.updateSolvedQuestions();
-    this.profileService.getUserInfo(this.authService.getUsername());
   }
 
   public onImageURLBroken(): void {
@@ -160,28 +161,30 @@ export class ProfileComponent implements OnInit, OnDestroy, AfterViewInit {
     return this.stats ? this.stats.solvedQuestions.size : 0;
   }
 
-  public onProfileURLsClick(type: string): void {
-    switch (type) {
-      case this.urlTypes.Facebook:
-        if (this.currentInfo.socials[0].url !== '') {
-          window.open(this.currentInfo.socials[0].url, '_blank');
-        }
-        break;
-      case this.urlTypes.Github:
-        if (this.currentInfo.socials[1].url !== '') {
-          window.open(this.currentInfo.socials[1].url, '_blank');
-        }
-        break;
-      case this.urlTypes.LinkedIn:
-        if (this.currentInfo.socials[2].url !== '') {
-          window.open(this.currentInfo.socials[2].url, '_blank');
-        }
-        break;
-      case this.urlTypes.Twitter:
-        if (this.currentInfo.socials[3].url !== '') {
-          window.open(this.currentInfo.socials[3].url, '_blank');
-        }
-        break;
+  public onProfileURLsClick(type: string, active: boolean): void {
+    if (active) {
+      switch (type) {
+        case this.urlTypes.Facebook:
+          if (this.currentInfo.socials[0].url !== '') {
+            window.open(this.currentInfo.socials[0].url, '_blank');
+          }
+          break;
+        case this.urlTypes.Github:
+          if (this.currentInfo.socials[1].url !== '') {
+            window.open(this.currentInfo.socials[1].url, '_blank');
+          }
+          break;
+        case this.urlTypes.LinkedIn:
+          if (this.currentInfo.socials[2].url !== '') {
+            window.open(this.currentInfo.socials[2].url, '_blank');
+          }
+          break;
+        case this.urlTypes.Twitter:
+          if (this.currentInfo.socials[3].url !== '') {
+            window.open(this.currentInfo.socials[3].url, '_blank');
+          }
+          break;
+      }
     }
   }
 
@@ -191,6 +194,9 @@ export class ProfileComponent implements OnInit, OnDestroy, AfterViewInit {
 
   public onSubmitEditClicked(): void {
     this.toggleEditMode();
-    this.profileService.updateUserInfo(this.updatedInfo);
+    this.profileService.updateUserInfo(this.currentInfo);
+    this.currentInfo.confirmPassword = '';
+    this.currentInfo.password = '';
+    this.currentInfo.newPassword = '';
   }
 }

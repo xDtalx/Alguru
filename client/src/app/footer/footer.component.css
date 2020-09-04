@@ -1,5 +1,9 @@
 #footer {
   overflow: none;
   display: block;
-  background-color: rgb(53, 58, 66);
+  color: white;
+  padding: 2rem 0;
+  max-width: 80%;
+  margin: auto;
+  text-align: center;
 }

@@ -2,8 +2,8 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable, Subject } from 'rxjs';
 import { environment } from 'src/environments/environment';
-import { IUserStats } from './user-stats.model';
 import { UserInfoModel } from './user-info.model';
+import { IUserStats } from './user-stats.model';
 
 @Injectable({ providedIn: 'root' })
 export class ProfileService {
@@ -13,22 +13,31 @@ export class ProfileService {
 
   constructor(private http: HttpClient) {}
 
-  public updateUserInfo(userInfo: UserInfoModel) {
-    this.http.put<UserInfoModel>(`${environment.apiUrl}/users/update`, userInfo).subscribe((info) => {
-      this.infoUpdated.next(info);
+  private normalizedInfo(info) {
+    const userInfo = new UserInfoModel();
+    userInfo.username = info.username;
+    userInfo.email = info.email;
+    userInfo.socials.forEach((social) => {
+      for (const resSocial of info.socials) {
+        if (resSocial.url && social.type === resSocial.type) {
+          social.url = resSocial.url;
+          break;
+        }
+      }
     });
+    return userInfo;
+  }
+
+  public updateUserInfo(userInfo: UserInfoModel) {
+    this.http.put<UserInfoModel>(`${environment.apiUrl}/users/update`, userInfo).subscribe();
   }
 
   public getUserInfo(username: string): void {
     this.http
-      .get<{ username: string; mail: string; socials: [] }>(`${environment.apiUrl}/users/info/${username}`)
-      .subscribe((info) => {
-        const userInfo = new UserInfoModel();
-        userInfo.username = info.username;
-        userInfo.mail = info.mail;
-        userInfo.socials = info.socials;
-        this.infoUpdated.next(userInfo);
-      });
+      .get<{ username: string; email: string; socials: [{ type: string; url: string }] }>(
+        `${environment.apiUrl}/users/info/${username}`
+      )
+      .subscribe((info) => this.infoUpdated.next(this.normalizedInfo(info)));
   }
 
   public getInfoUpdatedListener(): Observable<UserInfoModel> {

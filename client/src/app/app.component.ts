@@ -30,16 +30,16 @@ export class AppComponent implements OnInit {
     }
 
     if (event instanceof NavigationEnd) {
-      setTimeout(() => (this.showOverlay = false), 300);
+      setTimeout(() => (this.showOverlay = false), 200);
     }
 
     // Set loading state to false in both of the below events to hide the spinner in case a request fails
     if (event instanceof NavigationCancel) {
-      setTimeout(() => (this.showOverlay = false), 300);
+      setTimeout(() => (this.showOverlay = false), 200);
     }
 
     if (event instanceof NavigationEnd) {
-      setTimeout(() => (this.showOverlay = false), 300);
+      setTimeout(() => (this.showOverlay = false), 200);
     }
   }
 }

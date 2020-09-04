@@ -104,7 +104,6 @@ exports.updateQuestion = async (req, res, next) => {
       question.tests = fixQuestionArrays(req.body.tests);
       question.solution = fixQuestionArrays(req.body.solution);
       question.solutionTemplate = fixQuestionArrays(req.body.solutionTemplate);
-      console.log(req.body.solutionTemplate);
 
       await Question.updateOne(searchOptions, question)
         .then(async function (result) {

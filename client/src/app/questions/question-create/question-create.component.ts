@@ -54,6 +54,7 @@ export class QuestionCreateComponent implements OnInit, OnDestroy, AfterViewInit
   public ngOnInit() {
     this.questionUpdatedSubs = this.questionService.getQuestionUpdatedListener().subscribe((question: IQuestion) => {
       this.question = question;
+      this.lvlCheckboxes.forEach((checkbox, index) => (checkbox.nativeElement.checked = index === this.question.level));
     });
     this.question = {
       content: '',
