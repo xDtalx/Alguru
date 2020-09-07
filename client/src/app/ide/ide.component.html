@@ -52,10 +52,22 @@
         <div class="head top">
           <span class="title">Your Solution</span>
           <span class="spacer"></span>
-          <button *ngIf="!loading" (click)="onRunCode()" class="run-code btn">
+          <button
+            *ngIf="!submitLoading"
+            (click)="onRunCode(true)"
+            class="btn"
+            [ngClass]="{ disabled: submitDisabled }"
+            [disabled]="submitDisabled"
+          >
+            Submit
+          </button>
+          <div *ngIf="submitLoading" class="submit-loading-btn">
+            <div class="loader"></div>
+          </div>
+          <button *ngIf="!runCodeLoading" (click)="onRunCode(false)" class="run-code btn">
             Run Code
           </button>
-          <div *ngIf="loading" class="loading-btn">
+          <div *ngIf="runCodeLoading" class="run-code-loading-btn">
             <div class="loader"></div>
           </div>
         </div>

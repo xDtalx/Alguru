@@ -15,11 +15,12 @@ export class CodeService {
     return this.executeResponseListener.asObservable();
   }
 
-  public runCode(questionId: string, lang: string, code: string, tests: string) {
+  public runCode(questionId: string, lang: string, code: string, tests: string, submit: boolean) {
     const runRequest = {
       code,
       lang,
       questionId,
+      submit,
       tests
     };
 

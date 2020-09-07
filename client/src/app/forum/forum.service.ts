@@ -133,6 +133,10 @@ export class ForumService {
   }
 
   private mapPost(post: any) {
+    if (post === null) {
+      return null;
+    }
+
     return {
       id: post._id,
       currentTitle: post.currentTitle,

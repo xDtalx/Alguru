@@ -126,8 +126,13 @@ export class ForumComponent implements OnInit, OnDestroy, AfterViewInit {
       this.forumService.getPosts();
     } else {
       this.postsSub = this.forumService.getPostUpdatedListener().subscribe((post: IPost) => {
-        this.posts = [post as IClientPost];
-        this.onPostClick(this.selectedPostId);
+        if (post === null) {
+          this.posts = [];
+          this.showPost = true;
+        } else {
+          this.posts = [post as IClientPost];
+          this.onPostClick(this.selectedPostId);
+        }
       });
       this.forumService.getPost(this.selectedPostId);
     }

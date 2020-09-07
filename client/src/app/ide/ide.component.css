@@ -238,8 +238,12 @@ div.container {
   width: 13rem;
 }
 
-.top .btn,
-.top .loading-btn {
+.disabled {
+  pointer-events: none;
+}
+
+.top .run-code,
+.top .run-code-loading-btn {
   border-top-right-radius: 1rem;
 }
 
@@ -260,7 +264,8 @@ div.container {
   background-color: rgba(0, 0, 0, 0.342);
 }
 
-.loading-btn {
+.run-code-loading-btn,
+.submit-loading-btn {
   display: flex;
   background-color: rgba(0, 0, 0, 0.158);
   min-width: fit-content;

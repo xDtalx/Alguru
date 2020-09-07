@@ -16,14 +16,16 @@ export class QuestionCreateComponent implements OnInit, OnDestroy, AfterViewInit
   @ViewChildren('levelCheckbox') public lvlCheckboxes: QueryList<ElementRef>;
   @ViewChildren('solutionTabCheckboxes') public solutionTabCheckboxes: QueryList<ElementRef>;
   @ViewChildren('solutionTemplateTabCheckboxes') public solutionTemplateTabCheckboxes: QueryList<ElementRef>;
-  @ViewChildren('testsTabCheckboxes') public testsTabCheckboxes: QueryList<ElementRef>;
+  @ViewChildren('exampleTestsTabCheckboxes') public exampleTestsTabCheckboxes: QueryList<ElementRef>;
+  @ViewChildren('submitionTestsTabCheckboxes') public submitionTestsTabCheckboxes: QueryList<ElementRef>;
 
   public question: IQuestion;
   public isLoading = false;
   public theme = 'dark';
   public solutionCurrentLang = 0;
   public solutionTemplateCurrentLang = 0;
-  public testsCurrentLang = 0;
+  public exampleTestsCurrentLang = 0;
+  public submitionTestsCurrentLang = 0;
   public mode = 'Create';
   private questionId: string;
   private questionsUpdatedSubs: Subscription;
@@ -59,12 +61,13 @@ export class QuestionCreateComponent implements OnInit, OnDestroy, AfterViewInit
     this.question = {
       content: '',
       creator: '',
+      exampleTests: ['', ''],
       hints: '',
       id: null,
       level: 0,
       solution: ['', ''],
       solutionTemplate: ['', ''],
-      tests: ['', ''],
+      submitionTests: ['', ''],
       title: '',
       votes: new Map<string, IVote>()
     };
@@ -97,9 +100,13 @@ export class QuestionCreateComponent implements OnInit, OnDestroy, AfterViewInit
         checkboxes = this.solutionTemplateTabCheckboxes;
         this.solutionTemplateCurrentLang = this.getLangIndex(target.classList[0]);
         break;
-      case 'tests':
-        checkboxes = this.testsTabCheckboxes;
-        this.testsCurrentLang = this.getLangIndex(target.classList[0]);
+      case 'exampleTests':
+        checkboxes = this.exampleTestsTabCheckboxes;
+        this.exampleTestsCurrentLang = this.getLangIndex(target.classList[0]);
+        break;
+      case 'submitionTests':
+        checkboxes = this.submitionTestsTabCheckboxes;
+        this.submitionTestsCurrentLang = this.getLangIndex(target.classList[0]);
         break;
     }
 
@@ -180,8 +187,12 @@ export class QuestionCreateComponent implements OnInit, OnDestroy, AfterViewInit
     this.question.solutionTemplate[this.solutionTemplateCurrentLang] = value;
   }
 
-  public onTestsValueChanged(value) {
-    this.question.tests[this.testsCurrentLang] = value;
+  public onExampleTestsValueChanged(value) {
+    this.question.exampleTests[this.exampleTestsCurrentLang] = value;
+  }
+
+  public onSubmitionTestsValueChanged(value) {
+    this.question.submitionTests[this.submitionTestsCurrentLang] = value;
   }
 
   public onSolValueChanged(value) {

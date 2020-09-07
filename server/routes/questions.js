@@ -15,7 +15,8 @@ const validations = [
   check('content', 'Content should be at least 6 characters').exists().trim().isLength({ min: 6 }),
   check('hints', 'Hints should be exists even if its empty').exists(),
   check('level', 'Level should be an integer number').exists().trim().isInt(),
-  check('tests', 'Tests should be exists even if its empty').exists(),
+  check('exampleTests', 'Example tests should be exists even if its empty').exists(),
+  check('submitionTests', 'Submition tests should be exists even if its empty').exists(),
   check('solution', 'Solution should be exists and not empty').exists(),
   check('solutionTemplate', 'Solution template should be exists and not empty').exists()
 ];

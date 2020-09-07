@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit, Renderer2 } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, ParamMap } from '@angular/router';
 import { AngularEditorConfig } from '@kolkov/angular-editor';
 import { Subscription } from 'rxjs';
@@ -31,19 +31,20 @@ export class IDEComponent implements OnInit, OnDestroy {
   public theme = 'dark';
   public solutionTemplate: string;
   public code: string;
-  public loading = false;
+  public runCodeLoading = false;
+  public submitLoading = false;
   public showHint = false;
   public votes = 0;
   public messageDefaultValue: string;
   public hidePopUp = true;
   public voteType: string;
   public questionLangs: string[];
+  public submitDisabled = true;
 
   constructor(
     private route: ActivatedRoute,
     private questionsService: QuestionsService,
     private codeService: CodeService,
-    private renderer: Renderer2,
     private themeService: ThemeService,
     private authService: AuthService
   ) {
@@ -61,7 +62,9 @@ export class IDEComponent implements OnInit, OnDestroy {
     });
     this.executeListenerSubs = this.codeService.getExecuteResponseListener().subscribe((response) => {
       this.executeResponse = response;
-      this.loading = false;
+      this.submitDisabled = this.executeResponse.errors !== '';
+      this.runCodeLoading = false;
+      this.submitLoading = false;
 
       if (this.executeResponse) {
         this.currentOutput = 'Custom> ' + this.executeResponse.message;
@@ -82,7 +85,7 @@ export class IDEComponent implements OnInit, OnDestroy {
     }
 
     this.solutionCode = this.questionToSolve.solutionTemplate[this.currentLang];
-    this.testsCode = this.questionToSolve.tests[this.currentLang];
+    this.testsCode = this.questionToSolve.exampleTests[this.currentLang];
   }
 
   public ngOnInit(): void {
@@ -108,18 +111,30 @@ export class IDEComponent implements OnInit, OnDestroy {
     }
   }
 
-  public onRunCode(): void {
-    this.loading = true;
+  public onRunCode(submit: boolean): void {
+    if (submit) {
+      this.runCodeLoading = false;
+      this.submitLoading = true;
+    } else {
+      this.runCodeLoading = true;
+      this.submitLoading = false;
+    }
 
     if (!this.testsCode || this.testsCode.trim() === '') {
-      this.testsCode = this.questionToSolve.tests[this.currentLang];
+      this.testsCode = this.questionToSolve.exampleTests[this.currentLang];
     }
 
     if (!this.solutionCode || this.solutionCode.trim() === '') {
       this.solutionCode = this.questionToSolve.solutionTemplate[this.currentLang];
     }
 
-    this.codeService.runCode(this.questionToSolve.id, this.langs[this.currentLang], this.solutionCode, this.testsCode);
+    this.codeService.runCode(
+      this.questionToSolve.id,
+      this.langs[this.currentLang],
+      this.solutionCode,
+      this.testsCode,
+      submit
+    );
   }
 
   public onCustomClick(): void {
@@ -223,7 +238,7 @@ export class IDEComponent implements OnInit, OnDestroy {
     }
 
     this.solutionCode = this.questionToSolve.solutionTemplate[this.currentLang];
-    this.testsCode = this.questionToSolve.tests[this.currentLang];
+    this.testsCode = this.questionToSolve.exampleTests[this.currentLang];
   }
 
   private updateLangsOptions(): void {

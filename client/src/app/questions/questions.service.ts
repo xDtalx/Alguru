@@ -86,7 +86,8 @@ export class QuestionsService {
         content: string;
         solutionTemplate: string[];
         solution: string[];
-        tests: string[];
+        exampleTests: string[];
+        submitionTests: string[];
         hints: string;
         level: number;
         creator: string;
@@ -97,12 +98,13 @@ export class QuestionsService {
           return {
             content: question.content,
             creator: question.creator,
+            exampleTests: question.exampleTests,
             hints: question.hints,
             id: question._id,
             level: question.level,
             solution: question.solution,
             solutionTemplate: question.solutionTemplate,
-            tests: question.tests,
+            submitionTests: question.submitionTests,
             title: question.title,
             votes: new Map<string, IVote>(Object.keys(question.votes).map((key) => this.mapVotes(key, question.votes)))
           };
@@ -119,20 +121,22 @@ export class QuestionsService {
     content: string,
     solutionTemplate: string[],
     solution: string[],
-    tests: string[],
+    exampleTests: string[],
+    submitionTests: string[],
     hints: string,
     level: number
   ) {
     const question: IQuestion = {
-      id: null,
-      title,
       content,
-      solutionTemplate,
-      solution,
-      tests,
-      hints,
-      level,
       creator: null,
+      exampleTests,
+      hints,
+      id: null,
+      level,
+      solution,
+      solutionTemplate,
+      submitionTests,
+      title,
       votes: new Map<string, IVote>()
     };
 
@@ -162,7 +166,8 @@ export class QuestionsService {
       content: question.content,
       solutionTemplate: question.solutionTemplate,
       solution: question.solution,
-      tests: question.tests,
+      exampleTests: question.exampleTests,
+      submitionTests: question.submitionTests,
       hints: question.hints,
       level: question.level,
       creator: null,

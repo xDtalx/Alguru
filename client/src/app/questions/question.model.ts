@@ -6,7 +6,8 @@ export interface IQuestion {
   content: string;
   solutionTemplate: string[];
   solution: string[];
-  tests: string[];
+  submitionTests: string[];
+  exampleTests: string[];
   hints: string;
   level: number;
   creator: string;

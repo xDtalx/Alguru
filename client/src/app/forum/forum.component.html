@@ -141,7 +141,7 @@
   </div>
   <!-- Post + Comments -->
   <!-- posts -->
-  <div *ngIf="showPost">
+  <div *ngIf="posts.length > 0 && showPost">
     <div *ngIf="!isAuth || !verified" [ngClass]="{ container: true, 'auth-message-color': !isAuth || !verified }">
       <div *ngIf="!isAuth" class="auth-message-color">
         Please login to add new comment.
@@ -223,11 +223,8 @@
           <label for="titleTextarea3">Title:</label>
           <textarea class="title-input" id="titleTextarea3" rows="1" [(ngModel)]="selectedPost.currentTitle"></textarea>
           <div class="message">Message:</div>
-          <angular-editor
-            id="editor3"
-            [config]="getEditorConfig()"
-            [(ngModel)]="selectedPost.currentContent"
-          ></angular-editor>
+          <angular-editor id="editor3" [config]="getEditorConfig()" [(ngModel)]="selectedPost.currentContent">
+          </angular-editor>
         </div>
         <button class="forum-btn alguru-primary-btn" (click)="onSubmitPost()" [disabled]="!verified">
           Submit
@@ -309,11 +306,8 @@
           <label for="titleTextarea4">Title:</label>
           <textarea class="title-input" id="titleTextarea4" rows="1" [(ngModel)]="comment.currentTitle"></textarea>
           <div>Message:</div>
-          <angular-editor
-            id="editor4"
-            [config]="getEditorConfig()"
-            [(ngModel)]="comment.currentContent"
-          ></angular-editor>
+          <angular-editor id="editor4" [config]="getEditorConfig()" [(ngModel)]="comment.currentContent">
+          </angular-editor>
         </div>
         <button class="forum-btn alguru-primary-btn" (click)="onSubmitComment()" [disabled]="!verified">
           Submit
@@ -340,5 +334,9 @@
         Submit
       </button>
     </div>
+  </div>
+  <div id="post-not-exists" *ngIf="posts.length == 0 && showPost">
+    <span>404</span>
+    <span>Oops! the post you were looking for not exists.</span>
   </div>
 </div>

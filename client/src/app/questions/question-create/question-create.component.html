@@ -79,21 +79,63 @@
   </label>
   <div class="tabs">
     <div>
-      <input (click)="uncheckOtherTabs($event, 'tests')" class="java" type="checkbox" #testsTabCheckboxes checked />
+      <input
+        (click)="uncheckOtherTabs($event, 'exampleTests')"
+        class="java"
+        type="checkbox"
+        #exampleTestsTabCheckboxes
+        checked
+      />
       <span>Java</span>
     </div>
     <div>
-      <input (click)="uncheckOtherTabs($event, 'tests')" class="javascript" type="checkbox" #testsTabCheckboxes />
+      <input
+        (click)="uncheckOtherTabs($event, 'exampleTests')"
+        class="javascript"
+        type="checkbox"
+        #exampleTestsTabCheckboxes
+      />
       <span>Javascript</span>
     </div>
   </div>
   <label for="title">
-    <span class="title">Tests</span>
+    <span class="title">Example Tests</span>
     <nt-editor
       fontSize="1.6rem"
       tabSpaces="4"
-      [value]="(question?.tests)[testsCurrentLang]"
-      (valueChanged)="onTestsValueChanged($event)"
+      [value]="(question?.exampleTests)[exampleTestsCurrentLang]"
+      (valueChanged)="onExampleTestsValueChanged($event)"
+      editable
+    ></nt-editor>
+  </label>
+  <div class="tabs">
+    <div>
+      <input
+        (click)="uncheckOtherTabs($event, 'submitionTests')"
+        class="java"
+        type="checkbox"
+        #submitionTestsTabCheckboxes
+        checked
+      />
+      <span>Java</span>
+    </div>
+    <div>
+      <input
+        (click)="uncheckOtherTabs($event, 'submitionTests')"
+        class="javascript"
+        type="checkbox"
+        #submitionTestsTabCheckboxes
+      />
+      <span>Javascript</span>
+    </div>
+  </div>
+  <label for="title">
+    <span class="title">Submition Tests</span>
+    <nt-editor
+      fontSize="1.6rem"
+      tabSpaces="4"
+      [value]="(question?.submitionTests)[submitionTestsCurrentLang]"
+      (valueChanged)="onSubmitionTestsValueChanged($event)"
       editable
     ></nt-editor>
   </label>

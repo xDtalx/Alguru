@@ -17,7 +17,8 @@ exports.createQuestion = async (req, res, next) => {
     content: req.body.content,
     solutionTemplate: fixQuestionArrays(req.body.solutionTemplate),
     solution: fixQuestionArrays(req.body.solution),
-    tests: fixQuestionArrays(req.body.tests),
+    exampleTests: fixQuestionArrays(req.body.exampleTests),
+    submitionTests: fixQuestionArrays(req.body.submitionTests),
     hints: req.body.hints,
     level: req.body.level,
     votes: {},
@@ -101,7 +102,8 @@ exports.updateQuestion = async (req, res, next) => {
       question.content = req.body.content;
       question.hints = req.body.hints;
       question.level = req.body.level;
-      question.tests = fixQuestionArrays(req.body.tests);
+      question.exampleTests = fixQuestionArrays(req.body.exampleTests);
+      question.submitionTests = fixQuestionArrays(req.body.submitionTests);
       question.solution = fixQuestionArrays(req.body.solution);
       question.solutionTemplate = fixQuestionArrays(req.body.solutionTemplate);
 
@@ -187,7 +189,8 @@ function checkQuestionArrays(req) {
 
   const solutionArray = checkQuestionArray(req.body.solution, 'solution');
   const solutionTemplateArray = checkQuestionArray(req.body.solutionTemplate, 'solutionTemplate');
-  const testsArray = checkQuestionArray(req.body.tests, 'tests');
+  const exampleTestsArray = checkQuestionArray(req.body.exampleTests, 'exampleTests');
+  const submitionTestsArray = checkQuestionArray(req.body.submitionTests, 'submitionTests');
 
   if (solutionArray) {
     errors.push(solutionArray);
@@ -197,8 +200,12 @@ function checkQuestionArrays(req) {
     errors.push(solutionTemplateArray);
   }
 
-  if (testsArray) {
-    errors.push(testsArray);
+  if (exampleTestsArray) {
+    errors.push(exampleTestsArray);
+  }
+
+  if (submitionTestsArray) {
+    errors.push(submitionTestsArray);
   }
 
   return errors;
