@@ -61,6 +61,22 @@ exports.createComment = async (req, res, next) => {
 
       post.comments.push(comment);
 
+      const messageToDisplay = 'Comment! user ' + req.userData.username + 'commented on your post : ' + post.titles;
+      const newNotifaction = new Notification({
+        sender: req.userData.username,
+        title: 'Someone commented on your post',
+        content: messageToDisplay,
+        seen: false,
+        url: '/forum/' + req.params.postId
+      });
+
+      await User.findOne({ username_lower: post.author.toLowerCase() })
+        .then(async (user) => {
+          user.notifications.push(newNotifaction);
+          await User.updateOne({ username_lower: post.author.toLowerCase() }, user);
+        })
+        .catch((err) => console.log(err));
+
       await Post.updateOne({ _id: req.params.postId }, post)
         .then(async (result) => {
           const isModified = result.n > 0;
