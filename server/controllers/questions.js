@@ -157,8 +157,8 @@ function fixQuestionArrays(array) {
   const length = array.length;
 
   for (let i = 0; i < length; i++) {
-    if (array[i] && array[i].trim() === '') {
-      array[i] = null;
+    if (array[i] == null) {
+      array[i] = '';
     }
   }
 
@@ -186,15 +186,9 @@ function checkQuestionArray(array, paramName) {
 
 function checkQuestionArrays(req) {
   const errors = [];
-
-  const solutionArray = checkQuestionArray(req.body.solution, 'solution');
   const solutionTemplateArray = checkQuestionArray(req.body.solutionTemplate, 'solutionTemplate');
   const exampleTestsArray = checkQuestionArray(req.body.exampleTests, 'exampleTests');
   const submitionTestsArray = checkQuestionArray(req.body.submitionTests, 'submitionTests');
-
-  if (solutionArray) {
-    errors.push(solutionArray);
-  }
 
   if (solutionTemplateArray) {
     errors.push(solutionTemplateArray);

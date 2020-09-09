@@ -41,5 +41,6 @@ app.use('/users', usersRoutes);
 app.use('/code', codeRoutes);
 app.use('/forum', forumRoutes);
 app.use('/image', imagesRoutes);
+app.use('/', (req, res) => res.status(200).json({ message: 'Welcome To Alguru API!' }));
 
 module.exports = app;
