@@ -4,8 +4,15 @@
 
 app-notifications-center {
   width: 100%;
-  border-radius: 1rem;
+  max-height: 80vh;
   flex: 1;
+}
+
+app-notifications-center::-webkit-scrollbar,
+app-notifications-center::-webkit-scrollbar-track,
+app-notifications-center::-webkit-scrollbar-thumb,
+app-notifications-center::-webkit-scrollbar-corner {
+  border-radius: 0.5rem !important;
 }
 
 .account-container {
@@ -141,7 +148,6 @@ input:-webkit-autofill:focus {
 }
 
 .content {
-  border-radius: 1rem;
   border: 1px solid rgb(230, 230, 230);
   margin-left: 1rem;
   display: flex;
@@ -181,7 +187,6 @@ fa-icon:not(:last-child) {
   width: 10rem;
   height: 10rem;
   background-color: rgb(89, 186, 241);
-  border-radius: 1rem;
   border-radius: 1rem;
   box-shadow: -1px 3px 3px rgba(0, 0, 0, 0.3);
 }
@@ -276,7 +281,6 @@ fa-icon:not(:last-child) {
   position: relative;
   background-color: rgba(235, 235, 235, 0);
   box-shadow: -1px 3px 3px rgba(0, 0, 0, 0.15);
-  border-radius: 5px;
   padding: 1rem;
   margin: 1rem 0;
   max-width: 100%;

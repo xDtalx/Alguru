@@ -61,13 +61,13 @@ exports.createComment = async (req, res, next) => {
 
       post.comments.push(comment);
 
-      const messageToDisplay = 'Comment! user ' + req.userData.username + 'commented on your post : ' + post.titles;
+      const messageToDisplay = req.userData.username + ' commented on your post: ' + post.titles;
       const newNotifaction = new Notification({
         sender: req.userData.username,
         title: 'Someone commented on your post',
         content: messageToDisplay,
         seen: false,
-        url: '/forum/' + req.params.postId
+        url: '/forum/post/' + req.params.postId
       });
 
       await User.findOne({ username_lower: post.author.toLowerCase() })
@@ -392,7 +392,7 @@ async function updateUserNotifcation(entity, isComment, req) {
     title: `Someone voted on your ${isComment ? 'comment' : 'post'}`,
     content: messageToDisplay,
     seen: false,
-    url: `/forum/post/${isComment ? entity.postId : entity._id}`
+    url: `/forum/post/${isComment ? entity.postId : entity.postId}`
   });
 
   await User.findOne({ username: entity.author })
