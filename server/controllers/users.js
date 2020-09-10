@@ -1,6 +1,7 @@
 const User = require('../models/user');
 const Stats = require('../models/stats');
 const TmpToken = require('../models/tmp-token');
+const Image = require('../models/image');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const { validationResult } = require('express-validator');
@@ -8,15 +9,25 @@ const nodemailer = require('nodemailer');
 let mailer;
 
 exports.getStats = async (req, res, next) => {
-  await User.findOne({ _id: req.userData.userId }).then((user) => {
-    const stats = {
-      solvedQuestions: user.stats.solvedQuestions,
-      contribPoints: user.stats.contribPoints,
-      contribProblems: user.stats.contribProblems,
-      contribComments: user.stats.contribComments
-    };
-    res.status(200).json(stats);
-  });
+  await User.findOne({ _id: req.userData.userId })
+    .then((user) => {
+      if (user) {
+        const stats = {
+          solvedQuestions: user.stats.solvedQuestions,
+          contribPoints: user.stats.contribPoints,
+          contribProblems: user.stats.contribProblems,
+          contribComments: user.stats.contribComments
+        };
+        res.status(200).json(stats);
+      } else {
+        res.status(404).json({ message: "Can't get user stats. User not found" });
+      }
+    })
+    .catch((err) =>
+      res
+        .status(404)
+        .json({ message: "Can't get user stats. User not found", stacktrace: req.userData.isAdmin ? err : '😊' })
+    );
 };
 
 exports.getSolvedQuestions = async (req, res, next) => {
@@ -148,11 +159,13 @@ exports.createUser = async (req, res, next) => {
 
 exports.deleteUser = async (req, res, next) => {
   await User.deleteOne({ _id: req.userData.userId })
-    .then((result) => {
-      const isDeleted = result.n > 0;
+    .then(async (result) => {
+      const isUserDeleted = result.n > 0;
 
-      if (isDeleted) {
-        res.status(200).json({ message: 'User deleted' });
+      if (isUserDeleted) {
+        await Image.deleteOne({ name: req.userData.username })
+          .then(() => res.status(200).json({ message: 'User deleted' }))
+          .catch(() => res.status(500).json({ message: 'Unknown error! User profile image could not be deleted' }));
       } else {
         res.status(401).json({ message: 'Not authorized!' });
       }
