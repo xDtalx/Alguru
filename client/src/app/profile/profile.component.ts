@@ -29,6 +29,7 @@ export class ProfileComponent implements OnInit, OnDestroy, AfterViewInit {
     Twitter: 'Twitter'
   };
 
+  public shouldDeleteUser = false;
   public solvedQuestions = 0;
   public username = '';
   public profileImageURL: string;
@@ -198,5 +199,18 @@ export class ProfileComponent implements OnInit, OnDestroy, AfterViewInit {
     this.currentInfo.confirmPassword = '';
     this.currentInfo.password = '';
     this.currentInfo.newPassword = '';
+  }
+
+  public deleteUser(): void {
+    this.profileService.deleteUser();
+    this.authService.logout('/');
+  }
+
+  public openDeleteUserPopup() {
+    this.shouldDeleteUser = true;
+  }
+
+  public closeDeleteUserPopup(): void {
+    this.shouldDeleteUser = false;
   }
 }

@@ -155,8 +155,11 @@
           />
         </div>
         <div class="btns">
-          <button class="submit-btn alguru-primary-btn" (click)="onSubmitEditClicked()">Submit</button>
-          <button class="submit-btn alguru-primary-btn" (click)="toggleEditMode()">Cancel</button>
+          <button class="submit-btn alguru-secondary-btn" (click)="onSubmitEditClicked()">Submit</button>
+          <button class="submit-btn alguru-secondary-btn" (click)="toggleEditMode()">Cancel</button>
+          <button class="delete-user-btn submit-btn alguru-secondary-btn" (click)="openDeleteUserPopup()">
+            Delete User
+          </button>
         </div>
       </div>
     </div>
@@ -173,4 +176,14 @@
   >
   </app-cropper>
   <div *ngIf="isLoading" class="loader"></div>
+</div>
+<!-- Delete User Popup -->
+<div (click)="closeDeleteUserPopup()" class="delete-user-popup" *ngIf="shouldDeleteUser">
+  <div class="action-container" (click)="$event.stopPropagation()">
+    <span>Are you sure ?</span>
+    <div class="delete-profile-btns">
+      <button class="alguru-secondary-btn" (click)="deleteUser()">Yes</button>
+      <button class="alguru-secondary-btn" (click)="closeDeleteUserPopup()">Cancel</button>
+    </div>
+  </div>
 </div>

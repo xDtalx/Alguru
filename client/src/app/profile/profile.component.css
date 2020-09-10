@@ -31,6 +31,51 @@ app-notifications-center::-webkit-scrollbar-corner {
   justify-content: center;
 }
 
+.delete-user-btn,
+.delete-user-btn:hover {
+  background-color: rgb(238, 80, 80) !important;
+}
+
+.delete-user-popup {
+  z-index: 999;
+  top: 0;
+  left: 0;
+  max-width: 100%;
+  position: absolute;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.7);
+  transition: all 0.2s ease;
+}
+
+.delete-user-popup,
+.action-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.action-container {
+  background-color: rgb(96, 102, 112);
+  padding: 5rem;
+  border-radius: 1rem;
+  border: 1px solid white;
+}
+
+.delete-user-popup span {
+  font-size: 3rem;
+  margin-bottom: 2rem;
+}
+
+.delete-user-popup button {
+  width: 10rem;
+}
+
+.delete-user-popup button:not(:last-child) {
+  margin-right: 1rem;
+}
+
 .side-nav {
   min-width: 30rem;
 }
@@ -188,6 +233,7 @@ fa-icon:not(:last-child) {
   height: 10rem;
   background-color: rgb(89, 186, 241);
   border-radius: 1rem;
+
   box-shadow: -1px 3px 3px rgba(0, 0, 0, 0.3);
 }
 

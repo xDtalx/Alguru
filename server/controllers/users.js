@@ -339,9 +339,10 @@ exports.userLogin = async (req, res, next) => {
 };
 
 function handleUnknownErrorInLogin(req, err, res) {
-  res
-    .status(401)
-    .json({ message: ['Username or password are incorrect'], stacktrace: req.userData.isAdmin ? err : '😊' });
+  res.status(401).json({
+    message: ['Username or password are incorrect'],
+    stacktrace: req.userData && req.userData.isAdmin ? err : '😊'
+  });
 }
 
 function handleAuthenticationAndResponse(fetchedUser, res) {
@@ -440,7 +441,7 @@ async function sendResetPasswordEmail(userData) {
   await tmpToken.save().then(async (savedTmpToken) => {
     // send mail with defined transport object
     const info = await mailer.sendMail({
-      from: '"No Reply" <alguru.dev@gmail.com>', // sender address
+      from: '"No Reply" <noreply@alguru.xyz>', // sender address
       to: userData.email, // list of receivers
       subject: 'Reset Password', // Subject line
       html: `<p>Hello ${userData.username},</p>
@@ -475,7 +476,7 @@ async function sendVarificationEmail(userData) {
 
   // send mail with defined transport object
   const info = await mailer.sendMail({
-    from: '"No Reply" <alguru.dev@gmail.com>', // sender address
+    from: '"No Reply" <noreply@alguru.xyz>', // sender address
     to: userData.email, // list of receivers
     subject: 'Alguru Verification Email', // Subject line
     html: `<p>Hello ${userData.username},</p>

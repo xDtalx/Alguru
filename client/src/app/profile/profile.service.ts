@@ -28,6 +28,10 @@ export class ProfileService {
     return userInfo;
   }
 
+  public deleteUser(): void {
+    this.http.delete(`${environment.apiUrl}/users/delete`).subscribe();
+  }
+
   public updateUserInfo(userInfo: UserInfoModel) {
     this.http.put<UserInfoModel>(`${environment.apiUrl}/users/update`, userInfo).subscribe();
   }
