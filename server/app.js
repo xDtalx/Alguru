@@ -35,7 +35,7 @@ app.use(helmet());
 app.use(limiter);
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
-app.use(cors());
+app.use(cors({ origin: '*' }));
 app.use('/questions', questionsRoutes);
 app.use('/users', usersRoutes);
 app.use('/code', codeRoutes);

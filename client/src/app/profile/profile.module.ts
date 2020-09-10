@@ -8,10 +8,12 @@ import { CropperComponent } from '../image-cropper/image-cropper.component';
 import { SharedModule } from '../notifications-shared.module';
 import { ProfileRoutingModule } from './profile-routing.module';
 import { ProfileComponent } from './profile.component';
+import { ErrorComponent } from '../error/error.component';
+import { ErrorSharedModule } from '../error/error-shared.module';
 
 @NgModule({
   declarations: [ProfileComponent, CropperComponent],
-  imports: [CommonModule, FormsModule, FontAwesomeModule, ProfileRoutingModule, SharedModule]
+  imports: [CommonModule, FormsModule, FontAwesomeModule, ProfileRoutingModule, SharedModule, ErrorSharedModule]
 })
 export class ProfileModule {
   constructor(library: FaIconLibrary) {

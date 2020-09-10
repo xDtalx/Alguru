@@ -29,6 +29,7 @@ export class ProfileComponent implements OnInit, OnDestroy, AfterViewInit {
     Twitter: 'Twitter'
   };
 
+  public settingsUpdateLoading = false;
   public shouldDeleteUser = false;
   public solvedQuestions = 0;
   public username = '';
@@ -60,7 +61,11 @@ export class ProfileComponent implements OnInit, OnDestroy, AfterViewInit {
     private authService: AuthService,
     private notificationService: NotificationService
   ) {
-    this.profileService.getInfoUpdatedListener().subscribe((info) => (this.currentInfo = info));
+    this.profileService.getInfoUpdatedListener().subscribe((info) => {
+      this.currentInfo = info;
+      this.settingsUpdateLoading = false;
+      this.onEditMode = false;
+    });
     this.urlUpdatedSub = this.profileService.getURLUpdatedListener().subscribe(this.onUploaded.bind(this));
     this.statsUpdatedSub = this.profileService.getStatsUpdatedListener().subscribe((stats) => {
       this.stats = stats;
@@ -194,7 +199,7 @@ export class ProfileComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   public onSubmitEditClicked(): void {
-    this.toggleEditMode();
+    this.settingsUpdateLoading = true;
     this.profileService.updateUserInfo(this.currentInfo);
     this.currentInfo.confirmPassword = '';
     this.currentInfo.password = '';
@@ -206,11 +211,16 @@ export class ProfileComponent implements OnInit, OnDestroy, AfterViewInit {
     this.authService.logout('/');
   }
 
-  public openDeleteUserPopup() {
+  public openDeleteUserPopup(): void {
     this.shouldDeleteUser = true;
   }
 
   public closeDeleteUserPopup(): void {
     this.shouldDeleteUser = false;
+  }
+
+  public setSettingsUpdateLoading(isLoading: boolean): void {
+    console.log('here');
+    this.settingsUpdateLoading = isLoading;
   }
 }

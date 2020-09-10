@@ -480,7 +480,7 @@ async function sendVarificationEmail(userData) {
     to: userData.email, // list of receivers
     subject: 'Alguru Verification Email', // Subject line
     html: `<p>Hello ${userData.username},</p>
-    <p>Please verify your email address in. </p>
+    <p>Please verify your email address. </p>
     <p>
       <a href="${process.env.CLIENT_URL}/users/verify/${token}">
         Click here

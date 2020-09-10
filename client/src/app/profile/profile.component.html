@@ -112,7 +112,7 @@
       </div>
     </div>
   </div>
-  <div class="frame content">
+  <div class="frame content" [ngStyle]="{ overflow: settingsUpdateLoading ? 'none' : 'hidden' }">
     <app-notifications-center
       *ngIf="!onEditMode"
       [notifications]="notifications"
@@ -120,8 +120,9 @@
       notificationColor="#353a42"
     >
     </app-notifications-center>
-    <div class="title" *ngIf="onEditMode">Settings</div>
-    <div class="settings" *ngIf="onEditMode">
+    <div class="title" [ngStyle]="{ display: onEditMode ? 'flex' : 'none' }">Settings</div>
+    <div class="loader" [ngStyle]="{ display: onEditMode && settingsUpdateLoading ? 'block' : 'none' }"></div>
+    <div class="settings" [ngStyle]="{ display: onEditMode && !settingsUpdateLoading ? 'block' : 'none' }">
       <h5 class="edit-lable">Username:</h5>
       <input type="text" name="username" class="form-control" [(ngModel)]="currentInfo.username" />
       <h5 class="edit-lable">Mail:</h5>
@@ -137,6 +138,7 @@
       <h5 class="edit-lable">New password:</h5>
       <input type="password" class="form-control" [(ngModel)]="currentInfo.newPassword" />
       <div class="auth">
+        <app-error (error)="setSettingsUpdateLoading(false)"></app-error>
         <div class="passwords">
           <h5 class="edit-lable">Please enter your password to update:</h5>
           <input

@@ -33,7 +33,9 @@ export class ProfileService {
   }
 
   public updateUserInfo(userInfo: UserInfoModel) {
-    this.http.put<UserInfoModel>(`${environment.apiUrl}/users/update`, userInfo).subscribe();
+    this.http
+      .put<UserInfoModel>(`${environment.apiUrl}/users/update`, userInfo)
+      .subscribe(() => this.infoUpdated.next(userInfo));
   }
 
   public getUserInfo(username: string): void {
