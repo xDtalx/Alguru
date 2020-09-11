@@ -185,20 +185,33 @@ function checkQuestionArray(array, paramName) {
 
 function checkQuestionArrays(req) {
   const errors = [];
-  const solutionTemplateArray = checkQuestionArray(req.body.solutionTemplate, 'solutionTemplate');
-  const exampleTestsArray = checkQuestionArray(req.body.exampleTests, 'exampleTests');
-  const submitionTestsArray = checkQuestionArray(req.body.submitionTests, 'submitionTests');
+  const solutionTemplateError = checkQuestionArray(req.body.solutionTemplate, 'solutionTemplate');
+  const exampleTestsError = checkQuestionArray(req.body.exampleTests, 'exampleTests');
+  const submitionTestsError = checkQuestionArray(req.body.submitionTests, 'submitionTests');
 
-  if (solutionTemplateArray) {
-    errors.push(solutionTemplateArray);
+  if (solutionTemplateError) {
+    errors.push(solutionTemplateError);
   }
 
-  if (exampleTestsArray) {
-    errors.push(exampleTestsArray);
+  if (exampleTestsError) {
+    errors.push(exampleTestsError);
   }
 
-  if (submitionTestsArray) {
-    errors.push(submitionTestsArray);
+  if (submitionTestsError) {
+    errors.push(submitionTestsError);
+  }
+
+  const arraysSizes = [req.body.solutionTemplate.length, req.body.exampleTests.length, req.body.submitionTests.length];
+  const max = arraysSizes.reduce((l1, l2) => (l1 > l2 ? l1 : l2));
+  const min = arraysSizes.reduce((l1, l2) => (l1 < l2 ? l1 : l2));
+
+  if (max !== min) {
+    errors.push({
+      value: null,
+      msg: 'For each programming language you should fill: Solution Template, Example Tests and Submition Tests',
+      param: null,
+      location: 'body'
+    });
   }
 
   return errors;

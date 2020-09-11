@@ -518,6 +518,5 @@ function handleRegisterError(error, res) {
     }
   }
 
-  console.log(error);
   res.status(409).json({ message: errors });
 }

@@ -56,16 +56,18 @@ exports.createComment = async (req, res, next) => {
       });
 
       post.comments.push(comment);
-      await addNotificationToUserAsync(
-        post.author.toLowerCase(),
-        new Notification({
-          sender: req.userData.username,
-          title: 'Someone commented on your post',
-          content: req.userData.username + ' commented on your post: ' + post.titles,
-          seen: false,
-          url: '/forum/post/' + req.params.postId
-        })
-      );
+      if (req.userData.username !== post.author) {
+        await addNotificationToUserAsync(
+          post.author.toLowerCase(),
+          new Notification({
+            sender: req.userData.username,
+            title: 'Someone commented on your post',
+            content: req.userData.username + ' commented on your post: ' + post.titles,
+            seen: false,
+            url: '/forum/post/' + req.params.postId
+          })
+        );
+      }
 
       await Post.updateOne({ _id: req.params.postId }, post)
         .then(async (result) => {
