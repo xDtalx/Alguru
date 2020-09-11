@@ -76,9 +76,8 @@ exports.deleteQuestion = async (req, res, next) => {
     );
 };
 
-exports.getQuestions = (req, res, next) => {
-  Question.find().then((documents) => res.status(200).json(documents));
-};
+exports.getQuestions = async (req, res, next) =>
+  await Question.find().then((documents) => res.status(200).json(documents));
 
 exports.updateQuestion = async (req, res, next) => {
   const errors = validationResult(req);
@@ -127,8 +126,8 @@ exports.updateQuestion = async (req, res, next) => {
     );
 };
 
-exports.getQuestion = (req, res, next) => {
-  Question.findById(req.params.id).then((question) => {
+exports.getQuestion = async (req, res, next) => {
+  await Question.findById(req.params.id).then((question) => {
     if (question) {
       res.status(200).json(question);
     } else {
@@ -137,16 +136,16 @@ exports.getQuestion = (req, res, next) => {
   });
 };
 
-exports.voteOnQuestion = (req, res, next) => {
+exports.voteOnQuestion = async (req, res, next) => {
   const errors = validationResult(req);
 
   if (!errors.isEmpty()) {
     return res.status(422).json({ errors: errors.array({ onlyFirstError: true }) });
   }
 
-  Question.findById(req.params.id).then((question) => {
+  await Question.findById(req.params.id).then((question) => {
     if (question) {
-      putNewVote(req, res, question);
+      putNewVoteAsync(req, res, question);
     } else {
       return res.status(404).json({ message: 'Question not found!' });
     }
@@ -205,18 +204,18 @@ function checkQuestionArrays(req) {
   return errors;
 }
 
-async function putNewVote(req, res, toPutIn) {
+async function putNewVoteAsync(req, res, toPutIn) {
   if (toPutIn.creator === req.userData.userId) {
     return res.status(400).json({ message: 'User cannot vote on his own question' });
   } else if (toPutIn.votes.has(req.userData.username)) {
     return res.status(400).json({ message: 'User voted already' });
   }
 
-  await updateUserNotification(toPutIn, req, res);
-  await updateQuestionVotes(toPutIn, req, res);
+  await updateUserNotificationAsync(toPutIn, req, res);
+  await updateQuestionVotesAsync(toPutIn, req, res);
 }
 
-async function updateUserNotification(question, req) {
+async function updateUserNotificationAsync(question, req) {
   await User.findOne({ _id: question.creator }).then(async (user) => {
     console.log('user', user);
     const messageToDisplay = `${req.userData.username} ${req.body.isUp ? 'upvote' : 'downvote'} your question: ${
@@ -237,7 +236,7 @@ async function updateUserNotification(question, req) {
   });
 }
 
-async function updateQuestionVotes(question, req, res) {
+async function updateQuestionVotesAsync(question, req, res) {
   const newVote = new Vote({
     username: req.userData.username,
     isUp: req.body.isUp,
@@ -246,7 +245,7 @@ async function updateQuestionVotes(question, req, res) {
 
   question.votes.set(newVote.username, newVote);
 
-  Question.updateOne({ _id: req.params.id }, question)
+  await Question.updateOne({ _id: req.params.id }, question)
     .then(async (result) => {
       const isModified = result.n > 0;
 

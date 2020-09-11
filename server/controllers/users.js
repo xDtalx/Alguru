@@ -87,7 +87,7 @@ exports.resendVarificationEmail = async (req, res, next) => {
         if (user.verified) {
           res.status(400).json({ message: 'User is already verified' });
         } else {
-          await sendVarificationEmail(req.userData);
+          await sendVarificationEmailAsync(req.userData);
           res.status(200).json({ message: 'Varification email sent' });
         }
       })
@@ -151,7 +151,7 @@ exports.createUser = async (req, res, next) => {
 
       await user
         .save()
-        .then(async (result) => await handleSuccessfulSave(result, res))
+        .then(async (result) => await handleSuccessfulSaveAsync(result, res))
         .catch((err) => handleRegisterError(err, res));
     })
     .catch((err) => res.status(500).json({ message: 'Unknown error', stacktrace: req.userData.isAdmin ? err : '😊' }));
@@ -233,7 +233,7 @@ exports.updateUser = async (req, res, next) => {
 
             if (isModified) {
               if (!isVerified) {
-                await sendResetPasswordEmail({
+                await sendResetPasswordEmailAsync({
                   username: req.body.username || req.userData.username,
                   email: req.body.email || req.userData.email,
                   id: req.userData.userId,
@@ -317,7 +317,7 @@ exports.sendResetPasswordEmail = async (req, res, next) => {
 
   await User.findOne({ email: email })
     .then(async (user) => {
-      await sendResetPasswordEmail({
+      await sendResetPasswordEmailAsync({
         username: user.username,
         email: user.email,
         id: user._id,
@@ -347,7 +347,7 @@ exports.userLogin = async (req, res, next) => {
   }
 
   await User.findOne({ username_lower: req.body.username.toLowerCase() })
-    .then(async (user) => await handleFoundUser(user, req, res))
+    .then(async (user) => await handleFoundUserAsync(user, req, res))
     .catch((err) => handleUnknownErrorInLogin(req, err, res));
 };
 
@@ -383,7 +383,7 @@ function handleAuthenticationAndResponse(fetchedUser, res) {
   });
 }
 
-async function handleFoundUser(user, req, res) {
+async function handleFoundUserAsync(user, req, res) {
   await bcrypt.compare(req.body.password, user.hashedPassword).then((isEqual) => {
     if (!isEqual) {
       return res.status(401).json({ message: ['Username or password are incorrect'] });
@@ -393,8 +393,8 @@ async function handleFoundUser(user, req, res) {
   });
 }
 
-async function handleSuccessfulSave(savedUser, res) {
-  await sendVarificationEmail({
+async function handleSuccessfulSaveAsync(savedUser, res) {
+  await sendVarificationEmailAsync({
     username: savedUser.username,
     email: savedUser.email,
     userId: savedUser._id,
@@ -411,7 +411,7 @@ async function handleSuccessfulSave(savedUser, res) {
   });
 }
 
-async function initMailer() {
+async function initMailerAsync() {
   if (!mailer) {
     let testAccount;
 
@@ -433,8 +433,8 @@ async function initMailer() {
   }
 }
 
-async function sendResetPasswordEmail(userData) {
-  await initMailer();
+async function sendResetPasswordEmailAsync(userData) {
+  await initMailerAsync();
 
   const token = jwt.sign(
     {
@@ -470,8 +470,8 @@ async function sendResetPasswordEmail(userData) {
   });
 }
 
-async function sendVarificationEmail(userData) {
-  await initMailer();
+async function sendVarificationEmailAsync(userData) {
+  await initMailerAsync();
 
   const token = jwt.sign(
     {

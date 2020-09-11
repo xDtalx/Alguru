@@ -4,7 +4,6 @@ import { AuthGuard } from './auth/auth.guard';
 import { EmailVerificationComponent } from './auth/email-verification/email-verification.component';
 import { PasswordResetComponent } from './auth/password-reset/password-reset.component';
 import { HomeComponent } from './home/home.component';
-import { NotificationCenterComponent } from './notification-center/notification-center.component';
 
 const routes: Routes = [
   {

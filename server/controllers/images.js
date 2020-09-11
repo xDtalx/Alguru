@@ -2,8 +2,8 @@ const fs = require('fs');
 const path = require('path');
 const Image = require('../models/image');
 
-exports.getImage = (req, res) => {
-  Image.findOne({ name: req.params.imageName })
+exports.getImage = async (req, res) => {
+  await Image.findOne({ name: req.params.imageName })
     .then((image) => {
       res.status(200).contentType(image.img.contentType).send(image.img.data);
     })
@@ -22,16 +22,16 @@ exports.uploadImage = async (req, res) => {
   });
   await Image.exists({ name: image.name }).then(async (isExists) => {
     if (isExists) {
-      await updateImage(req, res, image);
+      await updateImageAsync(req, res, image);
     } else {
       fs.unlinkSync(filePath);
-      await saveImage(req, res, image);
+      await saveImageAsync(req, res, image);
     }
   });
 };
 
-function saveImage(req, res, image) {
-  image
+async function saveImageAsync(req, res, image) {
+  await image
     .save()
     .then(() => {
       res.status(200).json({
@@ -42,8 +42,8 @@ function saveImage(req, res, image) {
     .catch((err) => res.status(500).json({ message: 'Unknown error', stacktrace: req.userData.isAdmin ? err : '😊' }));
 }
 
-async function updateImage(req, res, image) {
-  Image.findOneAndUpdate(
+async function updateImageAsync(req, res, image) {
+  await Image.findOneAndUpdate(
     {
       name: image.name
     },
