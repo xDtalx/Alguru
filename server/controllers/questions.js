@@ -201,7 +201,10 @@ function checkQuestionArrays(req) {
     errors.push(submitionTestsError);
   }
 
-  const arraysSizes = [req.body.solutionTemplate.length, req.body.exampleTests.length, req.body.submitionTests.length];
+  const arraysSizes = [0, 0, 0];
+  req.body.solutionTemplate.forEach((value) => (value !== '' ? arraysSizes[0]++ : value));
+  req.body.exampleTests.forEach((value) => (value !== '' ? arraysSizes[1]++ : value));
+  req.body.submitionTests.forEach((value) => (value !== '' ? arraysSizes[2]++ : value));
   const max = arraysSizes.reduce((l1, l2) => (l1 > l2 ? l1 : l2));
   const min = arraysSizes.reduce((l1, l2) => (l1 < l2 ? l1 : l2));
 

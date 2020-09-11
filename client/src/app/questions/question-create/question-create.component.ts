@@ -1,5 +1,14 @@
-import { AfterViewInit, Component, ElementRef, OnDestroy, OnInit, QueryList, ViewChildren } from '@angular/core';
-import { ActivatedRoute, ParamMap } from '@angular/router';
+import {
+  AfterViewInit,
+  Component,
+  ElementRef,
+  OnDestroy,
+  OnInit,
+  QueryList,
+  ViewChild,
+  ViewChildren
+} from '@angular/core';
+import { ActivatedRoute, ParamMap, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { AuthService } from 'src/app/auth/auth.service';
 import { IVote } from 'src/app/forum/vote.model';
@@ -36,7 +45,8 @@ export class QuestionCreateComponent implements OnInit, OnDestroy, AfterViewInit
     private questionService: QuestionsService,
     private route: ActivatedRoute,
     private themeService: ThemeService,
-    private authService: AuthService
+    private authService: AuthService,
+    private router: Router
   ) {}
 
   public ngAfterViewInit(): void {
@@ -80,9 +90,10 @@ export class QuestionCreateComponent implements OnInit, OnDestroy, AfterViewInit
       }
     });
 
-    this.questionsUpdatedSubs = this.questionService
-      .getQuestionsUpdatedListener()
-      .subscribe(() => (this.isLoading = false));
+    this.questionsUpdatedSubs = this.questionService.getQuestionsUpdatedListener().subscribe(() => {
+      this.isLoading = false;
+      this.router.navigate(['/questions/list']);
+    });
 
     this.errorsSub = this.authService.getAuthErrorListener().subscribe(() => (this.isLoading = false));
   }

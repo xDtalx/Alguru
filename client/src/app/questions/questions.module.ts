@@ -9,6 +9,7 @@ import { MatSortModule } from '@angular/material/sort';
 import { MatTableModule } from '@angular/material/table';
 import { AngularEditorModule } from '@kolkov/angular-editor';
 import { NeutrinoModule } from 'neutrino';
+import { ErrorSharedModule } from '../error/error-shared.module';
 import { IDEComponent } from '../ide/ide.component';
 import { QuestionCreateComponent } from './question-create/question-create.component';
 import { QuestionListComponent } from './question-list/question-list.component';
@@ -27,7 +28,8 @@ import { QuestionRoutingModule } from './question-routing.module';
     NeutrinoModule,
     FormsModule,
     CommonModule,
-    AngularEditorModule
+    AngularEditorModule,
+    ErrorSharedModule
   ]
 })
 export class QuestionsModule {}
