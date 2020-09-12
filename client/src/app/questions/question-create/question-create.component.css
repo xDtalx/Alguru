@@ -68,6 +68,21 @@ label {
   background-color: rgb(80, 80, 94);
   border: 1px solid rgba(0, 0, 0, 0.5);
   border-radius: 0.25rem;
+  display: flex;
+  flex-direction: column;
+}
+
+.required {
+  color: red;
+}
+
+.simple-editor {
+  padding: 0.5rem;
+  background-color: transparent;
+  color: white;
+  border: 1px solid rgba(0, 0, 0, 0.2);
+  min-width: 100%;
+  outline: none;
 }
 
 .title {

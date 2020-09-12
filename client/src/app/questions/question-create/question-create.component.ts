@@ -194,35 +194,54 @@ export class QuestionCreateComponent implements OnInit, OnDestroy, AfterViewInit
     }
   }
 
-  public onSolTemplateValueChanged(value) {
-    this.question.solutionTemplate[this.solutionTemplateCurrentLang] = value;
+  public onSolTemplateValueChanged(event) {
+    this.question.solutionTemplate[this.solutionTemplateCurrentLang] = event.target.value;
   }
 
-  public onExampleTestsValueChanged(value) {
-    this.question.exampleTests[this.exampleTestsCurrentLang] = value;
+  public onExampleTestsValueChanged(event) {
+    this.question.exampleTests[this.exampleTestsCurrentLang] = event.target.value;
   }
 
-  public onSubmitionTestsValueChanged(value) {
-    this.question.submitionTests[this.submitionTestsCurrentLang] = value;
+  public onSubmitionTestsValueChanged(event) {
+    this.question.submitionTests[this.submitionTestsCurrentLang] = event.target.value;
   }
 
-  public onSolValueChanged(value) {
-    this.question.solution[this.solutionCurrentLang] = value;
+  public onSolValueChanged(event) {
+    this.question.solution[this.solutionCurrentLang] = event.target.value;
   }
 
-  public onContentValueChanged(value) {
-    this.question.content = value;
+  public onContentValueChanged(event) {
+    this.question.content = event.target.value;
   }
 
-  public onTitleValueChanged(value) {
-    this.question.title = value;
+  public onTitleValueChanged(event) {
+    this.question.title = event.target.value;
   }
 
-  public onHintsValueChanged(value) {
-    this.question.hints = value;
+  public onHintsValueChanged(event) {
+    this.question.hints = event.target.value;
   }
 
   public setLevel(level: number) {
     this.question.level = level;
+  }
+
+  public preventTab(event): void {
+    if (event.key.toLowerCase() === 'tab') {
+      event.preventDefault();
+    }
+  }
+
+  public onKeyUp(event): void {
+    if (event.key.toLowerCase() === 'tab') {
+      if (event.target) {
+        const start = event.target.selectionStart;
+        const end = event.target.selectionEnd;
+        event.target.value = event.target.value.substring(0, start) + '\t' + event.target.value.substring(end);
+        event.target.selectionStart = event.target.selectionEnd = start + 1;
+      }
+
+      event.preventDefault();
+    }
   }
 }

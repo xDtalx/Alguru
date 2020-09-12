@@ -1,25 +1,26 @@
 <app-error></app-error>
 <form *ngIf="!isLoading" (submit)="onSaveQuestion()" #questionsForm>
   <label for="title">
-    <span class="title">Title</span>
-    <nt-editor
-      fontSize="1.6rem"
-      tabSpaces="4"
+    <span class="title">Title <span class="required">*</span></span>
+    <textarea
+      class="simple-editor"
       [value]="question?.title"
-      (valueChanged)="onTitleValueChanged($event)"
-      editable
-      focus="true"
-    ></nt-editor>
+      (keydown)="preventTab($event)"
+      (keyup)="onKeyUp($event)"
+      (input)="onTitleValueChanged($event)"
+    >
+    </textarea>
   </label>
   <label for="title">
-    <span class="title">Problem Description</span>
-    <nt-editor
-      fontSize="1.6rem"
-      tabSpaces="4"
+    <span class="title">Problem Description <span class="required">*</span></span>
+    <textarea
+      class="simple-editor"
       [value]="question?.content"
-      (valueChanged)="onContentValueChanged($event)"
-      editable
-    ></nt-editor>
+      (keydown)="preventTab($event)"
+      (keyup)="onKeyUp($event)"
+      (input)="onContentValueChanged($event)"
+    >
+    </textarea>
   </label>
   <div class="tabs">
     <div>
@@ -43,14 +44,15 @@
     </div>
   </div>
   <label for="title">
-    <span class="title">Solution Template</span>
-    <nt-editor
-      fontSize="1.6rem"
-      tabSpaces="4"
+    <span class="title">Solution Template <span class="required">*</span></span>
+    <textarea
+      class="simple-editor"
       [value]="(question?.solutionTemplate)[solutionTemplateCurrentLang]"
-      (valueChanged)="onSolTemplateValueChanged($event)"
-      editable
-    ></nt-editor>
+      (keydown)="preventTab($event)"
+      (keyup)="onKeyUp($event)"
+      (input)="onSolTemplateValueChanged($event)"
+    >
+    </textarea>
   </label>
   <div class="tabs">
     <div>
@@ -70,13 +72,14 @@
   </div>
   <label for="title">
     <span class="title">Solution</span>
-    <nt-editor
-      fontSize="1.6rem"
-      tabSpaces="4"
+    <textarea
+      class="simple-editor"
       [value]="(question?.solution)[solutionCurrentLang]"
-      (valueChanged)="onSolValueChanged($event)"
-      editable
-    ></nt-editor>
+      (keydown)="preventTab($event)"
+      (keyup)="onKeyUp($event)"
+      (input)="onSolValueChanged($event)"
+    >
+    </textarea>
   </label>
   <div class="tabs">
     <div>
@@ -100,14 +103,15 @@
     </div>
   </div>
   <label for="title">
-    <span class="title">Example Tests</span>
-    <nt-editor
-      fontSize="1.6rem"
-      tabSpaces="4"
+    <span class="title">Example Tests <span class="required">*</span></span>
+    <textarea
+      class="simple-editor"
       [value]="(question?.exampleTests)[exampleTestsCurrentLang]"
-      (valueChanged)="onExampleTestsValueChanged($event)"
-      editable
-    ></nt-editor>
+      (keydown)="preventTab($event)"
+      (keyup)="onKeyUp($event)"
+      (input)="onExampleTestsValueChanged($event)"
+    >
+    </textarea>
   </label>
   <div class="tabs">
     <div>
@@ -131,19 +135,26 @@
     </div>
   </div>
   <label for="title">
-    <span class="title">Submition Tests</span>
-    <nt-editor
-      fontSize="1.6rem"
-      tabSpaces="4"
+    <span class="title">Submition Tests <span class="required">*</span></span>
+    <textarea
+      class="simple-editor"
       [value]="(question?.submitionTests)[submitionTestsCurrentLang]"
-      (valueChanged)="onSubmitionTestsValueChanged($event)"
-      editable
-    ></nt-editor>
+      (keydown)="preventTab($event)"
+      (keyup)="onKeyUp($event)"
+      (input)="onSubmitionTestsValueChanged($event)"
+    >
+    </textarea>
   </label>
   <label for="title">
     <span class="title">Hints</span>
-    <nt-editor fontSize="1.6rem" [value]="question?.hints" (valueChanged)="onHintsValueChanged($event)" editable>
-    </nt-editor>
+    <textarea
+      class="simple-editor"
+      [value]="question?.hints"
+      (keydown)="preventTab($event)"
+      (keyup)="onKeyUp($event)"
+      (input)="onHintsValueChanged($event)"
+    >
+    </textarea>
   </label>
   <div class="levels">
     <div class="level">
@@ -161,4 +172,4 @@
   </div>
   <button class="alguru-primary-btn" name="create" type="submit">{{ mode }}</button>
 </form>
-<div *ngIf="isLoading" class="loader">Loading...</div>
+<div *ngIf="isLoading" class="loader"></div>
