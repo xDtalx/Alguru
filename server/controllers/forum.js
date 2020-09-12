@@ -148,10 +148,10 @@ exports.deleteComment = async (req, res, next) => {
           const isDeleted = deleteResult.n > 0;
 
           if (isDeleted) {
-            await User.findOne({ username: comment.author }).then(async (user) => {
+            await User.findOne({ username_lower: comment.author.toLowerCase() }).then(async (user) => {
               user.stats.contribComments--;
               user.stats.contribPoints -= 50;
-              await User.updateOne({ username: comment.author }, user);
+              await User.updateOne({ username_lower: comment.author.toLowerCase() }, user);
             });
 
             await deleteCommentFromPostAsync(req, res);
@@ -178,7 +178,7 @@ exports.getPost = async (req, res, next) => {
     .catch((err) =>
       res.status(404).json({
         message: 'Post not found!',
-        stacktrace: req.userData.isAdmin ? err : '😊'
+        stacktrace: req.userData && req.userData.isAdmin ? err : '😊'
       })
     );
 };
@@ -391,16 +391,16 @@ async function addVoteNotificationAsync(entity, isComment, req) {
       title: `Someone voted on your ${isComment ? 'comment' : 'post'}`,
       content: messageToDisplay,
       seen: false,
-      url: `/forum/post/${isComment ? entity.postId : entity.postId}`
+      url: `/forum/post/${isComment ? entity.postId : entity._id}`
     })
   );
 }
 
 async function addNotificationToUserAsync(username, notification) {
-  await User.findOne({ username: username })
+  await User.findOne({ username_lower: username.toLowerCase() })
     .then(async (user) => {
       user.notifications.push(notification);
-      await User.updateOne({ username: username }, user);
+      await User.updateOne({ username_lower: username.toLowerCase() }, user);
     })
     .catch((err) => console.log(err));
 }

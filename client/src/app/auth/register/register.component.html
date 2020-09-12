@@ -1,8 +1,8 @@
 <div (click)="hide()" class="background-unclickable">
   <div class="login-form" (click)="$event.stopPropagation()">
-    <app-error></app-error>
+    <app-error [ngStyle]="{ display: isLoading ? 'hidden' : 'flex' }"></app-error>
+    <div *ngIf="isLoading" class="loader">Loading...</div>
     <form *ngIf="!isLoading" (submit)="onRegister(userRegistration)" #userRegistration="ngForm">
-      <div *ngIf="isLoading" class="loader">Loading...</div>
       <div *ngIf="!isLoading">
         <div class="form-group">
           <div class="input-group">
