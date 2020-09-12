@@ -468,7 +468,9 @@ async function sendResetPasswordEmailAsync(userData) {
       </p>`
     });
 
-    console.log('Preview URL: %s', nodemailer.getTestMessageUrl(info));
+    if (process.env.TYPE === 'dev') {
+      console.log('Preview URL: %s', nodemailer.getTestMessageUrl(info));
+    }
   });
 }
 

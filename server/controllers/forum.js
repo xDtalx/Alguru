@@ -399,8 +399,10 @@ async function addVoteNotificationAsync(entity, isComment, req) {
 async function addNotificationToUserAsync(username, notification) {
   await User.findOne({ username_lower: username.toLowerCase() })
     .then(async (user) => {
-      user.notifications.push(notification);
-      await User.updateOne({ username_lower: username.toLowerCase() }, user);
+      if (user) {
+        user.notifications.push(notification);
+        await User.updateOne({ username_lower: username.toLowerCase() }, user);
+      }
     })
     .catch((err) => console.log(err));
 }

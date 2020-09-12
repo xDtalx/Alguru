@@ -1,5 +1,5 @@
 import { AfterViewInit, Component, OnDestroy, OnInit, Renderer2 } from '@angular/core';
-import { ActivatedRoute, ParamMap } from '@angular/router';
+import { ActivatedRoute, ParamMap, Router } from '@angular/router';
 import { AngularEditorConfig } from '@kolkov/angular-editor';
 import { Subscription } from 'rxjs';
 import { AuthService } from '../auth/auth.service';
@@ -85,7 +85,8 @@ export class ForumComponent implements OnInit, OnDestroy, AfterViewInit {
     private authService: AuthService,
     private renderer: Renderer2,
     private themeService: ThemeService,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private router: Router
   ) {}
 
   public ngAfterViewInit(): void {
@@ -495,6 +496,7 @@ export class ForumComponent implements OnInit, OnDestroy, AfterViewInit {
     }
 
     this.reset(true);
+    this.router.navigate(['/forum']);
   }
 
   public onDeleteCommentClick(comment: IClientComment) {
