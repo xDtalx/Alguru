@@ -176,11 +176,11 @@ exports.deleteUser = async (req, res, next) => {
 };
 
 exports.getUserInfo = async (req, res, next) => {
-  await User.findOne({ username: req.params.username })
+  await User.findOne({ username_lower: req.params.username.toLowerCase() })
     .then((user) => {
       const info = {
         username: user.username,
-        email: req.userData.username === req.params.username ? user.email : '😊',
+        email: req.userData.username.toLowerCase() === req.params.username.toLowerCase() ? user.email : '😊',
         socials: user.socials
       };
 

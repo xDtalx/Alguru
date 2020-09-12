@@ -56,7 +56,7 @@ exports.deleteQuestion = async (req, res, next) => {
           const isDeleted = deleteResult.n > 0;
 
           if (isDeleted) {
-            await User.findOne({ _id: question.creator }).then(async (user) => {
+            await User.findOne({ _id: String(question.creator) }).then(async (user) => {
               user.stats.contribProblems--;
               user.stats.contribPoints -= 100;
               await User.updateOne({ _id: question.creator }, user);
@@ -143,9 +143,9 @@ exports.voteOnQuestion = async (req, res, next) => {
     return res.status(422).json({ errors: errors.array({ onlyFirstError: true }) });
   }
 
-  await Question.findById(req.params.id).then((question) => {
+  await Question.findById(req.params.id).then(async (question) => {
     if (question) {
-      putNewVoteAsync(req, res, question);
+      await putNewVoteAsync(req, res, question);
     } else {
       return res.status(404).json({ message: 'Question not found!' });
     }
@@ -221,7 +221,7 @@ function checkQuestionArrays(req) {
 }
 
 async function putNewVoteAsync(req, res, toPutIn) {
-  if (toPutIn.creator === req.userData.userId) {
+  if (String(toPutIn.creator) === req.userData.userId) {
     return res.status(400).json({ message: 'User cannot vote on his own question' });
   } else if (toPutIn.votes.has(req.userData.username)) {
     return res.status(400).json({ message: 'User voted already' });
@@ -232,8 +232,7 @@ async function putNewVoteAsync(req, res, toPutIn) {
 }
 
 async function updateUserNotificationAsync(question, req) {
-  await User.findOne({ _id: question.creator }).then(async (user) => {
-    console.log('user', user);
+  await User.findOne({ _id: String(question.creator) }).then(async (user) => {
     const messageToDisplay = `${req.userData.username} ${req.body.isUp ? 'upvote' : 'downvote'} your question: ${
       question.title
     }`;
@@ -248,7 +247,7 @@ async function updateUserNotificationAsync(question, req) {
       })
     );
 
-    await User.updateOne({ _id: question.creator }, user);
+    await User.updateOne({ _id: String(question.creator) }, user);
   });
 }
 
