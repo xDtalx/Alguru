@@ -5,6 +5,7 @@ import { Observable, Subject } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
 import { IVote } from '../forum/vote.model';
+import { IExecution } from './execution.model';
 import { IQuestion } from './question.model';
 
 const BACKEND_URL = environment.apiUrl + '/questions';
@@ -14,6 +15,7 @@ export class QuestionsService {
   private questions: IQuestion[] = [];
   private question: IQuestion;
   private questionsUpdated = new Subject<IQuestion[]>();
+  private executionUpdated = new Subject<IExecution>();
   private questionUpdated = new Subject<IQuestion>();
 
   constructor(private http: HttpClient, private router: Router) {}
@@ -31,6 +33,14 @@ export class QuestionsService {
 
   public getQuestionUpdatedListener(): Observable<IQuestion> {
     return this.questionUpdated.asObservable();
+  }
+
+  public updateExecution(execution: IExecution) {
+    this.executionUpdated.next(execution);
+  }
+
+  public getExecutionUpdatedListener(): Observable<IExecution> {
+    return this.executionUpdated.asObservable();
   }
 
   public getQuestions() {

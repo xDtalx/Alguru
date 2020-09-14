@@ -110,7 +110,7 @@ exports.verifyUser = async (req, res, next) => {
             {
               username: decodedToken.username,
               email: decodedToken.email,
-              userId: decodedToken._id,
+              userId: decodedToken.userId,
               isAdmin: decodedToken.isAdmin,
               verified: true
             },
@@ -119,7 +119,15 @@ exports.verifyUser = async (req, res, next) => {
               expiresIn: '5h'
             }
           );
-          res.status(200).json({ message: 'User is verified', token: newToken, expiresIn: 3600 * 5 });
+
+          res.status(200).json({
+            token: newToken,
+            expiresIn: 3600 * 5,
+            userId: decodedToken.userId,
+            username: decodedToken.username,
+            isAdmin: decodedToken.isAdmin,
+            verified: true
+          });
         } else {
           res.status(500).json({ message: 'Unknown error' });
         }
@@ -322,7 +330,7 @@ exports.sendResetPasswordEmail = async (req, res, next) => {
       await sendResetPasswordEmailAsync({
         username: user.username,
         email: user.email,
-        id: user._id,
+        userId: user._id,
         isAdmin: user.isAdmin,
         verified: user.verified
       });

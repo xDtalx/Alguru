@@ -1,4 +1,6 @@
-<app-error></app-error>
+<app-error *ngIf="!execution"></app-error>
+<nt-editor *ngIf="execution && !isLoading" class="editable-editor" fontSize="1.6rem" [value]="getExecutionInfo()">
+</nt-editor>
 <form *ngIf="!isLoading" (submit)="onSaveQuestion()" #questionsForm>
   <label for="title">
     <span class="title">Title <span class="required">*</span></span>

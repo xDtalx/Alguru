@@ -19,7 +19,15 @@
       <!-- Title Column -->
       <ng-container matColumnDef="title">
         <th mat-header-cell *matHeaderCellDef mat-sort-header>Title</th>
-        <td mat-cell *matCellDef="let question">{{ question.title }}</td>
+        <td mat-cell *matCellDef="let question">
+          <fa-icon
+            *ngIf="solvedQuestions && solvedQuestions[question.id]"
+            class="solved"
+            [icon]="['fas', 'check']"
+            size="1x"
+          ></fa-icon>
+          {{ question.title }}
+        </td>
       </ng-container>
 
       <!-- Level Column -->

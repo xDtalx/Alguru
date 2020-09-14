@@ -3,10 +3,11 @@ import { Injectable } from '@angular/core';
 import { throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { AuthService } from './auth/auth.service';
+import { QuestionsService } from './questions/questions.service';
 
 @Injectable()
 export class ErrorInterceptor implements HttpInterceptor {
-  constructor(private authService: AuthService) {}
+  constructor(private authService: AuthService, private questionsService: QuestionsService) {}
 
   public intercept(req: HttpRequest<any>, next: HttpHandler) {
     // handle returns the response observable stream.
@@ -28,7 +29,11 @@ export class ErrorInterceptor implements HttpInterceptor {
           });
         }
 
-        this.authService.addErrorMessages(errorMessage);
+        if (error.error.execution) {
+          this.questionsService.updateExecution(error.error.execution);
+        } else {
+          this.authService.addErrorMessages(errorMessage);
+        }
 
         return throwError(error);
       })

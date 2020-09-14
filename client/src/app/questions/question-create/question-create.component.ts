@@ -13,6 +13,7 @@ import { Subscription } from 'rxjs';
 import { AuthService } from 'src/app/auth/auth.service';
 import { IVote } from 'src/app/forum/vote.model';
 import { ThemeService } from 'src/app/theme/theme.service';
+import { IExecution } from '../execution.model';
 import { IQuestion } from '../question.model';
 import { QuestionsService } from '../questions.service';
 
@@ -29,6 +30,7 @@ export class QuestionCreateComponent implements OnInit, OnDestroy, AfterViewInit
   @ViewChildren('submitionTestsTabCheckboxes') public submitionTestsTabCheckboxes: QueryList<ElementRef>;
 
   public question: IQuestion;
+  public execution: IExecution;
   public isLoading = false;
   public theme = 'dark';
   public solutionCurrentLang = 0;
@@ -53,6 +55,7 @@ export class QuestionCreateComponent implements OnInit, OnDestroy, AfterViewInit
     this.themeService.overrideProperty('--main-display', 'block');
     this.themeService.overrideProperty('--main-padding', '1rem 1rem 0 1rem');
     this.themeService.overrideProperty('--main-background-color', 'rgb(53, 58, 66)');
+    this.themeService.overrideProperty('--editor-background', 'rgb(214, 69, 69)');
     this.themeService.setActiveThemeByName(this.theme);
   }
 
@@ -96,6 +99,10 @@ export class QuestionCreateComponent implements OnInit, OnDestroy, AfterViewInit
     });
 
     this.errorsSub = this.authService.getAuthErrorListener().subscribe(() => (this.isLoading = false));
+    this.questionService.getExecutionUpdatedListener().subscribe((execution) => {
+      this.execution = execution;
+      this.isLoading = false;
+    });
   }
 
   public uncheckOtherTabs(event: MouseEvent, inputType: string): void {
@@ -243,5 +250,15 @@ export class QuestionCreateComponent implements OnInit, OnDestroy, AfterViewInit
 
       event.preventDefault();
     }
+  }
+
+  public getExecutionInfo(): string {
+    if (this.execution) {
+      return `Custom>>\n${this.execution.message}\n\nOutput>>\n${
+        this.execution.errors === '' ? this.execution.output : this.execution.errors
+      }`;
+    }
+
+    return '';
   }
 }

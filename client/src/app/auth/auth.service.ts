@@ -70,14 +70,14 @@ export class AuthService {
   }
 
   public verifyEmail(verifyToken: string): void {
-    this.http.get<{ message; token; expiresIn }>(BACKEND_URL + `/verify/${verifyToken}`).subscribe((resposne) => {
+    this.http.get<IAuthData>(BACKEND_URL + `/verify/${verifyToken}`).subscribe((response) => {
       this.emailVerifiedListener.next(true);
-      this.authData.token = resposne.token;
+      this.authData.token = response.token;
       this.authData.verified = true;
       this.verifiedListener.next(true);
-      this.setAuthTimer(resposne.expiresIn);
-      localStorage.setItem('token', resposne.token);
-      localStorage.setItem('verified', 'true');
+      this.setAuthTimer(response.expiresIn);
+      this.saveAuthData(response);
+      this.autoAuthUser();
     });
   }
 

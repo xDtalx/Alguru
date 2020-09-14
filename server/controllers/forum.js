@@ -64,7 +64,8 @@ exports.createComment = async (req, res, next) => {
             title: 'Someone commented on your post',
             content: req.userData.username + ' commented on your post: ' + post.titles,
             seen: false,
-            url: '/forum/post/' + req.params.postId
+            url: '/forum/post/' + req.params.postId,
+            createdAt: new Date().getTime()
           })
         );
       }
@@ -75,7 +76,7 @@ exports.createComment = async (req, res, next) => {
 
           if (isModified) {
             await comment.save().then(async (createdComment) => {
-              if (createdComment.author !== req.userData.username) {
+              if (post.author !== req.userData.username) {
                 await User.findOne({ _id: req.userData.userId }).then(async (user) => {
                   user.stats.contribComments++;
                   user.stats.contribPoints += 50;
@@ -391,7 +392,8 @@ async function addVoteNotificationAsync(entity, isComment, req) {
       title: `Someone voted on your ${isComment ? 'comment' : 'post'}`,
       content: messageToDisplay,
       seen: false,
-      url: `/forum/post/${isComment ? entity.postId : entity._id}`
+      url: `/forum/post/${isComment ? entity.postId : entity._id}`,
+      createdAt: new Date().getTime()
     })
   );
 }

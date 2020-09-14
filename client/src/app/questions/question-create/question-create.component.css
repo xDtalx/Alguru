@@ -82,6 +82,7 @@ label {
   color: white;
   border: 1px solid rgba(0, 0, 0, 0.2);
   min-width: 100%;
+  min-height: 10rem;
   outline: none;
 }
 

@@ -16,6 +16,10 @@ th {
   margin-right: 10px;
 }
 
+.solved {
+  color: rgb(43, 241, 43) !important;
+}
+
 .create-question-btn {
   margin-bottom: 1rem;
 }

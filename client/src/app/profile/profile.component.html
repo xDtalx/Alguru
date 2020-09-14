@@ -112,7 +112,7 @@
       </div>
     </div>
   </div>
-  <div class="frame content" [ngStyle]="{ overflow: settingsUpdateLoading ? 'none' : 'hidden' }">
+  <div class="frame content" [ngStyle]="{ overflow: settingsUpdateLoading ? 'hidden' : 'auto' }">
     <app-notifications-center
       *ngIf="!onEditMode"
       [notifications]="notifications"

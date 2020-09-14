@@ -4,6 +4,7 @@ import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { Subscription } from 'rxjs';
 import { AuthService } from 'src/app/auth/auth.service';
+import { ProfileService } from 'src/app/profile/profile.service';
 import { ThemeService } from 'src/app/theme/theme.service';
 import { IQuestion } from '../question.model';
 import { QuestionsService } from '../questions.service';
@@ -20,6 +21,7 @@ export class QuestionListComponent implements OnInit, OnDestroy {
   public isAdmin: boolean;
   public verified: boolean;
   public emailSent: boolean;
+  public solvedQuestions: Map<string, boolean>;
   public userId: string;
   public displayedColumns: string[] = ['title', 'level', 'actions'];
   public dataSource: MatTableDataSource<IQuestion>;
@@ -32,13 +34,13 @@ export class QuestionListComponent implements OnInit, OnDestroy {
   constructor(
     private questionService: QuestionsService,
     private authService: AuthService,
-    private themeService: ThemeService
+    private themeService: ThemeService,
+    private profileService: ProfileService
   ) {}
 
   public ngOnInit() {
     this.themeService.overrideProperty('--main-display', 'block');
     this.themeService.setActiveThemeByName(this.theme);
-
     this.userId = this.authService.getUserId();
     this.isUserAuth = this.authService.getIsAuth();
     this.verified = this.authService.isVerified();
@@ -57,6 +59,8 @@ export class QuestionListComponent implements OnInit, OnDestroy {
     this.dataSource.paginator = this.paginator;
     this.dataSource.sort = this.sort;
     this.isAdmin = this.authService.getIsAdmin();
+    this.profileService.getStatsUpdatedListener().subscribe((stats) => (this.solvedQuestions = stats.solvedQuestions));
+    this.profileService.updateSolvedQuestions();
   }
 
   public ngOnDestroy() {

@@ -220,7 +220,6 @@ export class ProfileComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   public setSettingsUpdateLoading(isLoading: boolean): void {
-    console.log('here');
     this.settingsUpdateLoading = isLoading;
   }
 }

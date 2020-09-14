@@ -1,8 +1,44 @@
 const Question = require('../models/question');
 const Vote = require('../models/vote.js');
 const User = require('../models/user.js');
+const axios = require('axios');
 const Notification = require('../models/notification.js');
 const { validationResult } = require('express-validator');
+const { exec } = require('child_process');
+
+const langs = {
+  0: 'java',
+  1: 'javascript'
+};
+
+async function testQuestion(question) {
+  let failed = false;
+  let execution;
+
+  for (let i = 0; i < question.solutionTemplate.length && !failed; i++) {
+    if (question.solutionTemplate[i] !== null && question.solutionTemplate[i] !== '') {
+      const data = {
+        lang: langs[i],
+        code: question.solution[i],
+        tests: question.submitionTests[i],
+        submit: false,
+        questionId: null
+      };
+
+      await axios.post(process.env.RUN_CODE_API + '/execute', JSON.stringify(data)).then((result) => {
+        if (
+          (result.data.testsFailed !== '' && result.data.testsFailed.indexOf('true') === -1) ||
+          result.data.errors !== ''
+        ) {
+          failed = true;
+          execution = result.data;
+        }
+      });
+    }
+  }
+
+  return execution;
+}
 
 exports.createQuestion = async (req, res, next) => {
   const errors = validationResult(req);
@@ -24,6 +60,11 @@ exports.createQuestion = async (req, res, next) => {
     votes: {},
     creator: req.userData.userId
   });
+  const execution = await testQuestion(question);
+
+  if (execution) {
+    return res.status(422).json({ execution: execution });
+  }
 
   await question.save().then(async (createdQuestion) => {
     await User.findOne({ _id: req.userData.userId }).then(async (user) => {
@@ -77,7 +118,19 @@ exports.deleteQuestion = async (req, res, next) => {
 };
 
 exports.getQuestions = async (req, res, next) =>
-  await Question.find().then((documents) => res.status(200).json(documents));
+  await Question.find().then((questions) => {
+    questions.forEach((question) => {
+      const creatorId = String(question.creator._id);
+
+      if (creatorId !== req.userData.userId && !req.userData.isAdmin) {
+        for (let i = 0; i < Object.keys(langs).length; i++) {
+          question.submitionTests[i] = '';
+          question.solution[i] = '';
+        }
+      }
+    });
+    res.status(200).json(questions);
+  });
 
 exports.updateQuestion = async (req, res, next) => {
   const errors = validationResult(req);
@@ -105,6 +158,11 @@ exports.updateQuestion = async (req, res, next) => {
       question.submitionTests = fixQuestionArrays(req.body.submitionTests);
       question.solution = fixQuestionArrays(req.body.solution);
       question.solutionTemplate = fixQuestionArrays(req.body.solutionTemplate);
+      const execution = await testQuestion(question);
+
+      if (execution) {
+        return res.status(422).json({ execution: execution });
+      }
 
       await Question.updateOne(searchOptions, question)
         .then(async function (result) {
@@ -129,6 +187,15 @@ exports.updateQuestion = async (req, res, next) => {
 exports.getQuestion = async (req, res, next) => {
   await Question.findById(req.params.id).then((question) => {
     if (question) {
+      const creatorId = String(question.creator._id);
+
+      if (creatorId !== req.userData.userId && !req.userData.isAdmin) {
+        for (let i = 0; i < Object.keys(langs).length; i++) {
+          question.submitionTests[i] = '';
+          question.solution[i] = '';
+        }
+      }
+
       res.status(200).json(question);
     } else {
       res.status(404).json({ message: 'Question not found!' });
@@ -188,6 +255,11 @@ function checkQuestionArrays(req) {
   const solutionTemplateError = checkQuestionArray(req.body.solutionTemplate, 'solutionTemplate');
   const exampleTestsError = checkQuestionArray(req.body.exampleTests, 'exampleTests');
   const submitionTestsError = checkQuestionArray(req.body.submitionTests, 'submitionTests');
+  const solutionError = checkQuestionArray(req.body.solution, 'solution');
+
+  if (solutionError) {
+    errors.push(solutionError);
+  }
 
   if (solutionTemplateError) {
     errors.push(solutionTemplateError);
@@ -201,17 +273,19 @@ function checkQuestionArrays(req) {
     errors.push(submitionTestsError);
   }
 
-  const arraysSizes = [0, 0, 0];
+  const arraysSizes = [0, 0, 0, 0];
   req.body.solutionTemplate.forEach((value) => (value !== '' ? arraysSizes[0]++ : value));
   req.body.exampleTests.forEach((value) => (value !== '' ? arraysSizes[1]++ : value));
   req.body.submitionTests.forEach((value) => (value !== '' ? arraysSizes[2]++ : value));
+  req.body.solution.forEach((value) => (value !== '' ? arraysSizes[3]++ : value));
   const max = arraysSizes.reduce((l1, l2) => (l1 > l2 ? l1 : l2));
   const min = arraysSizes.reduce((l1, l2) => (l1 < l2 ? l1 : l2));
 
   if (max !== min) {
     errors.push({
       value: null,
-      msg: 'For each programming language you should fill: Solution Template, Example Tests and Submition Tests',
+      msg:
+        'For each programming language you should fill: Solution Template, Solution, Example Tests and Submition Tests',
       param: null,
       location: 'body'
     });
@@ -243,7 +317,8 @@ async function updateUserNotificationAsync(question, req) {
         title: 'Someone voted on your question',
         content: messageToDisplay,
         seen: false,
-        url: `/questions/solve/${req.params.id}`
+        url: `/questions/solve/${req.params.id}`,
+        createdAt: new Date().toUTCString()
       })
     );
 
