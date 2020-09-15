@@ -51,7 +51,7 @@ export class QuestionsService {
           return questionsData.map((question) => {
             return {
               content: question.content,
-              creator: question.creator,
+              author: question.author,
               hints: question.hints,
               id: question._id,
               level: question.level,
@@ -100,14 +100,14 @@ export class QuestionsService {
         submitionTests: string[];
         hints: string;
         level: number;
-        creator: string;
+        author: string;
         votes: Map<string, IVote>;
       }>(BACKEND_URL + '/' + id)
       .pipe(
         map((question) => {
           return {
             content: question.content,
-            creator: question.creator,
+            author: question.author,
             exampleTests: question.exampleTests,
             hints: question.hints,
             id: question._id,
@@ -138,7 +138,7 @@ export class QuestionsService {
   ) {
     const question: IQuestion = {
       content,
-      creator: null,
+      author: null,
       exampleTests,
       hints,
       id: null,
@@ -180,7 +180,7 @@ export class QuestionsService {
       submitionTests: question.submitionTests,
       hints: question.hints,
       level: question.level,
-      creator: null,
+      author: null,
       votes: question.votes
     };
 

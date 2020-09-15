@@ -58,7 +58,7 @@ exports.createQuestion = async (req, res, next) => {
     hints: req.body.hints,
     level: req.body.level,
     votes: {},
-    creator: req.userData.userId
+    author: req.userData.username
   });
   const execution = await testQuestion(question);
 
@@ -86,7 +86,7 @@ exports.deleteQuestion = async (req, res, next) => {
   if (req.userData.isAdmin) {
     searchOptions = { _id: req.params.id };
   } else {
-    searchOptions = { _id: req.params.id, creator: req.userData.userId };
+    searchOptions = { _id: req.params.id, author: req.userData.username };
   }
 
   await Question.findById(req.params.id)
@@ -97,10 +97,10 @@ exports.deleteQuestion = async (req, res, next) => {
           const isDeleted = deleteResult.n > 0;
 
           if (isDeleted) {
-            await User.findOne({ _id: String(question.creator) }).then(async (user) => {
+            await User.findOne({ username: question.author }).then(async (user) => {
               user.stats.contribProblems--;
               user.stats.contribPoints -= 100;
-              await User.updateOne({ _id: question.creator }, user);
+              await User.updateOne({ username: question.author }, user);
             });
 
             res.status(200).json({ message: 'Question deleted' });
@@ -120,9 +120,7 @@ exports.deleteQuestion = async (req, res, next) => {
 exports.getQuestions = async (req, res, next) =>
   await Question.find().then((questions) => {
     questions.forEach((question) => {
-      const creatorId = String(question.creator._id);
-
-      if (creatorId !== req.userData.userId && !req.userData.isAdmin) {
+      if (question.author !== req.userData.username && !req.userData.isAdmin) {
         for (let i = 0; i < Object.keys(langs).length; i++) {
           question.submitionTests[i] = '';
           question.solution[i] = '';
@@ -145,7 +143,7 @@ exports.updateQuestion = async (req, res, next) => {
   if (req.userData.isAdmin) {
     searchOptions = { _id: req.params.id };
   } else {
-    searchOptions = { _id: req.params.id, creator: req.userData.userId };
+    searchOptions = { _id: req.params.id, author: req.userData.username };
   }
 
   await Question.findOne(searchOptions)
@@ -158,10 +156,15 @@ exports.updateQuestion = async (req, res, next) => {
       question.submitionTests = fixQuestionArrays(req.body.submitionTests);
       question.solution = fixQuestionArrays(req.body.solution);
       question.solutionTemplate = fixQuestionArrays(req.body.solutionTemplate);
-      const execution = await testQuestion(question);
 
-      if (execution) {
-        return res.status(422).json({ execution: execution });
+      try {
+        const execution = await testQuestion(question);
+
+        if (execution) {
+          return res.status(422).json({ execution: execution });
+        }
+      } catch {
+        return res.status(500).json({ message: "Couldn't execute code at this moment. Please try again later." });
       }
 
       await Question.updateOne(searchOptions, question)
@@ -187,9 +190,7 @@ exports.updateQuestion = async (req, res, next) => {
 exports.getQuestion = async (req, res, next) => {
   await Question.findById(req.params.id).then((question) => {
     if (question) {
-      const creatorId = String(question.creator._id);
-
-      if (creatorId !== req.userData.userId && !req.userData.isAdmin) {
+      if (question.author !== req.userData.username && !req.userData.isAdmin) {
         for (let i = 0; i < Object.keys(langs).length; i++) {
           question.submitionTests[i] = '';
           question.solution[i] = '';
@@ -295,7 +296,7 @@ function checkQuestionArrays(req) {
 }
 
 async function putNewVoteAsync(req, res, toPutIn) {
-  if (String(toPutIn.creator) === req.userData.userId) {
+  if (toPutIn.author === req.userData.username) {
     return res.status(400).json({ message: 'User cannot vote on his own question' });
   } else if (toPutIn.votes.has(req.userData.username)) {
     return res.status(400).json({ message: 'User voted already' });
@@ -306,7 +307,7 @@ async function putNewVoteAsync(req, res, toPutIn) {
 }
 
 async function updateUserNotificationAsync(question, req) {
-  await User.findOne({ _id: String(question.creator) }).then(async (user) => {
+  await User.findOne({ username: question.author }).then(async (user) => {
     const messageToDisplay = `${req.userData.username} ${req.body.isUp ? 'upvote' : 'downvote'} your question: ${
       question.title
     }`;
@@ -318,11 +319,11 @@ async function updateUserNotificationAsync(question, req) {
         content: messageToDisplay,
         seen: false,
         url: `/questions/solve/${req.params.id}`,
-        createdAt: new Date().toUTCString()
+        createdAt: new Date().getTime()
       })
     );
 
-    await User.updateOne({ _id: String(question.creator) }, user);
+    await User.updateOne({ username: question.author }, user);
   });
 }
 

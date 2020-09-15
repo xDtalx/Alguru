@@ -10,6 +10,6 @@ export interface IQuestion {
   exampleTests: string[];
   hints: string;
   level: number;
-  creator: string;
+  author: string;
   votes: Map<string, IVote>;
 }

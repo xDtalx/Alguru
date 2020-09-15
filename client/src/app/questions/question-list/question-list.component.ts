@@ -4,6 +4,7 @@ import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { Subscription } from 'rxjs';
 import { AuthService } from 'src/app/auth/auth.service';
+import { IVote } from 'src/app/forum/vote.model';
 import { ProfileService } from 'src/app/profile/profile.service';
 import { ThemeService } from 'src/app/theme/theme.service';
 import { IQuestion } from '../question.model';
@@ -22,8 +23,8 @@ export class QuestionListComponent implements OnInit, OnDestroy {
   public verified: boolean;
   public emailSent: boolean;
   public solvedQuestions: Map<string, boolean>;
-  public userId: string;
-  public displayedColumns: string[] = ['title', 'level', 'actions'];
+  public username: string;
+  public displayedColumns: string[] = ['title', 'level', 'votes', 'author', 'actions'];
   public dataSource: MatTableDataSource<IQuestion>;
   private questionsSub: Subscription;
   private theme = 'dark';
@@ -41,7 +42,7 @@ export class QuestionListComponent implements OnInit, OnDestroy {
   public ngOnInit() {
     this.themeService.overrideProperty('--main-display', 'block');
     this.themeService.setActiveThemeByName(this.theme);
-    this.userId = this.authService.getUserId();
+    this.username = this.authService.getUsername();
     this.isUserAuth = this.authService.getIsAuth();
     this.verified = this.authService.isVerified();
     this.questionService.getQuestions();
@@ -50,14 +51,18 @@ export class QuestionListComponent implements OnInit, OnDestroy {
       this.dataSource = new MatTableDataSource(questions);
       this.dataSource.paginator = this.paginator;
       this.dataSource.sort = this.sort;
+      this.dataSource.sortingDataAccessor = (data, attribute) => {
+        if (attribute === 'votes') {
+          return this.getQuestionVotesCount(data);
+        }
+
+        return data[attribute];
+      };
     });
     this.authService.getAuthStatusListener().subscribe((isAuth) => {
       this.isUserAuth = isAuth;
-      this.userId = this.authService.getUserId();
+      this.username = this.authService.getUsername();
     });
-    this.dataSource = new MatTableDataSource(this.questions);
-    this.dataSource.paginator = this.paginator;
-    this.dataSource.sort = this.sort;
     this.isAdmin = this.authService.getIsAdmin();
     this.profileService.getStatsUpdatedListener().subscribe((stats) => (this.solvedQuestions = stats.solvedQuestions));
     this.profileService.updateSolvedQuestions();
@@ -98,5 +103,19 @@ export class QuestionListComponent implements OnInit, OnDestroy {
     if (this.dataSource.paginator) {
       this.dataSource.paginator.firstPage();
     }
+  }
+
+  public getQuestionVotesCount(question: IQuestion): string {
+    let votes = 0;
+
+    question.votes.forEach((vote: IVote) => {
+      if (vote.isUp) {
+        votes++;
+      } else {
+        votes--;
+      }
+    });
+
+    return String(votes);
   }
 }

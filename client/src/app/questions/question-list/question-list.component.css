@@ -9,7 +9,12 @@ table {
 
 td,
 th {
-  width: 25%;
+  width: auto;
+  padding: 0 1rem;
+}
+
+.spacer-column {
+  width: 100%;
 }
 
 .action-button {

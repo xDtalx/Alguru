@@ -10,7 +10,7 @@ const questionSchema = mongoose.Schema({
   submitionTests: [String],
   hints: { type: String },
   level: { type: Number, required: true },
-  creator: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+  author: { type: String, required: true },
   votes: { type: Map, of: Vote.schema, required: true }
 });
 

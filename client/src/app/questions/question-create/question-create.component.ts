@@ -73,7 +73,7 @@ export class QuestionCreateComponent implements OnInit, OnDestroy, AfterViewInit
     });
     this.question = {
       content: '',
-      creator: '',
+      author: '',
       exampleTests: ['', ''],
       hints: '',
       id: null,

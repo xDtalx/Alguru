@@ -62,7 +62,9 @@ export class IDEComponent implements OnInit, OnDestroy {
     });
     this.executeListenerSubs = this.codeService.getExecuteResponseListener().subscribe((response) => {
       this.executeResponse = response;
-      this.submitDisabled = this.executeResponse.errors !== '';
+      this.submitDisabled =
+        this.executeResponse.errors !== '' ||
+        (this.executeResponse.testsFailed !== '' && this.executeResponse.testsFailed.indexOf('true') === -1);
       this.runCodeLoading = false;
       this.submitLoading = false;
 
