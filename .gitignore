@@ -51,3 +51,4 @@ nodemon.json
 *.exe
 server/public/uploads/*
 .vscode/
+third-party/
