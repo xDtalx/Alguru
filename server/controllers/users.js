@@ -5,8 +5,8 @@ const Image = require('../models/image');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const { validationResult } = require('express-validator');
-const nodemailer = require('nodemailer');
-let mailer;
+const sgMail = require('@sendgrid/mail');
+sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
 exports.getStats = async (req, res, next) => {
   await User.findOne({ _id: req.userData.userId })
@@ -83,11 +83,11 @@ exports.resendVarificationEmail = async (req, res, next) => {
     res.status(400).json({ message: 'User is already verified' });
   } else {
     await User.findOne({ _id: req.userData.userId })
-      .then(async (user) => {
+      .then((user) => {
         if (user.verified) {
           res.status(400).json({ message: 'User is already verified' });
         } else {
-          await sendVarificationEmailAsync(req.userData);
+          sendVarificationEmail(req.userData);
           res.status(200).json({ message: 'Varification email sent' });
         }
       })
@@ -404,7 +404,7 @@ async function handleFoundUserAsync(user, req, res) {
 }
 
 async function handleSuccessfulSaveAsync(savedUser, res) {
-  await sendVarificationEmailAsync({
+  sendVarificationEmail({
     username: savedUser.username,
     email: savedUser.email,
     userId: savedUser._id,
@@ -421,31 +421,7 @@ async function handleSuccessfulSaveAsync(savedUser, res) {
   });
 }
 
-async function initMailerAsync() {
-  if (!mailer) {
-    let testAccount;
-
-    if (process.env.TYPE === 'dev') {
-      testAccount = await nodemailer.createTestAccount();
-    }
-
-    // create reusable transporter object using the default SMTP transport
-    mailer = nodemailer.createTransport({
-      service: testAccount ? null : process.env.EMAIL_SERVICE,
-      host: testAccount ? 'smtp.ethereal.email' : process.env.EMAIL_HOST,
-      port: testAccount ? 587 : process.env.EMAIL_PORT,
-      secure: testAccount ? false : process.env.EMAIL_SECURE, // true for 465, false for other ports
-      auth: {
-        user: testAccount ? testAccount.user : process.env.EMAIL_USER, // generated ethereal user
-        pass: testAccount ? testAccount.pass : process.env.EMAIL_PASS // generated ethereal password
-      }
-    });
-  }
-}
-
 async function sendResetPasswordEmailAsync(userData) {
-  await initMailerAsync();
-
   const token = jwt.sign(
     {
       username: userData.username,
@@ -461,12 +437,11 @@ async function sendResetPasswordEmailAsync(userData) {
   );
 
   const tmpToken = new TmpToken({ token });
-  await tmpToken.save().then(async (savedTmpToken) => {
-    // send mail with defined transport object
-    const info = await mailer.sendMail({
-      from: '"No Reply" <noreply@alguru.xyz>', // sender address
-      to: userData.email, // list of receivers
-      subject: 'Reset Password', // Subject line
+  await tmpToken.save().then(() => {
+    const msg = {
+      to: userData.email,
+      from: 'No Reply <noreply@alguru.xyz>',
+      subject: 'Reset Password',
       html: `<p>Hello ${userData.username},</p>
       <p>
         <a href="${process.env.CLIENT_URL}/users/login/reset/${token}">
@@ -474,17 +449,13 @@ async function sendResetPasswordEmailAsync(userData) {
         </a>
         <span> to reset your password.</span>
       </p>`
-    });
+    };
 
-    if (process.env.TYPE === 'dev') {
-      console.log('Preview URL: %s', nodemailer.getTestMessageUrl(info));
-    }
+    sgMail.send(msg);
   });
 }
 
-async function sendVarificationEmailAsync(userData) {
-  await initMailerAsync();
-
+function sendVarificationEmail(userData) {
   const token = jwt.sign(
     {
       username: userData.username,
@@ -499,11 +470,10 @@ async function sendVarificationEmailAsync(userData) {
     }
   );
 
-  // send mail with defined transport object
-  const info = await mailer.sendMail({
-    from: '"No Reply" <noreply@alguru.xyz>', // sender address
-    to: userData.email, // list of receivers
-    subject: 'Alguru Verification Email', // Subject line
+  sgMail.send({
+    to: userData.email,
+    from: 'No Reply <noreply@alguru.xyz>',
+    subject: 'Alguru Verification Email',
     html: `<p>Hello ${userData.username},</p>
     <p>Please verify your email address. </p>
     <p>
@@ -513,8 +483,6 @@ async function sendVarificationEmailAsync(userData) {
       <span> to verify.</span>
     </p>`
   });
-
-  console.log('Preview URL: %s', nodemailer.getTestMessageUrl(info));
 }
 
 function handleRegisterError(error, res) {
