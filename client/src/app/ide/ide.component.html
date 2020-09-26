@@ -81,7 +81,7 @@
           editable
         ></nt-editor>
       </div>
-      <div class="container static-size" id="output-container">
+      <div class="container" id="output-container">
         <div class="head">
           <span class="title">Output</span>
           <span class="spacer"></span>
@@ -92,7 +92,11 @@
       </div>
     </div>
     <div id="second-col">
-      <div class="container">
+      <div
+        class="container"
+        id="question-container"
+        [ngStyle]="{ height: questionToSolve?.hints === '' ? '50vh' : '30vh' }"
+      >
         <div class="head top">
           <span class="title">Question</span>
           <div class="voting">
@@ -121,7 +125,7 @@
           showLineNumber
         ></nt-editor>
       </div>
-      <div class="container">
+      <div class="container" id="hints-container" *ngIf="questionToSolve?.hints !== ''">
         <div class="head">
           <span class="title">Hints</span>
           <span class="spacer"></span>
